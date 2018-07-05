@@ -1,0 +1,14 @@
+{
+  "name": "musicgang_stock",
+  "version": "1.0.0",
+  "description": "simple stock for easier life",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "musicgang"
+  ],
+  "author": "hazelnut",
+  "license": "ISC"
+}
