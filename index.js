@@ -1,6 +1,10 @@
 const express = require('express')
+const mongoose = require('mongoose')
+const keys = require('./config/key')
 
 const app = express()
+
+mongoose.connect(keys.mongoUrl);
 
 require('./routes/testing_route')(app);
 
