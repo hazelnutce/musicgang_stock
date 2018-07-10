@@ -5,11 +5,6 @@ const mongoose = require('mongoose')
 const User = mongoose.model('users')
 
 passport.use(new LocalStrategy(
-    {
-        usernameField: 'email',
-        passwordField: 'password',
-        passReqToCallback: true
-    },
     (username,password,done) => {
         User.findOne({username: username}, (err,user) => {
             if(err) {
@@ -18,7 +13,7 @@ passport.use(new LocalStrategy(
             if(!user){
                 return done(null,false)
             }
-            if (!user.authenticate(password)) return done(null, false);
+            if (user.validPassword(password)) return done(null, false);
             return done(null,user)
         })
     }
@@ -26,7 +21,6 @@ passport.use(new LocalStrategy(
 
 passport.use('local-signup',new LocalStrategy(
     async (username,password,done) => {
-        console.log("test from local signup")
         const user = await User.findOne({username: username})
         if(user){
             return done(null,false)
