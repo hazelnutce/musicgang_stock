@@ -6,9 +6,14 @@ module.exports = app => {
         res.status(200).send("create account success")
     })
 
-    app.post('/api/login', passport.authenticate('local',{failureRedirect : '/api/autherror'}), 
+    app.post('/api/login', passport.authenticate('local'), 
     (req,res) => {
-        res.redirect('/')
+        if(!req.user){
+            res.send("login failed")
+        }
+        else{
+            res.redirect('/')
+        }
     })
 
     app.get('/api/logout',(req,res) => {

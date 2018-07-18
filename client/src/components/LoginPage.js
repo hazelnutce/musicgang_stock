@@ -1,7 +1,11 @@
 import React, {Component} from 'react'
-import {reduxForm} from 'redux-form'
+import {reduxForm, Field} from 'redux-form'
+import {connect} from 'react-redux'
+import {withRouter} from 'react-router-dom'
 
 import Footer from './Footer'
+import LoginForm from './forms/LoginForm';
+import {loggedInUser} from '../actions/index'
 
 const marginForInput = {
     marginTop: "25px",
@@ -9,37 +13,37 @@ const marginForInput = {
 }
 
 export class LoginPage extends Component {
+
   render() {
+    const {history} = this.props
     return (
       <div>
         <div className="row">
-          <h4 class="header col s6 offset-s3">Login
-            <i class="material-icons" style={{marginLeft: "10px"}}>input</i>
+          <h4 className="header col s6 offset-s3">Login
+            <i className="material-icons" style={{marginLeft: "10px"}}>input</i>
           </h4>
           <div className="card medium col s6 offset-s3">
             <div className="row">
-              <form className="col s12">
-                <div
-                  className="input-field col s8"
-                  style={marginForInput}>
-                  <i class="material-icons prefix">account_circle</i>
-                  <input id="user_name" type="text" className="validate"/>
-                  <label for="user_name">User Name</label>
-                </div>
-                <div
-                  className="input-field col s8"
-                  style={marginForInput}>
-                  <i class="material-icons prefix">lock_open</i>
-                  <input id="password" type="password" className="validate"/>
-                  <label for="password">Password</label>
-                </div>
+              <form className="col s12" onSubmit={this.props.handleSubmit((values) => this.props.loggedInUser(values,history))}>
+                <Field 
+                component={LoginForm} 
+                name="username"
+                type={"text"}
+                icon={"account_circle"}
+                keyLabel={"User Name"}/>
+
+                <Field 
+                component={LoginForm}
+                name="password"
+                type={"password"}
+                icon={"lock_open"}
+                keyLabel={"Password"}
+                />
+
                 <div
                   className="col s6"
-                  style={{
-                  marginTop: "25px",
-                  marginLeft: "25px"
-                }}>
-                  <button className="btn waves-effect waves-light" type="submit" name="action">Submit
+                  style={marginForInput}>
+                  <button className="btn waves-effect waves-light" type="submit">Submit
                     <i className="material-icons right">send</i>
                   </button>
                 </div>
@@ -54,8 +58,6 @@ export class LoginPage extends Component {
   }
 }
 
-LoginPage = reduxForm({
+export default reduxForm({
   form: 'login'
-})(LoginPage)
-
-export default LoginPage
+})(connect(null,{loggedInUser})(withRouter(LoginPage)))

@@ -4,16 +4,18 @@ import {TopbarMenu} from './navigates/topbarMenu';
 
 export class Header extends Component {
   renderContext(){
-    if(this.props.auth == null){
+    if(this.props.auth === null){
       return ;
     }
-    else if(this.props.auth == false){
+    else if(this.props.auth === false){
       return (
         <TopbarMenu />
       )
     }
     else{
-      return <div>You are logged in!</div>
+      return (
+        <TopbarMenu />
+      )
     }
   }
 
