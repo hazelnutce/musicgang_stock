@@ -9,7 +9,7 @@ export class Header extends Component {
     }
     else if(this.props.auth === false){
       return (
-        <TopbarMenu />
+        <div></div>
       )
     }
     else{
@@ -21,7 +21,6 @@ export class Header extends Component {
 
 
   render() {
-    console.log(this.props.auth)
     return (
       <div>
         {this.renderContext()}

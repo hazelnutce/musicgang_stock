@@ -4,8 +4,8 @@ import {connect} from 'react-redux'
 import {withRouter} from 'react-router-dom'
 
 import Footer from './Footer'
-import LoginForm from './forms/LoginForm';
-import {loggedInUser} from '../actions/index'
+import LoginField from './forms/LoginField';
+import {loggedInUser, clearErrorAuth} from '../actions/index'
 
 const marginForInput = {
     marginTop: "25px",
@@ -19,21 +19,34 @@ export class LoginPage extends Component {
     return (
       <div>
         <div className="row">
-          <h4 className="header col s6 offset-s3">Login
-            <i className="material-icons" style={{marginLeft: "10px"}}>input</i>
-          </h4>
+            <h4 className="header col s6 offset-s3">Login
+              <i className="material-icons" style={{marginLeft: "10px"}}>input</i>
+            </h4>
+          {
+            this.props.authError !== "" &&
+              <div className="col s6 offset-s3">
+                <div className="card-panel red lighten-1">
+                  <span className="white-text">
+                    <span><i className="material-icons" style={{marginLeft: "10px",top:"5px",position:"relative"}}>warning</i></span>
+                    <a className="btn-flat right" onClick={() => this.props.clearErrorAuth(history)}><i className="close right material-icons  white-text">close</i></a>
+                    <span style={{marginLeft: "10px"}}>{this.props.authError}</span>
+                  </span>
+                </div>
+            </div>
+          }
+          
           <div className="card medium col s6 offset-s3">
             <div className="row">
               <form className="col s12" onSubmit={this.props.handleSubmit((values) => this.props.loggedInUser(values,history))}>
                 <Field 
-                component={LoginForm} 
+                component={LoginField} 
                 name="username"
                 type={"text"}
                 icon={"account_circle"}
                 keyLabel={"User Name"}/>
 
                 <Field 
-                component={LoginForm}
+                component={LoginField}
                 name="password"
                 type={"password"}
                 icon={"lock_open"}
@@ -58,6 +71,10 @@ export class LoginPage extends Component {
   }
 }
 
+function mapStateToProp(state){
+  return {authError: state.authError}
+}
+
 export default reduxForm({
   form: 'login'
-})(connect(null,{loggedInUser})(withRouter(LoginPage)))
+})(connect(mapStateToProp,{loggedInUser, clearErrorAuth})(withRouter(LoginPage)))

@@ -1,13 +1,28 @@
-import {FETCH_USER} from './types';
+import {FETCH_USER,LOGIN_USER_FAILED} from './types';
 import axios from "axios";
+import { reset } from '../../node_modules/redux-form';
 
 export const fetchUser = () => async dispatch => {
     const res = await axios.get('/api/currentuser')
     dispatch({ type: FETCH_USER , payload: res});
 }
 
-export const loggedInUser = (values,history) => async dispatch => {
-    const res = await axios.post('/api/login',values)
-    history.push('/')
-    dispatch({ type: FETCH_USER , payload: res});
+export const loggedInUser = (values,history) => dispatch => {
+    axios.post('/api/login',values).then(async res => {
+        const userRes = await axios.get('/api/currentuser')
+        history.push('/')
+        dispatch({ type: FETCH_USER , payload: userRes});
+    }).catch(error => {
+        if (error.response) {
+            // The request was made and the server responded with a status code
+            // that falls out of the range of 2xx
+            history.push('/')
+            dispatch(reset('login'))
+            dispatch({ type: LOGIN_USER_FAILED, payload: error.response.data.message});
+        }
+    })
+}
+
+export const clearErrorAuth = (history) => dispatch => {
+    dispatch({type: LOGIN_USER_FAILED, payload: ""})
 }
