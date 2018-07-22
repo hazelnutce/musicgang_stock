@@ -4,8 +4,8 @@ import {connect} from 'react-redux'
 import {withRouter} from 'react-router-dom'
 
 import Footer from './Footer'
-import LoginField from './forms/LoginField';
-import {loggedInUser, clearErrorAuth} from '../actions/index'
+import {loggedInUser, clearErrorAuth} from '../actions'
+import LoginForm from './forms/LoginForm';
 
 const marginForInput = {
     marginTop: "25px",
@@ -17,7 +17,7 @@ export class LoginPage extends Component {
   render() {
     const {history} = this.props
     return (
-      <div>
+      <div className="container">
         <div className="row">
             <h4 className="header col s6 offset-s3">Login
               <i className="material-icons" style={{marginLeft: "10px"}}>input</i>
@@ -38,21 +38,7 @@ export class LoginPage extends Component {
           <div className="card medium col s6 offset-s3">
             <div className="row">
               <form className="col s12" onSubmit={this.props.handleSubmit((values) => this.props.loggedInUser(values,history))}>
-                <Field 
-                component={LoginField} 
-                name="username"
-                type={"text"}
-                icon={"account_circle"}
-                keyLabel={"User Name"}/>
-
-                <Field 
-                component={LoginField}
-                name="password"
-                type={"password"}
-                icon={"lock_open"}
-                keyLabel={"Password"}
-                />
-
+                <LoginForm />
                 <div
                   className="col s6"
                   style={marginForInput}>
