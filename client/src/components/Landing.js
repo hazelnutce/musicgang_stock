@@ -10,7 +10,7 @@ export class Landing extends Component {
       case false:
         return <LoginPage />
       default:
-        return <div>You logged in!</div>
+        return ;
     }
   }
 

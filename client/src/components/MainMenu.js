@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import {connect} from 'react-redux'
-import {TopbarMenu} from './navigates/topbarMenu';
+import {SidebarMenu} from './navigates/sidebarMenu';
 
 export class Header extends Component {
   renderContext(){
@@ -14,7 +14,7 @@ export class Header extends Component {
     }
     else{
       return (
-        <TopbarMenu />
+        <SidebarMenu />
       )
     }
   }
