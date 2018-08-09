@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import {connect} from 'react-redux'
 import LoginPage from './LoginPage'
+import DashboardPage from './DashboardPage'
 
 export class Landing extends Component {
   renderContext(){
@@ -10,7 +11,7 @@ export class Landing extends Component {
       case false:
         return <LoginPage />
       default:
-        return ;
+        return <DashboardPage />;
     }
   }
 

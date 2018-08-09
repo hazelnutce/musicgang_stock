@@ -1,11 +1,11 @@
 import React, {Component} from 'react'
-import {reduxForm, Field} from 'redux-form'
+import {reduxForm} from 'redux-form'
 import {connect} from 'react-redux'
 import {withRouter} from 'react-router-dom'
 
 import Footer from './Footer'
 import {loggedInUser, clearErrorAuth} from '../actions'
-import LoginForm from './forms/LoginForm';
+import LoginForm from './forms/login/LoginForm';
 
 const marginForInput = {
     marginTop: "25px",
