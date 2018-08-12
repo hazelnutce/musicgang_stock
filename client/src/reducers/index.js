@@ -1,4 +1,4 @@
-import {combineReducers} from '../../../../../../AppData/Local/Microsoft/TypeScript/2.9/node_modules/redux'
+import {combineReducers} from 'redux'
 import {reducer as formReducer} from 'redux-form';
 
 import authReducer from './authReducer'
