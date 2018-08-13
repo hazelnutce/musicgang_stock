@@ -30,4 +30,16 @@ module.exports = app => {
 
         res.status(200).send("Created stock successfully")
     })
+
+    app.delete('/api/stock/delete/:stockId',requireLogin,async (req,res) => {
+        const stockId = req.params.stockId
+        Stock.deleteOne({_id: stockId}, function(err){
+            if(err){
+                res.status(500).send(err)
+                throw err
+            }
+        })
+
+        res.status(200).send("Deleted stock successfully")
+    })
 }

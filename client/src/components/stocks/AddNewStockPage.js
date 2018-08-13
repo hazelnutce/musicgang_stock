@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import {Link} from 'react-router-dom'
+import {Link, withRouter} from 'react-router-dom'
 import {reduxForm} from 'redux-form'
 import {connect} from 'react-redux'
 
@@ -8,6 +8,7 @@ import {addNewStock} from '../../actions/stock'
 
 export class AddNewStockPage extends Component {
   render() {
+    const {history} = this.props
     return (
       <div className="container" style={{position: "relative", top: "5px"}}>
         <div className="row">
@@ -16,13 +17,15 @@ export class AddNewStockPage extends Component {
             </h5>
         </div>
         <div className="row">
-            <div className="card small col s12 yellow lighten-4" style={{height: "150px"}}>
+            <div className="card small col s12 amber lighten-1" style={{height: "150px"}}>
                 <NewStockForm />
             </div>
         </div>
-        <div className="row">    
-            <a onClick={this.props.handleSubmit((values) => this.props.addNewStock(values))} className="green waves-effect waves-light btn col s2 offset-s7" style={{position: "relative", left: "75px"}}><i className="material-icons right">add_circle</i>Add stock</a>
-            <Link to="/stocks" className="red waves-effect waves-light btn col s2 offset-s1"><i className="material-icons right">cancel</i>Cancel</Link>
+        <div className="row">
+            <span className="right">
+                <a onClick={this.props.handleSubmit((values) => this.props.addNewStock(values,history))} className="green waves-effect waves-light btn" style={{position: "relative", right: "10px"}}><i className="material-icons right">add_circle</i>Add stock</a>
+                <Link to="/stocks" className="red waves-effect waves-light btn"><i className="material-icons right">cancel</i>Cancel</Link>
+            </span>   
         </div>
         <div>
         
@@ -49,4 +52,4 @@ function validate(values){
 export default reduxForm({
     form : 'newStockForm',
     validate
-})(connect(null,{addNewStock})(AddNewStockPage))
+})(connect(null,{addNewStock})(withRouter(AddNewStockPage)))
