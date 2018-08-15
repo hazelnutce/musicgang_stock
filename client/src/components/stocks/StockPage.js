@@ -47,7 +47,7 @@ export class StockPage extends Component {
   }
 
   componentDidUpdate = (prevProps) => {
-    if (prevProps.stocks !== this.props.stocks) {
+    if (prevProps.stocks.stockList !== this.props.stocks.stockList) {
       if(this.props.stocks !== ""){
         this.setState({loadingStock:true},() => {
           var elems = document.querySelectorAll('.modal');
@@ -60,7 +60,7 @@ export class StockPage extends Component {
   }
   
   render() {
-    const {stocks} = this.props
+    const {stockList} = this.props.stocks
     if(!this.state.loadingStock){
       return (
         <div className="container" style={{position: "relative", top: "50px"}}>
@@ -82,7 +82,7 @@ export class StockPage extends Component {
         </div>
         <div className="row">
           <div className="col s12">
-            {this.renderStock(stocks)}
+            {this.renderStock(stockList)}
           </div>
         </div>
         

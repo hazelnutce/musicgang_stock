@@ -1,9 +1,20 @@
-import {ADD_STOCK} from './types';
+import {ADD_STOCK,ERROR_CREATE_STOCK} from './types';
+import { reset } from 'redux-form';
 import axios from 'axios'
 
 export const addNewStock = (values,history) => async dispatch => {
-    await axios.post('/api/stock/add',values);
-    history.push('/stocks')
+    axios.post('/api/stock/add',values).then(async res => {
+        history.push('/stocks')
+    }).catch(error => {
+        if (error.response) {
+            dispatch({type: ERROR_CREATE_STOCK, payload: error.response.data})
+            dispatch(reset('newStockForm'))
+        }
+    })
+}
+
+export const clearErrorCreateStock = () => async dispatch => {
+    dispatch({type: ERROR_CREATE_STOCK, payload: ""})
 }
 
 export const fetchStock = () => async dispatch => {
