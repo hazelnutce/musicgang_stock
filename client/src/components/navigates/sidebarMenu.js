@@ -20,7 +20,7 @@ export class SidebarMenu extends Component {
         <div>
             <nav >
                 <div className="nav-wrapper amber darken-1">
-                    <a data-target="slide-out" className="button-collapse sidenav-trigger"><i className="material-icons">menu</i></a>
+                    <Link to="" data-target="slide-out" className="button-collapse sidenav-trigger"><i className="material-icons">menu</i></Link>
                     <Link to="/"><div style={{fontSize: "20px", position: "relative", left: "20px"}}>Dashboard</div></Link>
                 </div>
             </nav> 

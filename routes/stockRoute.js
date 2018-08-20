@@ -15,6 +15,16 @@ module.exports = app => {
         })
     })
 
+    app.get('/api/stock/stockName',requireLogin,(req,res) => {
+        Stock.find({_user: req.user.id},{stockName: 1,_id: 1},function(err,stock){
+            if(err){
+                res.status(500).send(err)
+                throw err
+            }
+            res.send(stock)
+        })
+    })
+
     app.post('/api/stock/add',requireLogin,async (req,res) => {
         const {stockName, description} = req.body
         const stock = await Stock.findOne({stockName: stockName})

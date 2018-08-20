@@ -4,3 +4,6 @@ export const LOGIN_USER_FAILED = "login_user_failed"
 export const ADD_STOCK = "add_stock"
 export const FETCH_STOCK = "fetch_stock"
 export const ERROR_CREATE_STOCK = "error_create_stock"
+
+export const FETCH_CATEGORY = "fetch_category"
+export const FETCH_STOCK_IN_CATEGORY = "fetch_stock_in_category"
