@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import {connect} from 'react-redux'
 import {LoaderSpinner} from '../commons/LoaderSpinner'
+import _ from 'lodash'
 
 import {fetchCategory} from '../../actions/category'
 
@@ -18,8 +19,8 @@ export class CategoryPage extends Component {
         }
     }
 
-    renderCategories = (categories) => {
-        if(categories.length === 0){
+    renderCategories = (category) => {
+        if(category.categories.length === 0 && category.stockDetails.length === 0){
             return(
               <div className="card-panel yellow darken-1" style={{marginLeft: "10px",top:"-20px",position:"relative"}}>
                 <span className="white-text">
@@ -29,24 +30,39 @@ export class CategoryPage extends Component {
               </div>
             )
         }
+        else if(category.stockDetails.length > 0){
+            return _.map(category.stockDetails,stock => {
+                return (
+                    <div key={stock._id}>
+                        <div className="row">
+                            <h6><u>{stock.stockName}</u></h6> 
+                        </div>
+                        <div className="row">
+                            <p className="grey-text" style={{marginLeft: "20px"}}><i className="material-icons" style={{top: "5px", position: "relative", marginRight: "10px"}}>warning</i>you didn't have any category in stock</p> 
+                        </div>
+                    </div>
+                )
+            })
+        }
     }
 
     componentDidMount = () => {
         this.props.fetchCategory()
     }
 
-    componentDidUpdate = (prevProps, prevState) => {
-      if(prevProps.category.categories !== this.props.category.categories){
+    componentDidUpdate = (prevProps) => {
+      const {categories, stockDetails} = prevProps.category
+      if(categories !== this.props.category.categories){
         this.setState({loadingCategory: true})
       }
-      if(prevProps.category.stockDetails !== this.props.category.stockDetails){
+      if(stockDetails !== this.props.category.stockDetails){
         this.setState({loadingStock: true})
       }
     }
     
     render() {
         const {category} = this.props
-        if(!this.state.loadingCategory){
+        if(!(this.state.loadingCategory && this.state.loadingStock)){
             return (
               <LoaderSpinner loading={this.state.loadingCategory && this.state.loadingStock} color={'#123abc'}/>
             )
@@ -57,7 +73,7 @@ export class CategoryPage extends Component {
             <h5 className="col s12">Categories {buttonInLine}</h5>
             </div>
             <div className="row">
-                {this.renderCategories(category.categories)}
+                {this.renderCategories(category)}
             </div>   
         </div>
         )
