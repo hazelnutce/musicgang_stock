@@ -1,12 +1,15 @@
 import React, { Component } from 'react'
 import {connect} from 'react-redux'
 import {LoaderSpinner} from '../commons/LoaderSpinner'
+import M from 'materialize-css'
+import {reduxForm} from 'redux-form'
 import _ from 'lodash'
 
 import {fetchCategory} from '../../actions/category'
+import {NewCategoryForm} from '../forms/newcategory/NewCategoryForm'
 
 const buttonInLine = <span className="right">
-<a className="waves-effect waves-light btn-small amber darken-3"><i className="material-icons right">add</i>Add category</a>
+<a data-target="addCategory" className="waves-effect waves-light btn-small amber darken-3 modal-trigger"><i className="material-icons right">add</i>Add category</a>
 </span>
 
 export class CategoryPage extends Component {
@@ -48,9 +51,10 @@ export class CategoryPage extends Component {
 
     componentDidMount = () => {
         this.props.fetchCategory()
+        
     }
 
-    componentDidUpdate = (prevProps) => {
+    componentDidUpdate = (prevProps, prevState) => {
       const {categories, stockDetails} = prevProps.category
       if(categories !== this.props.category.categories){
         this.setState({loadingCategory: true})
@@ -58,6 +62,15 @@ export class CategoryPage extends Component {
       if(stockDetails !== this.props.category.stockDetails){
         this.setState({loadingStock: true})
       }
+      if(prevState !== this.state){
+        if(this.state.loadingCategory && this.state.loadingStock){
+            var elems = document.querySelectorAll('.modal');
+              M.Modal.init(elems, {
+                opacity: 0.6
+            });
+        }
+      }
+      
     }
     
     render() {
@@ -74,6 +87,15 @@ export class CategoryPage extends Component {
             </div>
             <div className="row">
                 {this.renderCategories(category)}
+            </div>
+            <div id="addCategory" className="modal">
+                    <div className="modal-content">
+                        <NewCategoryForm />
+                    </div>
+                    <div className="modal-footer">
+                        <a  className="red modal-close waves-effect waves-light btn right"><i className="material-icons right">cancel</i>Cancel</a>
+                        <a  className="green modal-close waves-effect waves-light btn right" style={{position: "relative", right: "20px"}}><i className="material-icons right">add_circle</i>Confirm</a> 
+                    </div>
             </div>   
         </div>
         )
@@ -84,4 +106,6 @@ function mapStateToProps(state) {
     return { category: state.category}
 }
 
-export default connect(mapStateToProps,{fetchCategory})(CategoryPage)
+export default reduxForm({
+    form: 'newCategoryForm'
+})(connect(mapStateToProps,{fetchCategory})(CategoryPage))
