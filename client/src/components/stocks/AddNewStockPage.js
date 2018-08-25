@@ -4,11 +4,12 @@ import {reduxForm} from 'redux-form'
 import {connect} from 'react-redux'
 
 import NewStockForm from '../forms/newstock/NewStockForm'
-import {addNewStock} from '../../actions/stock'
+import {addNewStock,clearErrorCreateStock} from '../../actions/stock'
+import {ErrorFormNotification} from '../commons/ErrorFormNotification'
 
 export class AddNewStockPage extends Component {
   render() {
-    const {history} = this.props
+    const {history,stocks,clearErrorCreateStock} = this.props
     return (
       <div className="container" style={{position: "relative", top: "5px"}}>
         <div className="row">
@@ -16,6 +17,10 @@ export class AddNewStockPage extends Component {
                 <i className="material-icons" style={{marginLeft: "10px"}}>input</i>
             </h5>
         </div>
+        {
+            stocks.errorCreateStock !== "" &&
+             <ErrorFormNotification errorMessage={stocks.errorCreateStock} clearErrorMessage={clearErrorCreateStock} specificColumn={"col s12"}/>
+          }
         <div className="row">
             <div className="card small col s12 amber lighten-1" style={{height: "150px"}}>
                 <NewStockForm />
@@ -49,7 +54,11 @@ function validate(values){
     return errors
 }
 
+function mapStateToProps(state){
+    return {stocks : state.stocks}
+}
+
 export default reduxForm({
     form : 'newStockForm',
     validate
-})(connect(null,{addNewStock})(withRouter(AddNewStockPage)))
+})(connect(mapStateToProps,{addNewStock,clearErrorCreateStock})(withRouter(AddNewStockPage)))

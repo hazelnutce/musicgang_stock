@@ -25,6 +25,10 @@ const StockSchema = new Schema({
     itemDanger: {
         type: Number,
         default: 0
+    },
+    _user: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'users'
     }
 }, {timestamps: true})
 

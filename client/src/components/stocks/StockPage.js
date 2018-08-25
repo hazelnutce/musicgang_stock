@@ -1,12 +1,12 @@
 import React, { Component } from 'react'
 import {Link} from 'react-router-dom'
 import {connect} from 'react-redux'
-import { RingLoader } from 'react-spinners';
 import M from 'materialize-css'
 import _ from 'lodash'
 
 import {fetchStock} from '../../actions/stock'
 import StockDetail from './StockDetail'
+import {LoaderSpinner} from '../commons/LoaderSpinner'
 
 const buttonInLine = <span className="right">
 <Link to="/stocks/new" className="waves-effect waves-light btn-small amber darken-3"><i className="material-icons right">add</i>Add stock</Link>
@@ -47,7 +47,7 @@ export class StockPage extends Component {
   }
 
   componentDidUpdate = (prevProps) => {
-    if (prevProps.stocks !== this.props.stocks) {
+    if (prevProps.stocks.stockList !== this.props.stocks.stockList) {
       if(this.props.stocks !== ""){
         this.setState({loadingStock:true},() => {
           var elems = document.querySelectorAll('.modal');
@@ -60,19 +60,10 @@ export class StockPage extends Component {
   }
   
   render() {
-    const {stocks} = this.props
+    const {stockList} = this.props.stocks
     if(!this.state.loadingStock){
       return (
-        <div className="container" style={{position: "relative", top: "50px"}}>
-          <div className="row">
-            <div className='col s2 offset-s6'>
-            <RingLoader
-              color={'#123abc'} 
-              loading={!this.state.loadingStock} 
-            />
-            </div>
-          </div>
-        </div>
+        <LoaderSpinner loading={this.state.loadingCategory} color={'#123abc'}/>
       )
     }
     return (
@@ -82,7 +73,7 @@ export class StockPage extends Component {
         </div>
         <div className="row">
           <div className="col s12">
-            {this.renderStock(stocks)}
+            {this.renderStock(stockList)}
           </div>
         </div>
         

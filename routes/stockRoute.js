@@ -5,12 +5,22 @@ const Stock = mongoose.model('stocks')
 
 module.exports = app => {
     app.get('/api/stock',requireLogin,(req,res) => {
-        Stock.find({}, function(err,stock){
+        Stock.find({_user: req.user.id}, function(err,stock){
             if(err){
                 res.status(500).send(err)
                 throw err
             }
 
+            res.send(stock)
+        })
+    })
+
+    app.get('/api/stock/stockName',requireLogin,(req,res) => {
+        Stock.find({_user: req.user.id},{stockName: 1,_id: 1},function(err,stock){
+            if(err){
+                res.status(500).send(err)
+                throw err
+            }
             res.send(stock)
         })
     })
@@ -23,7 +33,8 @@ module.exports = app => {
         }
         const newStock = new Stock({
             stockName: stockName,
-            description: description
+            description: description,
+            _user: req.user.id
         })
         newStock.tag.push(stockName)
         await newStock.save()

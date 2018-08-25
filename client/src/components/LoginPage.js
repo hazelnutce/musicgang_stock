@@ -6,6 +6,7 @@ import {withRouter} from 'react-router-dom'
 import Footer from './Footer'
 import {loggedInUser, clearErrorAuth} from '../actions'
 import LoginForm from './forms/login/LoginForm';
+import {ErrorFormNotification} from './commons/ErrorFormNotification'
 
 const marginForInput = {
     marginTop: "25px",
@@ -24,15 +25,7 @@ export class LoginPage extends Component {
             </h4>
           {
             this.props.authError !== "" &&
-              <div className="col s6 offset-s3">
-                <div className="card-panel red lighten-1">
-                  <span className="white-text">
-                    <span><i className="material-icons" style={{marginLeft: "10px",top:"5px",position:"relative"}}>warning</i></span>
-                    <a className="btn-flat right" onClick={() => this.props.clearErrorAuth(history)}><i className="close right material-icons  white-text">close</i></a>
-                    <span style={{marginLeft: "10px"}}>{this.props.authError}</span>
-                  </span>
-                </div>
-            </div>
+              <ErrorFormNotification errorMessage={this.props.authError} clearErrorMessage={this.props.clearErrorAuth} specificColumn="col s6 offset-s3"/>
           }
           
           <div className="card medium col s6 offset-s3">
