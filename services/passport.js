@@ -1,7 +1,7 @@
 const passport = require('passport')
 const LocalStrategy = require('passport-local').Strategy
 const mongoose = require('mongoose')
-const bcrypt = require('bcrypt')
+const bcrypt = require('bcrypt-nodejs')
 
 const User = mongoose.model('users')
 
@@ -16,11 +16,16 @@ passport.use(new LocalStrategy(
                 console.log("User didn't exist")
                 return done(null,false)
             }
-            bcrypt.compare(password,user.password).then(function(res){
+            bcrypt.compare(password,user.password,function(err,res){
+                if(err){
+                    console.log(err)
+                    return done(err)
+                }
                 if(!res){
                     console.log("Password invalid")
                     return done(null, false);
                 }
+                
                 return done(null,user)
             })
         })
@@ -33,7 +38,11 @@ passport.use('local-signup',new LocalStrategy(
         if(user){
             return done(null,false)
         }
-        bcrypt.hash(password, 12).then(async function(hashPassword){
+        bcrypt.hash(password, bcrypt.genSaltSync(12), null, async function(err,hashPassword){
+            if(err){
+                console.log(err)
+                return done(err)
+            }
             const newUser = new User({
                 username: username,
                 password: hashPassword
