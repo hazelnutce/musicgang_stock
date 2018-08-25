@@ -5,7 +5,7 @@ import M from 'materialize-css'
 import {reduxForm} from 'redux-form'
 import _ from 'lodash'
 
-import {fetchCategory} from '../../actions/category'
+import {fetchCategory,addCategory} from '../../actions/category'
 import {NewCategoryForm} from '../forms/newcategory/NewCategoryForm'
 
 const buttonInLine = <span className="right">
@@ -75,6 +75,7 @@ export class CategoryPage extends Component {
     
     render() {
         const {category} = this.props
+        const {stockDetails} = category
         if(!(this.state.loadingCategory && this.state.loadingStock)){
             return (
               <LoaderSpinner loading={this.state.loadingCategory && this.state.loadingStock} color={'#123abc'}/>
@@ -88,15 +89,19 @@ export class CategoryPage extends Component {
             <div className="row">
                 {this.renderCategories(category)}
             </div>
-            <div id="addCategory" className="modal">
+            <div className="row">
+                <div id="addCategory" className="modal col s6 offset-s1">
                     <div className="modal-content">
+                        <h5>New Category</h5>
                         <NewCategoryForm />
                     </div>
                     <div className="modal-footer">
                         <a  className="red modal-close waves-effect waves-light btn right"><i className="material-icons right">cancel</i>Cancel</a>
-                        <a  className="green modal-close waves-effect waves-light btn right" style={{position: "relative", right: "20px"}}><i className="material-icons right">add_circle</i>Confirm</a> 
+                        <a onClick={this.props.handleSubmit((values) => this.props.addCategory(values,stockDetails))} className="green modal-close waves-effect waves-light btn right" style={{position: "relative", right: "20px"}}><i className="material-icons right">add_circle</i>Confirm</a> 
                     </div>
-            </div>   
+                </div>
+            </div>
+               
         </div>
         )
     }
@@ -108,4 +113,4 @@ function mapStateToProps(state) {
 
 export default reduxForm({
     form: 'newCategoryForm'
-})(connect(mapStateToProps,{fetchCategory})(CategoryPage))
+})(connect(mapStateToProps,{fetchCategory,addCategory})(CategoryPage))

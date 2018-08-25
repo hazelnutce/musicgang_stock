@@ -6,7 +6,7 @@ import NewCategoryDropdown from './NewCategoryDropdown'
 export class NewCategoryForm extends Component {
   render() {
     return (
-        <div>
+        <div className="container-fluid">
         <Field
             component={NewCategoryField} 
             name="categoryName"
@@ -18,6 +18,7 @@ export class NewCategoryForm extends Component {
         <Field 
             component={NewCategoryDropdown}
             name="stockSelector"
+            icon={"storage"}
         />
         
       </div>

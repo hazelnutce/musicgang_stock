@@ -9,3 +9,8 @@ export const fetchCategory = () => async dispatch => {
     dispatch({type: FETCH_STOCK_IN_CATEGORY, payload: stockRes.data})
 }
 
+export const addCategory = (values,categoryDetail) => async dispatch => {
+    var query = categoryDetail.filter((item) => item.stockName === values.stockSelector)
+    
+}
+

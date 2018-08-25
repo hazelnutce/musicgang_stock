@@ -1,5 +1,7 @@
 import React, { Component } from 'react'
+import {connect} from 'react-redux'
 import M from 'materialize-css'
+import _ from 'lodash'
 
 const marginForInput = {
     marginTop: "25px",
@@ -7,28 +9,44 @@ const marginForInput = {
 }
 
 export class NewCategoryDropdown extends Component {
+    constructor(props) {
+        super(props);
+        this.state = {value: ''};
+      }
+
     componentDidMount = () => {
-        var elems = document.querySelectorAll('.dropdown-trigger');
-        M.Dropdown.init(elems, {});
+        var elems = document.querySelectorAll('select');
+        M.FormSelect.init(elems, {});
+    }
+
+    renderStockList = (stocks) => {
+        return _.map(stocks,stock => {
+            return <option key={stock._id} value={stock.stockName}>{stock.stockName}</option>
+        })
+    }
+
+    handleChange = (event) => {
+        this.setState({value: event.target.value});
     }
     
     render() {
         return (
-            <div>
-                <div 
-                    className="input-field col s8"
-                    style={marginForInput}>
-                    <a className='dropdown-trigger btn' data-target='dropdown1'>Drop Me!</a>
+            <div className="row">
+                <div className="input-field col s8" {...this.props.input} style={marginForInput}>
+                    <i className="material-icons prefix">{this.props.icon}</i>
+                    <select value={this.state.value} onChange={this.handleChange}>
+                        <option value="" disabled>Choose your stock</option>
+                        {this.renderStockList(this.props.stocks)}
+                    </select>
+                    <label>Stock</label>
                 </div>
-
-                <ul id='dropdown1' className='dropdown-content'>
-                    <li><a>one</a></li>
-                    <li><a>two</a></li>
-                </ul>
-            </div>
-            
+            </div>   
         )
     }
 }
 
-export default NewCategoryDropdown
+function mapStateToProps(state){
+    return { stocks: state.category.stockDetails}
+}
+
+export default connect(mapStateToProps,null)(NewCategoryDropdown)
