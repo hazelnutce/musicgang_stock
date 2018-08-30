@@ -5,8 +5,9 @@ import M from 'materialize-css'
 import {reduxForm} from 'redux-form'
 import _ from 'lodash'
 
-import {fetchCategory,addCategory} from '../../actions/category'
+import {fetchCategory,addCategory,deleteCategory} from '../../actions/category'
 import {NewCategoryForm} from '../forms/newcategory/NewCategoryForm'
+import './CategoryPage.css'
 
 const buttonInLine = <span className="right">
 <a data-target="addCategory" className="waves-effect waves-light btn-small amber darken-3 modal-trigger"><i className="material-icons right">add</i>Add category</a>
@@ -35,18 +36,53 @@ export class CategoryPage extends Component {
         }
         else if(category.stockDetails.length > 0){
             return _.map(category.stockDetails,stock => {
+                var query = (category.categories.filter((item) => item._stock === stock._id))
                 return (
                     <div key={stock._id}>
                         <div className="row">
                             <h6><u>{stock.stockName}</u></h6> 
                         </div>
-                        <div className="row">
-                            <p className="grey-text" style={{marginLeft: "20px"}}><i className="material-icons" style={{top: "5px", position: "relative", marginRight: "10px"}}>warning</i>you didn't have any category in stock</p> 
+                        <div className="row" style={{height: "auto"}}>
+                            {this.renderCategoryPanels(query)}
                         </div>
                     </div>
                 )
             })
         }
+    }
+
+    renderCategoryPanels = (categorys) => {
+        
+        if(categorys.length === 0){
+            return(
+                <div className="row">
+                    <p className="grey-text" style={{marginLeft: "20px"}}><i className="material-icons" style={{top: "5px", position: "relative"}}>warning</i>you didn't have any category in stock</p> 
+                </div>
+            )
+        }
+        return _.map(categorys,category => {
+            return(
+                <div key={category._id} >
+                    <div className="col s1"style={{width: "auto"}}>
+                        <div className="card-panel teal" style={{paddingRight: "5px"}}>
+                            <span className="center" id="categoryNamePanel">{category.categoryName}<a className="btn-flat modal-trigger" href={`#${category._id}`} style={{bottom: "2px", position: "relative"}}><i className="waves-effect material-icons ">cancel</i></a></span>  
+                        </div>
+                    </div>
+                    <div id={category._id} className="modal deleteCategory">
+                        <div className="modal-content">
+                            <h4>Confirm delete</h4>
+                            <p>Are you sure for delete <b>{category.categoryName}</b> category ?</p>
+                        </div>
+                        <div className="modal-footer">
+                            <a  className="red modal-close waves-effect waves-light btn right"><i className="material-icons right">cancel</i>Cancel</a>
+                            <a  onClick={() => this.props.deleteCategory(category._id)} className="green modal-close waves-effect waves-light btn right" style={{position: "relative", right: "20px"}}><i className="material-icons right">add_circle</i>Confirm</a> 
+                        </div>
+                    </div>
+                </div>
+                
+            )
+        })
+        
     }
 
     componentDidMount = () => {
@@ -64,10 +100,14 @@ export class CategoryPage extends Component {
       }
       if(prevState !== this.state){
         if(this.state.loadingCategory && this.state.loadingStock){
-            var elems = document.querySelectorAll('.modal');
+            var elems = document.querySelectorAll('#addCategory');
               M.Modal.init(elems, {
                 opacity: 0.6
             });
+            var elems2 = document.querySelectorAll('.deleteCategory');
+            M.Modal.init(elems2, {
+                opacity: 0.6
+            })
         }
       }
       
@@ -113,4 +153,4 @@ function mapStateToProps(state) {
 
 export default reduxForm({
     form: 'newCategoryForm'
-})(connect(mapStateToProps,{fetchCategory,addCategory})(CategoryPage))
+})(connect(mapStateToProps,{fetchCategory,addCategory,deleteCategory})(CategoryPage))
