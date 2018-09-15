@@ -1,9 +1,11 @@
 {
     "name": "client",
+    "main": "src/index.js",
     "version": "0.1.0",
     "private": true,
     "dependencies": {
         "axios": "^0.18.0",
+        "concurrently": "^4.0.1",
         "lodash": "^4.17.10",
         "materialize-css": "^1.0.0-rc.2",
         "react": "^16.4.1",
@@ -17,7 +19,7 @@
         "redux-thunk": "^2.3.0"
     },
     "scripts": {
-        "start": "react-scripts start",
+        "start": "set PORT=3000 && react-scripts start",
         "build": "react-scripts build",
         "test": "react-scripts test --env=jsdom",
         "eject": "react-scripts eject"
@@ -26,5 +28,9 @@
         "/api/*": {
             "target": "http://localhost:5000"
         }
+    },
+    "devDependencies": {
+        "electron": "^2.0.8",
+        "foreman": "^3.0.1"
     }
 }

@@ -75,3 +75,6 @@ typings/
 dev.js
 
 secrets/*
+
+node.exe
+node.lib

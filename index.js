@@ -30,7 +30,7 @@ require('./routes/authRoute')(app)
 require('./routes/stockRoute')(app)
 require('./routes/categoryRoute')(app)
 
-if(process.env.NODE_ENV === 'production' ){
+if(!(process.env.NODE_ENV && process.env.NODE_ENV.trim() === 'development')){
     //express will serve up production asset
     app.use(express.static('client/build'));
     //express will serve up index.html file if it can't recognize route

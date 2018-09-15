@@ -7,7 +7,7 @@ import {createStore,  applyMiddleware } from 'redux';
 import reduxThunk from 'redux-thunk'
 
 import App from './components/App';
-import registerServiceWorker from './registerServiceWorker';
+import registerServiceWorker, {unregister} from './registerServiceWorker';
 import reducers from './reducers'
 
 const store = createStore(reducers,{},applyMiddleware(reduxThunk))
@@ -17,5 +17,13 @@ ReactDOM.render(
         <App />
     </Provider>, 
     document.getElementById('root'));
-registerServiceWorker();
+
+if(process.env.NODE_ENV && process.env.NODE_ENV.trim() === 'production'){
+    unregister()
+}
+else{
+    registerServiceWorker()
+}
+
+
 
