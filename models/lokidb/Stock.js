@@ -4,6 +4,7 @@ const StockSchema = lowkie.Schema({
     stockName: String,
     description: String,
     tag: [String],
+    _user: String,
     itemCount: Number,
     itemWarning: Number,
     itemDanger: Number,

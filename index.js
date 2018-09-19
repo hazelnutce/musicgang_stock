@@ -55,8 +55,8 @@ lowkie.connection.once('connected',(db,option) => {
 
     require('./routes/testingRoute')(app)
     require('./routes/authRoute')(app)
-    require('./routes/stockRoute')(app)
-    require('./routes/categoryRoute')(app)
+    require('./routes/stockRoute')(app, Stock)
+    require('./routes/categoryRoute')(app, Category)
 
     if(!(process.env.NODE_ENV && process.env.NODE_ENV.trim() === 'development')){
         //express will serve up production asset

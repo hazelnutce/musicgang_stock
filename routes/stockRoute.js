@@ -1,28 +1,18 @@
 const requireLogin = require('../middleware/requireLogin');
 const mongoose = require('mongoose')
+//const Stock = mongoose.model('stocks')
 
-const Stock = mongoose.model('stocks')
-
-module.exports = app => {
+module.exports = (app, Stock) => {
     app.get('/api/stock',requireLogin,(req,res) => {
-        Stock.find({_user: req.user.id}, function(err,stock){
-            if(err){
-                res.status(500).send(err)
-                throw err
-            }
+        var result = Stock.find({_user: req.user.id})
 
-            res.send(stock)
-        })
+        res.send(result)
     })
 
     app.get('/api/stock/stockName',requireLogin,(req,res) => {
-        Stock.find({_user: req.user.id},{stockName: 1,_id: 1},function(err,stock){
-            if(err){
-                res.status(500).send(err)
-                throw err
-            }
-            res.send(stock)
-        })
+        var result = Stock.find({_user: req.user.id},{stockName: 1,_id: 1})
+        
+        res.send(result)
     })
 
     app.post('/api/stock/add',requireLogin,async (req,res) => {
