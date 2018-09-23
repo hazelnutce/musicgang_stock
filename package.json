@@ -9,7 +9,7 @@
     },
     "scripts": {
         "start": "node index.js",
-        "server": "nodemon index.js",
+        "server": "node index.js",
         "client": "npm run start --prefix client",
         "dev": "concurrently \"npm run server\" \"npm run client\"",
         "heroku-postbuild": "NPM_CONFIG_PRODUCTION=false npm install --prefix client && npm run build --prefix client",
@@ -36,7 +36,7 @@
         "express": "^4.16.3",
         "jquery": "^3.3.1",
         "keymaster": "^1.6.2",
-        "lowkie": "^1.4.0",
+        "lokijs": "^1.5.5",
         "materialize-css": "^1.0.0-rc.2",
         "mongoose": "^5.2.1",
         "nodemon": "^1.17.5",

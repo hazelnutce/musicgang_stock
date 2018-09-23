@@ -3,7 +3,7 @@ const mongoose = require('mongoose')
 
 //const Category = mongoose.model('categories')
 
-module.exports = (app, Category) => {
+module.exports = (app, Db, Category) => {
     app.get('/api/category',requireLogin,(req,res) => {
         var result = Category.find({_user: req.user.id})
 

@@ -1,17 +1,16 @@
 const requireLogin = require('../middleware/requireLogin');
-const mongoose = require('mongoose')
-//const Stock = mongoose.model('stocks')
+const guid = require('../services/guid')
 
-module.exports = (app, Stock) => {
+module.exports = (app, Db, Stock) => {
     app.get('/api/stock',requireLogin,(req,res) => {
-        var result = Stock.find({_user: req.user.id})
-
+        var result = Stock.find({_user: req.user.id.toString()})
+        console.log(result)
         res.send(result)
     })
 
     app.get('/api/stock/stockName',requireLogin,(req,res) => {
         var result = Stock.find({_user: req.user.id},{stockName: 1,_id: 1})
-        
+
         res.send(result)
     })
 
@@ -21,26 +20,47 @@ module.exports = (app, Stock) => {
         if(stock){
             res.status(500).send("This stock name already exist")
         }
-        const newStock = new Stock({
+        //new data
+        var newStock = {
             stockName: stockName,
             description: description,
-            _user: req.user.id
-        })
+            tag: [],
+            _user: req.user.id.toString(),
+            itemCount: 0,
+            itemWarning: 0,
+            itemDanger: 0,
+            _id: guid()
+        }
         newStock.tag.push(stockName)
-        await newStock.save()
+
+        //save it
+        try{
+            await Stock.insert(newStock)
+        }
+        catch(e){
+            console.log(e)
+            res.status(500).send("something error on database", e)
+        }
+        finally{
+            await Db.saveDatabase();
+        }
 
         res.status(200).send("Created stock successfully")
     })
 
     app.delete('/api/stock/delete/:stockId',requireLogin,async (req,res) => {
         const stockId = req.params.stockId
-        Stock.deleteOne({_id: stockId}, function(err){
-            if(err){
-                res.status(500).send(err)
-                throw err
-            }
-        })
-
+        console.log(stockId)
+        try{
+            await Stock.removeWhere({_id: stockId.toString()})
+        }
+        catch(e){
+            res.status(500).send(e)
+        }
+        finally{
+            await Db.saveDatabase();
+        }
+        
         res.status(200).send("Deleted stock successfully")
     })
 }
