@@ -8,6 +8,7 @@ import Landing from './Landing'
 import StockPage from './stocks/StockPage';
 import AddNewStockPage from './stocks/AddNewStockPage'
 import CategoryPage from './categories/CategoryPage'
+import ItemPage from './items/ItemPage'
 
 
 class App extends Component {
@@ -26,6 +27,7 @@ class App extends Component {
             <Route exact path="/stocks" component={StockPage}></Route>
             <Route path="/stocks/new" component={AddNewStockPage}></Route>
             <Route exact path="/categories" component={CategoryPage}></Route>
+            <Route path="/items/:stockId" component={ItemPage}></Route>
           </div>
         </BrowserRouter>
       </div>

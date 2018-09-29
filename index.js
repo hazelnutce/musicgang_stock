@@ -2,48 +2,79 @@ const express = require('express')
 const mongoose = require('mongoose')
 const passport = require('passport')
 const cookieSession = require('cookie-session')
-const bodyParser = require('body-parser');
+const bodyParser = require('body-parser')
+const lokijs = require('lokijs')
 
 const keys = require('./config/key')
 
+//mlab database
 require('./models/User')
 require('./models/Stock')
 require('./models/Category')
 require('./services/passport')
 
-mongoose.connect(keys.mongoUrl,{ useNewUrlParser: true });
+var db = new lokijs('./database.json');
 
-const app = express()
+db.loadDatabase({}, function(err) {
+    if (err) {
+      console.log("error : " + err);
+    }
+    else {
+      console.log("database loaded.");
+      var Stock = db.getCollection('stock');
+      if(!Stock){
+        Stock = db.addCollection('stock')
+      }
+      
+      var Category = db.getCollection('category');
+      if(!Category){
+          Category = db.addCollection('category');
+      }
 
-app.use(bodyParser.json());
+      var Item = db.getCollection('item');
+      if(!Item){
+          Item = db.getCollection('item')
+      }
 
-app.use(cookieSession({
-    maxAge: 30*24*60*60*1000,
-    keys: [keys.cookieKey]
-}))
+      mongoose.connect(keys.mongoUrl,{ useNewUrlParser: true });
 
-app.use(passport.initialize())
-app.use(passport.session())
+        const app = express()
 
-require('./routes/testingRoute')(app)
-require('./routes/authRoute')(app)
-require('./routes/stockRoute')(app)
-require('./routes/categoryRoute')(app)
+        app.use(bodyParser.json());
 
-if(!(process.env.NODE_ENV && process.env.NODE_ENV.trim() === 'development')){
-    //express will serve up production asset
-    app.use(express.static('client/build'));
-    //express will serve up index.html file if it can't recognize route
-    const path = require('path');
-    app.get('/production/testing',(req,res) => {
-        res.send("Hello client path")
-    })
-    app.get('*',(req,res) => {
-      res.sendFile(path.resolve(__dirname,'client','build','index.html'));
-    })
-}
+        app.use(cookieSession({
+            maxAge: 30*24*60*60*1000,
+            keys: [keys.cookieKey]
+        }))
 
-const PORT = process.env.PORT || 5000
-app.listen(PORT, () => {
-    console.log("server're running at PORT 5000 without error :)")
-})
+        app.use(passport.initialize())
+        app.use(passport.session())
+
+        require('./routes/testingRoute')(app)
+        require('./routes/authRoute')(app)
+        require('./routes/stockRoute')(app, db, Stock)
+        require('./routes/categoryRoute')(app, db, Category)
+
+        if(!(process.env.NODE_ENV && process.env.NODE_ENV.trim() === 'development')){
+            //express will serve up production asset
+            app.use(express.static('client/build'));
+            //express will serve up index.html file if it can't recognize route
+            const path = require('path');
+            app.get('/production/testing',(req,res) => {
+                res.send("Hello client path")
+            })
+            app.get('*',(req,res) => {
+            res.sendFile(path.resolve(__dirname,'client','build','index.html'));
+            })
+        }
+
+        const PORT = process.env.PORT || 5000
+        app.listen(PORT, () => {
+            console.log("server're running at PORT 5000 without error :)")
+        })
+    }
+});
+
+
+
+

@@ -1,17 +1,11 @@
 const requireLogin = require('../middleware/requireLogin')
-const mongoose = require('mongoose')
+const guid = require('../services/guid')
+//const Category = mongoose.model('categories')
 
-const Category = mongoose.model('categories')
-
-module.exports = app => {
+module.exports = (app, Db, Category) => {
     app.get('/api/category',requireLogin,(req,res) => {
-        Category.find({_user: req.user.id}, function(err,stock){
-            if(err){
-                res.status(500).send(err)
-                throw err
-            }
-            res.send(stock)
-        })
+        var result = Category.find({_user: req.user.id.toString()})
+        res.send(result)
     })
 
     app.post('/api/category/new',requireLogin,async (req,res) => {
@@ -20,39 +14,44 @@ module.exports = app => {
         if(stock){
             res.status(500).send("This category name already exist")
         }
-        const newCategory = new Category({
+        const newCategory = {
             categoryName,
-            _user: req.user.id,
-            _stock: id
-        })
+            _user: req.user.id.toString(),
+            _stock: id,
+            _id: guid()
+        }
 
-        await newCategory.save()
+        //save it
+        try{
+            await Category.insert(newCategory)
+        }
+        catch(e){
+            console.log(e)
+            res.status(500).send("something error on database", e)
+        }
+        finally{
+            await Db.saveDatabase();
+        }
 
-        await Category.find({},function(err,category){
-            if(err){
-                res.status(500).send(err)
-                throw err
-            }
-            res.status(200).send(category)
-        })
+        var result = Category.find({_user: req.user.id.toString()})
+        res.status(200).send(result)
     })
 
     app.delete('/api/category/delete/:categoryId',requireLogin, async (req,res) => {
         const categoryId = req.params.categoryId
-        await Category.deleteOne({_id: categoryId}, function(err){
-            if(err){
-                res.status(500).send(err)
-                throw err
-            }
-        })
+        console.log(categoryId)
+        try{
+            await Category.removeWhere({_id: categoryId.toString()})
+        }
+        catch(e){
+            res.status(500).send(e)
+        }
+        finally{
+            await Db.saveDatabase();
+        }
 
-        await Category.find({},function(err,category){
-            if(err){
-                res.status(500).send(err)
-                throw err
-            }
-            res.status(200).send(category)
-        })
+        var result = Category.find({_user: req.user.id.toString()})
+        res.status(200).send(result)
         
     })
 }
