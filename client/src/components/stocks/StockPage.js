@@ -35,7 +35,7 @@ export class StockPage extends Component {
     return(
       _.map(stocks,(stock) => {
         return(
-          <StockDetail   key={stock.stockName} stockName={stock.stockName} itemCount={stock.itemCount} itemWarning={stock.itemWarning} itemDanger={stock.itemDanger} _id={stock._id}/>
+          <StockDetail  key={stock.stockName} stockName={stock.stockName} itemCount={stock.itemCount} itemWarning={stock.itemWarning} itemDanger={stock.itemDanger} _id={stock._id}/>
         )
       })
       

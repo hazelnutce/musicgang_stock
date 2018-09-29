@@ -79,3 +79,4 @@ secrets/*
 node.exe
 node.lib
 database/*
+database.json

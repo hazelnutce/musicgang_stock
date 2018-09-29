@@ -4,13 +4,11 @@ const guid = require('../services/guid')
 module.exports = (app, Db, Stock) => {
     app.get('/api/stock',requireLogin,(req,res) => {
         var result = Stock.find({_user: req.user.id.toString()})
-        console.log(result)
         res.send(result)
     })
 
     app.get('/api/stock/stockName',requireLogin,(req,res) => {
-        var result = Stock.find({_user: req.user.id},{stockName: 1,_id: 1})
-
+        var result = Stock.find({_user: req.user.id.toString()},{stockName: 1,_id: 1})
         res.send(result)
     })
 
