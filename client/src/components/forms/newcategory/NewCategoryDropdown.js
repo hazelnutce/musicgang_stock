@@ -2,11 +2,14 @@ import React, { Component } from 'react'
 import {connect} from 'react-redux'
 import M from 'materialize-css'
 import _ from 'lodash'
+import {formValueSelector} from 'redux-form'
 
 const marginForInput = {
     marginTop: "25px",
     marginLeft: "25px"
 }
+
+const selector = formValueSelector('newCategoryForm')
 
 export class NewCategoryDropdown extends Component {
     constructor(props) {
@@ -18,6 +21,13 @@ export class NewCategoryDropdown extends Component {
         var elems = document.querySelectorAll('select');
         M.FormSelect.init(elems, {});
     }
+
+    componentDidUpdate = (prevProps) => {
+        if(this.props.stockSelected != prevProps.stockSelected && this.props.stockSelected == null && this.state.value != null){
+            this.setState({value: ''})
+        }
+    }
+    
 
     renderStockList = (stocks) => {
         return _.map(stocks,stock => {
@@ -46,7 +56,10 @@ export class NewCategoryDropdown extends Component {
 }
 
 function mapStateToProps(state){
-    return { stocks: state.category.stockDetails}
+    return { 
+        stocks: state.category.stockDetails,
+        stockSelected: selector(state, 'stockSelector')
+    }
 }
 
 export default connect(mapStateToProps,null)(NewCategoryDropdown)

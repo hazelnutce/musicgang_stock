@@ -7,3 +7,5 @@ export const ERROR_CREATE_STOCK = "error_create_stock"
 
 export const FETCH_CATEGORY = "fetch_category"
 export const FETCH_STOCK_IN_CATEGORY = "fetch_stock_in_category"
+
+export const FETCH_ITEM = "fetch_item"

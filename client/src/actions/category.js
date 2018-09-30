@@ -15,7 +15,6 @@ export const addCategory = (values,categoryDetail) => async dispatch => {
     var query = (categoryDetail.filter((item) => item.stockName === values.stockSelector))
     const res = await axios.post('/api/category/new',{...values, id : query[0]._id})
     dispatch({type: FETCH_CATEGORY, payload: res.data})
-    dispatch(reset('newCategoryForm'))
 }
 
 export const deleteCategory = (categoryId) => async dispatch => {

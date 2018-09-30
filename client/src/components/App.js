@@ -9,12 +9,11 @@ import StockPage from './stocks/StockPage';
 import AddNewStockPage from './stocks/AddNewStockPage'
 import CategoryPage from './categories/CategoryPage'
 import ItemPage from './items/ItemPage'
-
+import AddNewItemPage from './items/AddNewItemPage'
 
 class App extends Component {
   componentDidMount = () => {
     this.props.fetchUser()
-    
   }
   
   render() {
@@ -27,7 +26,8 @@ class App extends Component {
             <Route exact path="/stocks" component={StockPage}></Route>
             <Route path="/stocks/new" component={AddNewStockPage}></Route>
             <Route exact path="/categories" component={CategoryPage}></Route>
-            <Route path="/items/:stockId" component={ItemPage}></Route>
+            <Route exact path="/items/:stockId" component={ItemPage}></Route>
+            <Route path="/items/add/new" component={AddNewItemPage}></Route>
           </div>
         </BrowserRouter>
       </div>
