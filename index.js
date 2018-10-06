@@ -33,7 +33,7 @@ db.loadDatabase({}, function(err) {
 
       var Item = db.getCollection('item');
       if(!Item){
-          Item = db.getCollection('item')
+          Item = db.addCollection('item')
       }
 
       mongoose.connect(keys.mongoUrl,{ useNewUrlParser: true });
@@ -54,6 +54,7 @@ db.loadDatabase({}, function(err) {
         require('./routes/authRoute')(app)
         require('./routes/stockRoute')(app, db, Stock)
         require('./routes/categoryRoute')(app, db, Category)
+        require('./routes/itemRoute')(app, db, Item)
 
         if(!(process.env.NODE_ENV && process.env.NODE_ENV.trim() === 'development')){
             //express will serve up production asset
