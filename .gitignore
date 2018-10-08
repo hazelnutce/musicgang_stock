@@ -80,3 +80,6 @@ node.exe
 node.lib
 database/*
 database.json
+
+package-lock.json
+.vscode

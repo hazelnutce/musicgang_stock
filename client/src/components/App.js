@@ -3,13 +3,13 @@ import {BrowserRouter,Route} from 'react-router-dom'
 import { fetchUser } from '../actions'
 import {connect} from 'react-redux'
 
-import MainMenu from './MainMenu'
 import Landing from './Landing'
 import StockPage from './stocks/StockPage';
 import AddNewStockPage from './stocks/AddNewStockPage'
 import CategoryPage from './categories/CategoryPage'
 import ItemPage from './items/ItemPage'
 import AddNewItemPage from './items/AddNewItemPage'
+import MainMenu from './MainMenu';
 
 class App extends Component {
   componentDidMount = () => {

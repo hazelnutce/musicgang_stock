@@ -67,6 +67,7 @@ export class StockPage extends Component {
       )
     }
     return (
+
       <div className="container" style={{position: "relative", top: "5px"}}>
         <div className="row">
           <h5 className="col s12">Stocks {buttonInLine}</h5>
@@ -76,8 +77,7 @@ export class StockPage extends Component {
             {this.renderStock(stockList)}
           </div>
         </div>
-        
-      </div>
+      </div> 
     )
   }
 }

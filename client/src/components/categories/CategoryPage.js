@@ -122,27 +122,28 @@ export class CategoryPage extends Component {
             )
           }
         return (
-        <div className="container" style={{top: "5px", position: "relative"}}>
-            <div className="row">
-            <h5 className="col s12">Categories {buttonInLine}</h5>
-            </div>
-            <div className="row">
-                {this.renderCategories(category)}
-            </div>
-            <div className="row">
-                <div id="addCategory" className="modal col s6 offset-s1">
-                    <div className="modal-content">
-                        <h5>New Category</h5>
-                        <NewCategoryForm />
-                    </div>
-                    <div className="modal-footer">
-                        <a  className="red modal-close waves-effect waves-light btn right"><i className="material-icons right">cancel</i>Cancel</a>
-                        <a onClick={this.props.handleSubmit((values) => this.props.addCategory(values,stockDetails))} className="green modal-close waves-effect waves-light btn right" style={{position: "relative", right: "20px"}}><i className="material-icons right">add_circle</i>Confirm</a> 
+
+            <div className="container" style={{top: "5px", position: "relative"}}>
+                <div className="row">
+                <h5 className="col s12">Categories {buttonInLine}</h5>
+                </div>
+                <div className="row">
+                    {this.renderCategories(category)}
+                </div>
+                <div className="row">
+                    <div id="addCategory" className="modal col s6 offset-s1">
+                        <div className="modal-content">
+                            <h5>New Category</h5>
+                            <NewCategoryForm />
+                        </div>
+                        <div className="modal-footer">
+                            <a className="red modal-close waves-effect waves-light btn right"><i className="material-icons right">cancel</i>Cancel</a>
+                            <a onClick={this.props.handleSubmit((values) => this.props.addCategory(values,stockDetails))} className="green modal-close waves-effect waves-light btn right" style={{position: "relative", right: "20px"}}><i className="material-icons right">add_circle</i>Confirm</a> 
+                        </div>
                     </div>
                 </div>
             </div>
-               
-        </div>
+        
         )
     }
 }

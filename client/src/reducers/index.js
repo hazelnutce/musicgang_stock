@@ -11,5 +11,5 @@ export default combineReducers({
     authError: authErrorReducer,
     stocks: stockReducer,
     category: categoryReducer,
-    form: formReducer
+    form: formReducer,
 });

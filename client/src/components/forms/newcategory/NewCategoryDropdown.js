@@ -23,7 +23,7 @@ export class NewCategoryDropdown extends Component {
     }
 
     componentDidUpdate = (prevProps) => {
-        if(this.props.stockSelected != prevProps.stockSelected && this.props.stockSelected == null && this.state.value != null){
+        if(this.props.stockSelected !== prevProps.stockSelected && this.props.stockSelected == null && this.state.value != null){
             this.setState({value: ''})
         }
     }

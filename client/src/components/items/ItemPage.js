@@ -74,14 +74,14 @@ export class ItemPage extends Component {
             )
         }
         return (
-        <div className="container" style={{position: "relative", top: "5px"}}>
-            <div className="row">
-                <h5 className="col s12">Items {buttonInLine}</h5>
+            <div className="container" style={{position: "relative", top: "5px"}}>
+                <div className="row">
+                    <h5 className="col s12">Items {buttonInLine}</h5>
+                </div>
+                <div className="row">
+                    {this.renderItemTable()}
+                </div>
             </div>
-            <div className="row">
-                {this.renderItemTable()}
-            </div>
-        </div>
         )
     }
 }

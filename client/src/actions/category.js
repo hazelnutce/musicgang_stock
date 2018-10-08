@@ -1,5 +1,4 @@
 import {FETCH_CATEGORY,FETCH_STOCK_IN_CATEGORY} from './types'
-import {reset} from 'redux-form'
 
 import axios from 'axios'
 
