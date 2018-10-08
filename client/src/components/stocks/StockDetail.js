@@ -9,22 +9,21 @@ export class StockDetail extends Component {
     render() { 
         const stock = this.props
         return (
-            <div>
-                <Link to={`/items/${stock._id}`}>
-                    <div className="card-panel amber lighten-1" style={{marginLeft: "10px",top:"-20px",position:"relative"}}>
-                        <span>
-                            <span className="right modal-trigger" href={"#"+stock._id}><a className="material-icons black-text">delete_forever</a></span>
-                            <div style={{left:"-20px",position:"relative"}}>
-                                <span className="new badge red black-text" data-badge-caption="out of stock">{stock.itemDanger}</span>
-                                <span className="new badge yellow black-text" data-badge-caption="nearly out of stock">{stock.itemWarning}</span>
-                                <span className="new badge green black-text" data-badge-caption="items">{stock.itemCount}</span>
-                            </div>
-                            <div>
-                                <span style={{marginLeft: "10px"}} className="black-text">{stock.stockName}</span>
-                            </div>
-                        </span>
-                    </div>
-                </Link>
+            <div> 
+                <div className="card-panel amber lighten-1" style={{marginLeft: "10px",top:"-20px",position:"relative"}}>
+                    <span>
+                        <span className="right modal-trigger" href={"#"+stock._id}><a className="material-icons black-text">delete_forever</a></span>
+                        <div style={{left:"-20px",position:"relative"}}>
+                            <span className="new badge red black-text" data-badge-caption="out of stock">{stock.itemDanger}</span>
+                            <span className="new badge yellow black-text" data-badge-caption="nearly out of stock">{stock.itemWarning}</span>
+                            <span className="new badge green black-text" data-badge-caption="items">{stock.itemCount}</span>
+                        </div>
+                        <div>
+                            <span style={{marginLeft: "10px"}} ><Link to={`/items/${stock._id}`} className="black-text">{stock.stockName}</Link></span>
+                        </div>
+                    </span>
+                </div>
+                
                 
                 <div id={stock._id} className="modal">
                     <div className="modal-content">

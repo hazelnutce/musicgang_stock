@@ -20,8 +20,12 @@ export class SidebarMenu extends Component {
         <div>
             <nav >
                 <div className="nav-wrapper amber darken-1">
-                    <Link to="" data-target="slide-out" className="button-collapse sidenav-trigger"><i className="material-icons">menu</i></Link>
-                    <Link to="/"><div style={{fontSize: "20px", position: "relative", left: "20px"}}>Dashboard</div></Link>
+                    <ul className="left">
+                        <li><Link to="" data-target="slide-out" className="button-collapse sidenav-trigger"><i className="material-icons medium">menu</i></Link></li>
+                        <li><a onClick={() => this.props.history.goBack()}><i className="material-icons medium">keyboard_backspace</i></a></li>
+                        <li><div><Link to="/">Dashboard</Link></div></li>
+                    </ul>
+                    
                 </div>
             </nav> 
             <SidebarMenuContent />

@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import {connect} from 'react-redux'
 import {SidebarMenu} from './navigates/sidebarMenu';
+import {withRouter} from 'react-router-dom'
 
 export class Header extends Component {
   renderContext(){
@@ -14,7 +15,7 @@ export class Header extends Component {
     }
     else{
       return (
-        <SidebarMenu />
+        <SidebarMenu history={this.props.history}/>
       )
     }
   }
@@ -33,4 +34,4 @@ function mapStateToProps(states){
   return {auth: states.auth}
 }
 
-export default connect(mapStateToProps)(Header)
+export default withRouter(connect(mapStateToProps)(Header))
