@@ -19,8 +19,7 @@ export class ItemPage extends Component {
     }
 
     renderItemTable = () => {
-        return (
-            
+        return (   
             <table className="highlight reponsive-table">
                 <thead>
                 <tr>
