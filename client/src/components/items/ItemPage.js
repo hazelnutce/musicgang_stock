@@ -5,9 +5,7 @@ import {connect} from 'react-redux'
 import {LoaderSpinner} from '../commons/LoaderSpinner'
 import {fetchItems} from '../../actions/item'
 
-const buttonInLine = <span className="right">
-<Link to="/items/add/new" className="waves-effect waves-light btn-small amber darken-3"><i className="material-icons right">add</i>Add item</Link>
-</span>
+
 
 export class ItemPage extends Component {
     constructor(props){
@@ -16,6 +14,17 @@ export class ItemPage extends Component {
         this.state = {
           loadingItem: false
         }
+    }
+
+    renderButtonForAddItem = () => {
+        var currentLocation = this.props.location.pathname.toString()
+        var stockId = currentLocation.replace("/items/", "")
+        console.log(stockId)
+        const buttonInLine = <span className="right">
+            <Link to={`/items/add/new/${stockId}`} className="waves-effect waves-light btn-small amber darken-3"><i className="material-icons right">add</i>Add item</Link>
+        </span>
+
+        return buttonInLine
     }
 
     renderItemTable = () => {
@@ -67,6 +76,7 @@ export class ItemPage extends Component {
     }
     
     render() {
+        
         if(!this.state.loadingItem){
             return (
               <LoaderSpinner loading={this.state.loadingCategory} color={'#123abc'}/>
@@ -75,7 +85,7 @@ export class ItemPage extends Component {
         return (
             <div className="container" style={{position: "relative", top: "5px"}}>
                 <div className="row">
-                    <h5 className="col s12">Items {buttonInLine}</h5>
+                    <h5 className="col s12">Items {this.renderButtonForAddItem()}</h5>
                 </div>
                 <div className="row">
                     {this.renderItemTable()}

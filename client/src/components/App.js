@@ -27,7 +27,7 @@ class App extends Component {
             <Route path="/stocks/new" component={AddNewStockPage}></Route>
             <Route exact path="/categories" component={CategoryPage}></Route>
             <Route exact path="/items/:stockId" component={ItemPage}></Route>
-            <Route path="/items/add/new" component={AddNewItemPage}></Route>
+            <Route path="/items/add/new/:stockId" component={AddNewItemPage}></Route>
           </div>
         </BrowserRouter>
       </div>
