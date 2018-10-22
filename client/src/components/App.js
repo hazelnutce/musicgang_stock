@@ -2,6 +2,8 @@ import React, { Component } from 'react';
 import {BrowserRouter,Route} from 'react-router-dom'
 import { fetchUser } from '../actions'
 import {connect} from 'react-redux'
+import { library } from '@fortawesome/fontawesome-svg-core'
+import { faGhost, faTag, faDollarSign, faHandHoldingUsd, faExclamation } from '@fortawesome/free-solid-svg-icons'
 
 import Landing from './Landing'
 import StockPage from './stocks/StockPage';
@@ -10,6 +12,8 @@ import CategoryPage from './categories/CategoryPage'
 import ItemPage from './items/ItemPage'
 import AddNewItemPage from './items/AddNewItemPage'
 import MainMenu from './MainMenu';
+
+library.add([faTag, faGhost, faDollarSign, faHandHoldingUsd, faExclamation])
 
 class App extends Component {
   componentDidMount = () => {

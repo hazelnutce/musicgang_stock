@@ -2,17 +2,7 @@ import React, { Component } from 'react'
 import {Field} from 'redux-form';
 
 import NewItemField from './NewItemField';
-import {NewItemCheckbox} from './NewItemCheckbox'
-
-const weekdayOptions = [
-  { value: 1, label: 'Monday' },
-  { value: 2, label: 'Tuesday' },
-  { value: 3, label: 'Wednesday' },
-  { value: 4, label: 'Thursday' },
-  { value: 5, label: 'Friday' },
-  { value: 6, label: 'Saturday' },
-  { value: 7, label: 'Sunday' },
-];
+import NewItemCategory from './NewItemCategory'
 
 export class NewItemForm extends Component {
   constructor(props){
@@ -40,28 +30,58 @@ export class NewItemForm extends Component {
       <div>
         <Field 
             component={NewItemField} 
-            name={"itemname"}
+            name={"itemName"}
             type={"text"}
             icon={"assignment"}
             keyLabel={"Item Name"}
+            faRequire={false}
         />
 
         <Field 
             component={NewItemField}
-            name="initialitem"
+            name="initialItem"
             type={"number"}
             icon={"assignment_turned_in"}
             keyLabel={"Initial stock amount"}
+            faRequire={false}
         />
 
-        {this.state.loadingCategory && 
+        {this.state.loadingCategory &&
         <Field
-            name="weekdays"
-            label="Weekdays"
-            keys="Checkboxes"
-            component={NewItemCheckbox}
-            options={this.flattenObject(this.props.category.categories)}
+          component={NewItemCategory}
+          name="category"
+          type={"text"}
+          icon={"tag"}
+          keyLabel={"Item category"}
+          options={this.flattenObject(this.props.category.categories)}
         />}
+
+        <Field 
+            component={NewItemField}
+            name="cost"
+            type={"number"}
+            icon={"dollar-sign"}
+            keyLabel={"Item cost"}
+            faRequire={true}
+        />
+
+        <Field 
+            component={NewItemField}
+            name="income"
+            type={"number"}
+            icon={"hand-holding-usd"}
+            keyLabel={"Item income"}
+            faRequire={true}
+        />
+
+        <Field 
+            component={NewItemField}
+            name="itemWarning"
+            type={"number"}
+            icon={"exclamation"}
+            keyLabel={"Item warning amount"}
+            faRequire={true}
+        />
       
       </div>
     )
