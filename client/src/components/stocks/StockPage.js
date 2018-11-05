@@ -9,7 +9,7 @@ import StockDetail from './StockDetail'
 import {LoaderSpinner} from '../commons/LoaderSpinner'
 
 const buttonInLine = <span className="right">
-<Link to="/stocks/new" className="waves-effect waves-light btn-small amber darken-3"><i className="material-icons right">add</i>Add stock</Link>
+<Link to="/stocks/new" className="waves-effect waves-light btn-small amber darken-3"><i className="material-icons right">add</i>เพิ่มคลังสินค้า</Link>
 </span>
 
 export class StockPage extends Component {
@@ -70,7 +70,7 @@ export class StockPage extends Component {
 
       <div className="container" style={{position: "relative", top: "5px"}}>
         <div className="row">
-          <h5 className="col s12">Stocks {buttonInLine}</h5>
+          <h5 className="col s12">คลังสินค้า {buttonInLine}</h5>
         </div>
         <div className="row">
           <div className="col s12">

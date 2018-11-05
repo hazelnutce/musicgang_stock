@@ -13,7 +13,7 @@ export class AddNewStockPage extends Component {
     return (
       <div className="container" style={{position: "relative", top: "5px"}}>
         <div className="row">
-            <h5 className="header col s6">Add new stock
+            <h5 className="header col s6">เพิ่มคลังสินค้า
                 <i className="material-icons" style={{marginLeft: "10px"}}>input</i>
             </h5>
         </div>
@@ -28,8 +28,8 @@ export class AddNewStockPage extends Component {
         </div>
         <div className="row">
             <span className="right">
-                <a onClick={this.props.handleSubmit((values) => this.props.addNewStock(values,history))} className="green waves-effect waves-light btn" style={{position: "relative", right: "10px"}}><i className="material-icons right">add_circle</i>Add stock</a>
-                <Link to="/stocks" className="red waves-effect waves-light btn"><i className="material-icons right">cancel</i>Cancel</Link>
+                <a onClick={this.props.handleSubmit((values) => this.props.addNewStock(values,history))} className="green waves-effect waves-light btn" style={{position: "relative", right: "10px"}}><i className="material-icons right">add_circle</i>ยืนยัน</a>
+                <Link to="/stocks" className="red waves-effect waves-light btn"><i className="material-icons right">cancel</i>ยกเลิก</Link>
             </span>   
         </div>
         <div>
@@ -44,11 +44,11 @@ function validate(values){
     const errors = {}
 
     if(!values.stockName){
-         errors.stockName = "you must provide a stock name"
+         errors.stockName = "กรุณาระบุชื่อคลังสินค้า"
     }
 
     if(!values.description){
-        errors.description = "you must provide a description"
+        errors.description = "กรุณาระบุคำจำกัดความของคลังสินค้านี้"
     }
 
     return errors

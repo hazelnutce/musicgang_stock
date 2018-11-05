@@ -33,7 +33,7 @@ export class NewItemForm extends Component {
             name={"itemName"}
             type={"text"}
             icon={"assignment"}
-            keyLabel={"Item Name"}
+            keyLabel={"ชื่อสินค้า"}
             faRequire={false}
         />
 
@@ -42,7 +42,7 @@ export class NewItemForm extends Component {
             name="initialItem"
             type={"number"}
             icon={"assignment_turned_in"}
-            keyLabel={"Initial stock amount"}
+            keyLabel={"จำนวนสินค้าเริ่มต้น"}
             faRequire={false}
         />
 
@@ -52,7 +52,7 @@ export class NewItemForm extends Component {
           name="category"
           type={"text"}
           icon={"tag"}
-          keyLabel={"Item category"}
+          keyLabel={"หมวดหมู่สินค้า"}
           options={this.flattenObject(this.props.category.categories)}
         />}
 
@@ -61,7 +61,7 @@ export class NewItemForm extends Component {
             name="cost"
             type={"number"}
             icon={"dollar-sign"}
-            keyLabel={"Item cost"}
+            keyLabel={"ราคาต้นทุน"}
             faRequire={true}
         />
 
@@ -70,7 +70,7 @@ export class NewItemForm extends Component {
             name="income"
             type={"number"}
             icon={"hand-holding-usd"}
-            keyLabel={"Item income"}
+            keyLabel={"ราคาขาย"}
             faRequire={true}
         />
 
@@ -79,7 +79,7 @@ export class NewItemForm extends Component {
             name="itemWarning"
             type={"number"}
             icon={"exclamation"}
-            keyLabel={"Item warning amount"}
+            keyLabel={"จำนวนสินค้าที่ต้องแจ้งเตือน"}
             faRequire={true}
         />
       

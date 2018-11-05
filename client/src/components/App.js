@@ -32,6 +32,7 @@ class App extends Component {
             <Route exact path="/categories" component={CategoryPage}></Route>
             <Route exact path="/items/:stockId" component={ItemPage}></Route>
             <Route path="/items/add/new/:stockId" component={AddNewItemPage}></Route>
+            {/* <Route path="/setting" component={SettingPage}></Route> */}
           </div>
         </BrowserRouter>
       </div>

@@ -10,7 +10,7 @@ import {NewCategoryForm} from '../forms/newcategory/NewCategoryForm'
 import './CategoryPage.css'
 
 const buttonInLine = <span className="right">
-<a data-target="addCategory" className="waves-effect waves-light btn-small amber darken-3 modal-trigger"><i className="material-icons right">add</i>Add category</a>
+<a data-target="addCategory" className="waves-effect waves-light btn-small amber darken-3 modal-trigger"><i className="material-icons right">add</i>เพิ่มหมวดหมู่</a>
 </span>
 
 export class CategoryPage extends Component {
@@ -70,12 +70,12 @@ export class CategoryPage extends Component {
                     </div>
                     <div id={category._id} className="modal deleteCategory">
                         <div className="modal-content">
-                            <h4>Confirm delete</h4>
-                            <p>Are you sure for delete <b>{category.categoryName}</b> category ?</p>
+                            <h4>ยืนยันการลบ</h4>
+                            <p>คุณต้องการจะลบหมวดหมู่ <b>{category.categoryName}</b> ใช่หรือไม่ ?</p>
                         </div>
                         <div className="modal-footer">
-                            <a  className="red modal-close waves-effect waves-light btn right"><i className="material-icons right">cancel</i>Cancel</a>
-                            <a  onClick={() => this.props.deleteCategory(category._id)} className="green modal-close waves-effect waves-light btn right" style={{position: "relative", right: "20px"}}><i className="material-icons right">add_circle</i>Confirm</a> 
+                            <a  className="red modal-close waves-effect waves-light btn right"><i className="material-icons right">cancel</i>ยกเลิก</a>
+                            <a  onClick={() => this.props.deleteCategory(category._id)} className="green modal-close waves-effect waves-light btn right" style={{position: "relative", right: "20px"}}><i className="material-icons right">add_circle</i>ยืนยัน</a> 
                         </div>
                     </div>
                 </div>
@@ -125,7 +125,7 @@ export class CategoryPage extends Component {
 
             <div className="container" style={{top: "5px", position: "relative"}}>
                 <div className="row">
-                <h5 className="col s12">Categories {buttonInLine}</h5>
+                <h5 className="col s12">หมวดหมู่สินค้า {buttonInLine}</h5>
                 </div>
                 <div className="row">
                     {this.renderCategories(category)}
@@ -133,7 +133,7 @@ export class CategoryPage extends Component {
                 <div className="row">
                     <div id="addCategory" className="modal col s6 offset-s1">
                         <div className="modal-content">
-                            <h5>New Category</h5>
+                            <h5>เพิ่มหมวดหมู่สินค้า</h5>
                             <NewCategoryForm />
                         </div>
                         <div className="modal-footer">

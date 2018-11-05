@@ -6,13 +6,13 @@ import './sidebarMenu.css'
 
 export class SidebarMenu extends Component {
     componentDidMount (){
-        var elem = document.querySelector(".sidenav");
-        var options = {
+        var sideNavElem = document.querySelector(".sidenav")
+        var sideNavOptions = {
             edge: "left",
             inDuration: 250,
             draggable: false
         }
-        M.Sidenav.init(elem, options);
+        M.Sidenav.init(sideNavElem, sideNavOptions)
     }
 
   render() {
@@ -23,7 +23,9 @@ export class SidebarMenu extends Component {
                     <ul className="left">
                         <li><Link to="" data-target="slide-out" className="button-collapse sidenav-trigger"><i className="material-icons medium">menu</i></Link></li>
                         <li><a onClick={() => this.props.history.goBack()}><i className="material-icons medium">keyboard_backspace</i></a></li>
-                        <li><div><Link to="/">Dashboard</Link></div></li>
+                        <li><div><Link to="/">หน้าแรก</Link></div></li>
+                    </ul>
+                    <ul className="right">
                     </ul>
                     
                 </div>

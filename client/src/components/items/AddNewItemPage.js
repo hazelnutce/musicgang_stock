@@ -17,7 +17,7 @@ export class AddNewItemPage extends Component {
     return (
         <div className="container" style={{position: "relative", top: "5px"}}>
           <div className="row">
-            <h5>New Items</h5>
+            <h5>เพิ่มสินค้า</h5>
           </div>
           <div className="row" style={{position: "relative", bottom: "10px"}}>
             <NewItemForm fetchCategory={fetchCategory} category={category} stockId={stockId}/>

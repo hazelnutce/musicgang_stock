@@ -21,7 +21,7 @@ export class ItemPage extends Component {
         var stockId = currentLocation.replace("/items/", "")
         console.log(stockId)
         const buttonInLine = <span className="right">
-            <Link to={`/items/add/new/${stockId}`} className="waves-effect waves-light btn-small amber darken-3"><i className="material-icons right">add</i>Add item</Link>
+            <Link to={`/items/add/new/${stockId}`} className="waves-effect waves-light btn-small amber darken-3"><i className="material-icons right">add</i>เพิ่มสินค้า</Link>
         </span>
 
         return buttonInLine
@@ -32,11 +32,11 @@ export class ItemPage extends Component {
             <table className="highlight reponsive-table">
                 <thead>
                 <tr>
-                    <th>Item Name</th>
-                    <th>Tag</th>
-                    <th>Item Cost</th>
-                    <th>Item Price</th>
-                    <th>Remaining</th>
+                    <th>ชื่อสินค้า</th>
+                    <th>หมวดหมู่</th>
+                    <th>ราคาต้นทุน</th>
+                    <th>ราค้าขาย</th>
+                    <th>จำนวนคงเหลือ</th>
                 </tr>
                 </thead>
 
@@ -85,7 +85,7 @@ export class ItemPage extends Component {
         return (
             <div className="container" style={{position: "relative", top: "5px"}}>
                 <div className="row">
-                    <h5 className="col s12">Items {this.renderButtonForAddItem()}</h5>
+                    <h5 className="col s12">สินค้า {this.renderButtonForAddItem()}</h5>
                 </div>
                 <div className="row">
                     {this.renderItemTable()}

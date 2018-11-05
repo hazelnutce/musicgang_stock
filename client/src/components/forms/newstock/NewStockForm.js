@@ -11,7 +11,7 @@ export class NewStockForm extends Component {
             name="stockName"
             type={"text"}
             icon={"assignment"}
-            keyLabel={"Stock Name"}
+            keyLabel={"ชื่อคลังสินค้า"}
         />
 
         <Field
@@ -19,7 +19,7 @@ export class NewStockForm extends Component {
             name="description"
             type={"text"}
             icon={"description"}
-            keyLabel={"Description"}
+            keyLabel={"คำจำกัดความของคลังสินค้า"}
         />
       </div>
     )

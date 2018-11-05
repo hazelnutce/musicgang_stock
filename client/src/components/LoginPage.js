@@ -20,7 +20,7 @@ export class LoginPage extends Component {
     return (
       <div className="container">
         <div className="row">
-            <h4 className="header col s6 offset-s3">Login
+            <h4 className="header col s6 offset-s3">เข้าสู่ระบบ
               <i className="material-icons" style={{marginLeft: "10px"}}>input</i>
             </h4>
           {
