@@ -22,6 +22,10 @@ export class AddNewItemPage extends Component {
           <div className="row" style={{position: "relative", bottom: "10px"}}>
             <NewItemForm fetchCategory={fetchCategory} category={category} stockId={stockId}/>
           </div>
+          <div className="row">
+            <a className="col xl2 push-xl7 l2 push-l7 m3 push-m6 s5 push-s2 green modal-close waves-effect waves-light btn" style={{marginRight: "20px"}}><i className="material-icons right">add_circle</i>Confirm</a> 
+            <a className="col xl2 push-xl7 l2 push-l7 m3 push-m6 s5 push-s2 red modal-close waves-effect waves-light btn"><i className="material-icons right">cancel</i>Cancel</a>
+          </div>
         </div>
     )
   }

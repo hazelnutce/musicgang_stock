@@ -4,6 +4,7 @@ import {LoaderSpinner} from '../commons/LoaderSpinner'
 import M from 'materialize-css'
 import {reduxForm} from 'redux-form'
 import _ from 'lodash'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 
 import {fetchCategory,addCategory,deleteCategory} from '../../actions/category'
 import {NewCategoryForm} from '../forms/newcategory/NewCategoryForm'
@@ -29,7 +30,7 @@ export class CategoryPage extends Component {
               <div className="card-panel yellow darken-1" style={{marginLeft: "10px",top:"-20px",position:"relative"}}>
                 <span className="white-text">
                   <span><i className="material-icons" style={{marginLeft: "10px",top:"5px",position:"relative"}}>warning</i></span>
-                  <span style={{marginLeft: "10px"}}>You didn't have any categories. Please create one.</span>
+                  <span style={{marginLeft: "10px"}}>คุณไม่ได้สร้างการจัดการหมวดหมู่ไว้ที่คลังสินค้านี้</span>
                 </span>
               </div>
             )
@@ -122,10 +123,10 @@ export class CategoryPage extends Component {
             )
           }
         return (
-
+            
             <div className="container" style={{top: "5px", position: "relative"}}>
                 <div className="row">
-                <h5 className="col s12">หมวดหมู่สินค้า {buttonInLine}</h5>
+                <h5 className="col s12"><i><FontAwesomeIcon icon="tags"/></i><span style={{marginLeft: "20px"}}>หมวดหมู่สินค้า</span>{buttonInLine}</h5>
                 </div>
                 <div className="row">
                     {this.renderCategories(category)}

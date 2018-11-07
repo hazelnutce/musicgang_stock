@@ -1,11 +1,10 @@
 import React, { Component } from 'react'
 import {connect} from 'react-redux'
-import {Link} from 'react-router-dom'
+import {Link, withRouter} from 'react-router-dom'
 
 import {deleteStock} from '../../actions/stock'
 
 export class StockDetail extends Component {
-    
     render() { 
         
         const stock = this.props
@@ -20,7 +19,7 @@ export class StockDetail extends Component {
                             <span className="new badge green black-text" data-badge-caption="สินค้า">{stock.itemCount}</span>
                         </div>
                         <div>
-                            <span style={{marginLeft: "10px"}} ><Link to={`/items/${stock._id}`} className="black-text">{stock.stockName}</Link></span>
+                            <span style={{marginLeft: "10px"}} ><Link to={{ state: {stockName : stock.stockName}, pathname: `/items/${stock._id}`}} className="black-text">{stock.stockName}</Link></span>
                         </div>
                     </span>
                 </div>
@@ -42,4 +41,4 @@ export class StockDetail extends Component {
   }
 }
 
-export default connect(null,{deleteStock})(StockDetail)
+export default withRouter(connect(null,{deleteStock})(StockDetail))

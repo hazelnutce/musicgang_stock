@@ -1,11 +1,10 @@
 import React, { Component } from 'react'
 import {Link} from 'react-router-dom'
 import {connect} from 'react-redux'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 
 import {LoaderSpinner} from '../commons/LoaderSpinner'
 import {fetchItems} from '../../actions/item'
-
-
 
 export class ItemPage extends Component {
     constructor(props){
@@ -73,10 +72,10 @@ export class ItemPage extends Component {
         var stockId = currentLocation.replace("/items/", "")
         this.props.fetchItems(stockId)
         this.setState({loadingItem: true})
-    }
-    
-    render() {
         
+    }
+
+    render() {
         if(!this.state.loadingItem){
             return (
               <LoaderSpinner loading={this.state.loadingCategory} color={'#123abc'}/>
@@ -85,7 +84,7 @@ export class ItemPage extends Component {
         return (
             <div className="container" style={{position: "relative", top: "5px"}}>
                 <div className="row">
-                    <h5 className="col s12">สินค้า {this.renderButtonForAddItem()}</h5>
+                    <h5 className="col s12"><i><FontAwesomeIcon icon="boxes"/></i><span style={{marginLeft: "20px"}}>สินค้า / คลัง : {this.props.history.location.state.stockName}</span> {this.renderButtonForAddItem()}</h5>
                 </div>
                 <div className="row">
                     {this.renderItemTable()}

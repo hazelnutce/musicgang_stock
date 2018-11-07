@@ -27,7 +27,7 @@ export class StockPage extends Component {
         <div className="card-panel yellow darken-1" style={{marginLeft: "10px",top:"-20px",position:"relative"}}>
           <span className="white-text">
             <span><i className="material-icons" style={{marginLeft: "10px",top:"5px",position:"relative"}}>warning</i></span>
-            <span style={{marginLeft: "10px"}}>You didn't have any stock. Please create one.</span>
+            <span style={{marginLeft: "10px"}}>ไม่มีคลังสินค้าในระบบ</span>
           </span>
         </div>
       )
@@ -70,7 +70,7 @@ export class StockPage extends Component {
 
       <div className="container" style={{position: "relative", top: "5px"}}>
         <div className="row">
-          <h5 className="col s12">คลังสินค้า {buttonInLine}</h5>
+          <h5 className="col s12"><i className="material-icons">storage</i>  คลังสินค้า {buttonInLine}</h5>
         </div>
         <div className="row">
           <div className="col s12">
