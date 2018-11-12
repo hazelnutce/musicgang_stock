@@ -3,6 +3,7 @@ import {Link} from 'react-router-dom'
 import {connect} from 'react-redux'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 
+
 import {LoaderSpinner} from '../commons/LoaderSpinner'
 import {fetchItems} from '../../actions/item'
 
@@ -18,7 +19,6 @@ export class ItemPage extends Component {
     renderButtonForAddItem = () => {
         var currentLocation = this.props.location.pathname.toString()
         var stockId = currentLocation.replace("/items/", "")
-        console.log(stockId)
         const buttonInLine = <span className="right">
             <Link to={`/items/add/new/${stockId}`} className="waves-effect waves-light btn-small amber darken-3"><i className="material-icons right">add</i>เพิ่มสินค้า</Link>
         </span>

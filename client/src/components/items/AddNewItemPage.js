@@ -3,7 +3,7 @@ import {reduxForm} from 'redux-form'
 import {connect} from 'react-redux'
 
 import {NewItemForm} from '../forms/newitem/NewItemForm'
-import {fetchCategory} from '../../actions/item'
+import {fetchCategory, addNewItems} from '../../actions/item'
 
 export class AddNewItemPage extends Component {
   componentDidMount = () => {
@@ -23,7 +23,7 @@ export class AddNewItemPage extends Component {
             <NewItemForm fetchCategory={fetchCategory} category={category} stockId={stockId}/>
           </div>
           <div className="row">
-            <a className="col xl2 push-xl7 l2 push-l7 m3 push-m6 s5 push-s2 green modal-close waves-effect waves-light btn" style={{marginRight: "20px"}}><i className="material-icons right">add_circle</i>Confirm</a> 
+            <a onClick={this.props.handleSubmit((values) => this.props.addNewItems(values))} className="col xl2 push-xl7 l2 push-l7 m3 push-m6 s5 push-s2 green modal-close waves-effect waves-light btn" style={{marginRight: "20px"}}><i className="material-icons right">add_circle</i>Confirm</a> 
             <a className="col xl2 push-xl7 l2 push-l7 m3 push-m6 s5 push-s2 red modal-close waves-effect waves-light btn"><i className="material-icons right">cancel</i>Cancel</a>
           </div>
         </div>
@@ -37,4 +37,4 @@ function mapStateToProps(state){
 
 export default reduxForm({
   form : 'newItemForm',
-})(connect(mapStateToProps,{fetchCategory})(AddNewItemPage))
+})(connect(mapStateToProps,{fetchCategory, addNewItems})(AddNewItemPage))
