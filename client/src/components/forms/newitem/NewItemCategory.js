@@ -1,8 +1,6 @@
 import React, { Component } from 'react'
 import M from 'materialize-css'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import AutoComplete from 'react-autocomplete'
-var elemInstance = null
 
 export class NewItemCategory extends Component {
     
@@ -29,16 +27,19 @@ export class NewItemCategory extends Component {
     }
 
     render() {
-        //console.log(this.props.input)
-        const {input,keyLabel,type,icon} = this.props
+        const {input,keyLabel,type,icon,meta: {touched, error}} = this.props
         return(
-            <div 
-            className="input-field col s12 m6 l6 xl6"
-            >
-                <i className="prefix"><FontAwesomeIcon icon={icon}/></i>
-                <input {...input} id="autocomplete-input" type={type} className="autocomplete"/>
-                <label htmlFor="autocomplete-input">{keyLabel}</label>
-            </div>
+                <div className="input-field col s12 m6 l6 xl6">
+                    <i className="prefix"><FontAwesomeIcon icon={icon}/></i>
+                    <input {...input} id="autocomplete-input" type={type} className="autocomplete"/>
+                    <label htmlFor="autocomplete-input">{keyLabel}</label>
+                    {
+                    touched && error && 
+                    <span className="red-text" style={{marginLeft: '45px'}}>
+                        {touched && error}
+                    </span>
+                    }  
+                </div>      
         )   
     }
 }

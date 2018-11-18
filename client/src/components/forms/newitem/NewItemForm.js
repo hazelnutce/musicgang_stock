@@ -27,44 +27,47 @@ export class NewItemForm extends Component {
 
   render() { 
     return (
-      <div>
-        <Field 
-            component={NewItemField} 
-            name={"itemName"}
+      <div className="container-fluid">
+        <div className="row">
+          <Field 
+              component={NewItemField} 
+              name={"itemName"}
+              type={"text"}
+              icon={"assignment"}
+              keyLabel={"ชื่อสินค้า"}
+              faRequire={false}
+          />
+
+          <Field 
+              component={NewItemField}
+              name="initialItem"
+              type={"number"}
+              icon={"assignment_turned_in"}
+              keyLabel={"จำนวนสินค้าเริ่มต้น"}
+              faRequire={false}
+          />
+        </div>
+        <div className="row">
+          {this.state.loadingCategory &&
+          <Field
+            component={NewItemCategory}
+            name="category"
             type={"text"}
-            icon={"assignment"}
-            keyLabel={"ชื่อสินค้า"}
-            faRequire={false}
-        />
+            icon={"tag"}
+            keyLabel={"หมวดหมู่สินค้า"}
+            options={this.flattenObject(this.props.category.categories)}
+          />}
 
-        <Field 
-            component={NewItemField}
-            name="initialItem"
-            type={"number"}
-            icon={"assignment_turned_in"}
-            keyLabel={"จำนวนสินค้าเริ่มต้น"}
-            faRequire={false}
-        />
-
-        {this.state.loadingCategory &&
-        <Field
-          component={NewItemCategory}
-          name="category"
-          type={"text"}
-          icon={"tag"}
-          keyLabel={"หมวดหมู่สินค้า"}
-          options={this.flattenObject(this.props.category.categories)}
-        />}
-
-        <Field 
-            component={NewItemField}
-            name="cost"
-            type={"number"}
-            icon={"dollar-sign"}
-            keyLabel={"ราคาต้นทุน"}
-            faRequire={true}
-        />
-
+          <Field 
+              component={NewItemField}
+              name="cost"
+              type={"number"}
+              icon={"dollar-sign"}
+              keyLabel={"ราคาต้นทุน"}
+              faRequire={true}
+          />
+        </div>
+        <div className="row">
         <Field 
             component={NewItemField}
             name="income"
@@ -82,7 +85,7 @@ export class NewItemForm extends Component {
             keyLabel={"จำนวนสินค้าที่ต้องแจ้งเตือน"}
             faRequire={true}
         />
-      
+        </div>
       </div>
     )
   }
