@@ -12,10 +12,10 @@ export class AddNewItemPage extends Component {
   }
   
   render() {
-    console.log(this.props.history)
     const {fetchCategory, category, history} = this.props
     var currentLocation = this.props.location.pathname.toString()
     var stockId = currentLocation.replace("/items/add/new/", "")
+    var stockName = this.props.history.location.state.stockName
     return (
         <div className="container" style={{position: "relative", top: "5px"}}>
           <div className="row">
@@ -25,8 +25,8 @@ export class AddNewItemPage extends Component {
             <NewItemForm fetchCategory={fetchCategory} category={category} stockId={stockId}/>
           </div>
           <div className="row">
-            <a onClick={this.props.handleSubmit((values) => this.props.addNewItems(values, stockId, history))} className="col xl2 push-xl7 l2 push-l7 m3 push-m6 s5 push-s2 green modal-close waves-effect waves-light btn" style={{marginRight: "20px"}}><i className="material-icons right">add_circle</i>Confirm</a> 
-            <Link to={{ state: {stockName : this.props.history.location.state.stockName}, pathname: `/items/${stockId}`}} className="col xl2 push-xl7 l2 push-l7 m3 push-m6 s5 push-s2 red modal-close waves-effect waves-light btn"><i className="material-icons right">cancel</i>Cancel</Link>
+            <a onClick={this.props.handleSubmit((values) => this.props.addNewItems(values, stockId, stockName, history))} className="col xl2 push-xl7 l2 push-l7 m3 push-m6 s5 push-s2 green modal-close waves-effect waves-light btn" style={{marginRight: "20px"}}><i className="material-icons right">add_circle</i>Confirm</a> 
+            <Link to={{ state: {stockName}, pathname: `/items/${stockId}`}} className="col xl2 push-xl7 l2 push-l7 m3 push-m6 s5 push-s2 red modal-close waves-effect waves-light btn"><i className="material-icons right">cancel</i>Cancel</Link>
           </div>
         </div>
     )

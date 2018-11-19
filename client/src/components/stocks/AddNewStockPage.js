@@ -19,8 +19,8 @@ export class AddNewStockPage extends Component {
         </div>
         {
             stocks.errorCreateStock !== "" &&
-             <ErrorFormNotification errorMessage={stocks.errorCreateStock} clearErrorMessage={clearErrorCreateStock} specificColumn={"col s12"}/>
-          }
+            <ErrorFormNotification errorMessage={stocks.errorCreateStock} clearErrorMessage={clearErrorCreateStock} specificColumn={"col s12"}/>
+        }
         <div className="row">
             <div className="card small col s12 amber lighten-1" style={{height: "150px"}}>
                 <NewStockForm />
