@@ -18,8 +18,7 @@ export const addNewItems = (values, stockId, stockName, history) => async dispat
         history.push({
             pathname: `/items/${stockId}`,
             state: { stockName: stockName }
-          })
-        console.log(res)
+        })
     }).catch(error => {
         if (error.response) {
             dispatch({type: ERROR_CREATE_STOCK, payload: error.response.data})
@@ -27,5 +26,12 @@ export const addNewItems = (values, stockId, stockName, history) => async dispat
         }
     })
     console.log(values)
+}
+
+export const deleteItem = (itemId, stockId) => async dispatch => {
+    var values = {stockId}
+    const res = await axios.delete(`/api/item/delete/${itemId}`,{ data: { values } });
+    console.log(res)
+    dispatch({type: FETCH_ITEM, payload: res.data})
 }
 

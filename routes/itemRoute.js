@@ -23,10 +23,10 @@ module.exports = (app, Db, Item, Category) => {
         }
         var newItem = {
             itemName: itemName,
-            itemRemaining: initialItem,
-            itemWarning: itemWarning,
-            cost: cost,
-            revenue: income,
+            itemRemaining: parseInt(initialItem),
+            itemWarning: parseInt(initialItem),
+            cost: parseFloat(cost).toFixed(2),
+            revenue: parseFloat(income).toFixed(2),
             category: category,
             _category: existCategory._id,
             _stock: stockId,
@@ -46,5 +46,26 @@ module.exports = (app, Db, Item, Category) => {
         }
 
         res.status(200).send("Created item successfully")
+    })
+
+    app.delete('/api/item/delete/:itemId',requireLogin,async (req,res) => {
+        const itemId = req.params.itemId
+        const {values} = req.body
+        try{
+            await Item.removeWhere({_id: itemId.toString()})
+        }
+        catch(e){
+            res.status(500).send(e)
+        }
+        finally{
+            await Db.saveDatabase();
+        }
+        try{
+            var result = Item.find({_stock: values.stockId.toString()}) 
+        }
+        catch(e){
+            res.status(500).send(e)
+        }
+        res.status(200).send(result)
     })
 }

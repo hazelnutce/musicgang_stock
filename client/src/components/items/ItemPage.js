@@ -2,10 +2,11 @@ import React, { Component } from 'react'
 import {Link} from 'react-router-dom'
 import {connect} from 'react-redux'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import M from 'materialize-css'
 import _ from 'lodash'
 
 import {LoaderSpinner} from '../commons/LoaderSpinner'
-import {fetchItems} from '../../actions/item'
+import {fetchItems ,deleteItem} from '../../actions/item'
 
 export class ItemPage extends Component {
     constructor(props){
@@ -26,21 +27,38 @@ export class ItemPage extends Component {
         return buttonInLine
     }
 
-    renderItem = () => {
+    renderItem = (stockId) => {
         return _.map(this.props.item.items, item => {
             return(
-                <tr key={item._id}>
-                    <td>{item.itemName}</td>
-                    <td>{item.category}</td>
-                    <td>{item.cost}</td>
-                    <td>{item.revenue}</td>
-                    <td>{item.itemRemaining}</td>
-                </tr>
+                    <tr key={item._id}>
+                        <td>{item.itemName}</td>
+                        <td>{item.category}</td>
+                        <td>{item.cost}</td>
+                        <td>{item.revenue}</td>
+                        <td>{item.itemRemaining}</td>
+                        <td>
+                            <span className="modal-trigger"><a className="material-icons black-text">edit</a></span>
+                            <span className="modal-trigger" href={"#"+item._id}><a className="material-icons black-text">delete</a></span>
+                        </td>
+                        <td>
+                            <div id={item._id} className="modal">
+                                <div className="modal-content">
+                                    <h4>ยืนยันการลบ</h4>
+                                    <p>คุณต้องการจะลบสินค้า <b>{item.itemName}</b> ใช่หรือไม่ ?</p>
+                                </div>
+                                <div className="modal-footer">
+                                    <a onClick={() => this.props.deleteItem(item._id, stockId)} className="green modal-close waves-effect waves-light btn" style={{position: "relative", right: "20px"}}><i className="material-icons right">add_circle</i>ยืนยัน</a> 
+                                    <a className="red modal-close waves-effect waves-light btn"><i className="material-icons right">cancel</i>ยกเลิก</a>
+                                </div>
+                            </div> 
+                        </td>
+                         
+                    </tr>          
             )
         })
     }
 
-    renderItemTable = () => {
+    renderItemTable = (stockId) => {
         return (   
             <table className="highlight reponsive-table">
                 <thead>
@@ -50,11 +68,12 @@ export class ItemPage extends Component {
                     <th>ราคาต้นทุน</th>
                     <th>ราคาขาย</th>
                     <th>จำนวนคงเหลือ</th>
+                    <th></th>
                 </tr>
                 </thead>
 
                 <tbody>
-                    {this.renderItem()}
+                    {this.renderItem(stockId)}
                 </tbody>
             </table>  
     
@@ -66,11 +85,24 @@ export class ItemPage extends Component {
         var stockId = currentLocation.replace("/items/", "")
         this.props.fetchItems(stockId)
         this.setState({loadingItem: true})
-        
+    }
+
+    componentDidUpdate = (prevProps) => {
+        if (prevProps.item.items !== this.props.item.items) {
+          if(this.props.item !== "" || this.props.item !== null){
+            this.setState({loadingItem: true},() => {
+              var elems = document.querySelectorAll('.modal');
+              M.Modal.init(elems, {
+                opacity: 0.6
+              });
+            }) 
+          }
+        }
     }
 
     render() {
-        console.log(this.props.item.items)
+        var currentLocation = this.props.location.pathname.toString()
+        var stockId = currentLocation.replace("/items/", "")
         if(!this.state.loadingItem){
             return (
               <LoaderSpinner loading={this.state.loadingCategory} color={'#123abc'}/>
@@ -82,7 +114,7 @@ export class ItemPage extends Component {
                     <h5 className="col s12"><i><FontAwesomeIcon icon="boxes"/></i><span style={{marginLeft: "20px"}}>สินค้า / คลัง : {this.props.history.location.state.stockName}</span> {this.renderButtonForAddItem()}</h5>
                 </div>
                 <div className="row">
-                    {this.renderItemTable()}
+                    {this.renderItemTable(stockId)}
                 </div>
             </div>
         )
@@ -93,4 +125,4 @@ function mapStateToProps(state){
     return { item: state.item}
 }
 
-export default connect(mapStateToProps, {fetchItems})(ItemPage)
+export default connect(mapStateToProps, {fetchItems, deleteItem})(ItemPage)
