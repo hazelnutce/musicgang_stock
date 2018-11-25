@@ -27,7 +27,7 @@ export class ItemPage extends Component {
         return buttonInLine
     }
 
-    renderItem = (stockId) => {
+    renderItem = (stockId, stockName) => {
         return _.map(this.props.item.items, item => {
             return(
                     <tr key={item._id}>
@@ -37,8 +37,8 @@ export class ItemPage extends Component {
                         <td>{item.revenue}</td>
                         <td>{item.itemRemaining}</td>
                         <td>
-                            <span className="modal-trigger"><a className="material-icons black-text">edit</a></span>
-                            <span className="modal-trigger" href={"#"+item._id}><a className="material-icons black-text">delete</a></span>
+                            <Link to={{ pathname: `/items/edit/${item._id}`, state: { stockId, stockName } }} className="material-icons black-text">edit</Link>
+                            <a className="modal-trigger" href={"#"+item._id}><i className="material-icons black-text">delete</i></a>
                         </td>
                         <td>
                             <div id={item._id} className="modal">
@@ -58,7 +58,7 @@ export class ItemPage extends Component {
         })
     }
 
-    renderItemTable = (stockId) => {
+    renderItemTable = (stockId, stockName) => {
         return (   
             <table className="highlight reponsive-table">
                 <thead>
@@ -73,7 +73,7 @@ export class ItemPage extends Component {
                 </thead>
 
                 <tbody>
-                    {this.renderItem(stockId)}
+                    {this.renderItem(stockId, stockName)}
                 </tbody>
             </table>  
     
@@ -103,6 +103,8 @@ export class ItemPage extends Component {
     render() {
         var currentLocation = this.props.location.pathname.toString()
         var stockId = currentLocation.replace("/items/", "")
+        const {stockName} = this.props.location.state
+
         if(!this.state.loadingItem){
             return (
               <LoaderSpinner loading={this.state.loadingCategory} color={'#123abc'}/>
@@ -111,10 +113,10 @@ export class ItemPage extends Component {
         return (
             <div className="container" style={{position: "relative", top: "5px"}}>
                 <div className="row">
-                    <h5 className="col s12"><i><FontAwesomeIcon icon="boxes"/></i><span style={{marginLeft: "20px"}}>สินค้า / คลัง : {this.props.history.location.state.stockName}</span> {this.renderButtonForAddItem()}</h5>
+                    <h5 className="col s12"><i><FontAwesomeIcon icon="boxes"/></i><span style={{marginLeft: "20px"}}>สินค้า / คลัง : {stockName}</span> {this.renderButtonForAddItem()}</h5>
                 </div>
                 <div className="row">
-                    {this.renderItemTable(stockId)}
+                    {this.renderItemTable(stockId, stockName)}
                 </div>
             </div>
         )

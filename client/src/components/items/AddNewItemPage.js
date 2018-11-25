@@ -12,7 +12,7 @@ export class AddNewItemPage extends Component {
   }
   
   render() {
-    const {fetchCategory, category, history} = this.props
+    const {category, history} = this.props
     var currentLocation = this.props.location.pathname.toString()
     var stockId = currentLocation.replace("/items/add/new/", "")
     var stockName = this.props.history.location.state.stockName
@@ -22,7 +22,7 @@ export class AddNewItemPage extends Component {
             <h5>เพิ่มสินค้า</h5>
           </div>
           <div className="row" style={{position: "relative", bottom: "10px"}}>
-            <NewItemForm fetchCategory={fetchCategory} category={category} stockId={stockId}/>
+            <NewItemForm category={category} stockId={stockId}/>
           </div>
           <div className="row">
             <a onClick={this.props.handleSubmit((values) => this.props.addNewItems(values, stockId, stockName, history))} className="col xl2 push-xl7 l2 push-l7 m3 push-m6 s5 push-s2 green modal-close waves-effect waves-light btn" style={{marginRight: "20px"}}><i className="material-icons right">add_circle</i>Confirm</a> 

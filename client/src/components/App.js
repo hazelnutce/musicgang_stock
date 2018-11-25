@@ -18,6 +18,7 @@ import AddNewStockPage from './stocks/AddNewStockPage'
 import CategoryPage from './categories/CategoryPage'
 import ItemPage from './items/ItemPage'
 import AddNewItemPage from './items/AddNewItemPage'
+import EditItemPage from './items/EditItemPage'
 import MainMenu from './MainMenu';
 
 library.add([faTag, faGhost, faDollarSign, faHandHoldingUsd, faExclamation, faTags, faBoxes, faBoxes,
@@ -40,6 +41,7 @@ class App extends Component {
             <Route exact path="/categories" component={CategoryPage}></Route>
             <Route exact path="/items/:stockId" component={ItemPage}></Route>
             <Route path="/items/add/new/:stockId" component={AddNewItemPage}></Route>
+            <Route path="/items/edit/:itemId" component={EditItemPage}></Route>
             {/* <Route path="/setting" component={SettingPage}></Route> */}
           </div>
         </BrowserRouter>
