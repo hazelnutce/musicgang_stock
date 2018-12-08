@@ -31,8 +31,8 @@ export class StockDetail extends Component {
                         <p>คุณต้องการจะลบคลังสินค้า <b>{stock.stockName}</b> ใช่หรือไม่ ?</p>
                     </div>
                     <div className="modal-footer">
-                        <a  className="red modal-close waves-effect waves-light btn right"><i className="material-icons right">cancel</i>ยกเลิก</a>
-                        <a  onClick={() => this.props.deleteStock(stock._id)} className="green modal-close waves-effect waves-light btn right" style={{position: "relative", right: "20px"}}><i className="material-icons right">add_circle</i>ยืนยัน</a> 
+                        <a className="red modal-close waves-effect waves-light btn right"><i className="material-icons right">cancel</i>ยกเลิก</a>
+                        <a onClick={() => this.props.deleteStock(stock._id)} className="green modal-close waves-effect waves-light btn right" style={{position: "relative", right: "20px"}}><i className="material-icons right">add_circle</i>ยืนยัน</a> 
                     </div>
                     
                 </div>

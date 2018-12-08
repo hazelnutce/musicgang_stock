@@ -2,6 +2,13 @@ const requireLogin = require('../middleware/requireLogin')
 const guid = require('../services/guid')
 
 module.exports = (app, Db, Item, Category) => {
+    app.get('/api/itemdetail/:itemId', requireLogin, (req,res) => {
+        const itemId = req.params.itemId
+
+        var result = Item.find({_id: itemId.toString()})
+        res.send(result[0])
+    })
+
     app.get('/api/item/:stockId',requireLogin,(req,res) => {
         const stockId = req.params.stockId
 
@@ -24,9 +31,9 @@ module.exports = (app, Db, Item, Category) => {
         var newItem = {
             itemName: itemName,
             itemRemaining: parseInt(initialItem),
-            itemWarning: parseInt(initialItem),
-            cost: parseFloat(cost).toFixed(2),
-            revenue: parseFloat(income).toFixed(2),
+            itemWarning: parseInt(itemWarning),
+            cost: parseFloat(parseFloat(cost).toFixed(2)),
+            revenue: parseFloat(parseFloat(income).toFixed(2)),
             category: category,
             _category: existCategory._id,
             _stock: stockId,
@@ -46,6 +53,42 @@ module.exports = (app, Db, Item, Category) => {
         }
 
         res.status(200).send("Created item successfully")
+    })
+
+    app.post('/api/item/edit/:itemId', requireLogin, async (req,res) => {
+        console.log("edit route")
+        const {itemName, itemWarning, cost, income, category} = req.body
+        const itemId = req.params.itemId
+        const existCategory = await Category.findOne({categoryName: category})
+        if(!existCategory){
+            res.status(500).send("หมวดหมู่สินค้าไม่ถูกต้อง กรุณาลองใหม่อีกครั้ง")
+            return
+        }
+        var result = Item.findOne({_id: itemId.toString()})
+        if(result){
+            try{
+                console.log(itemName,itemWarning,cost,income,category)
+                result.itemName = itemName
+                result.itemWarning = parseInt(itemWarning)
+                result.cost = parseFloat(parseFloat(cost).toFixed(2))
+                result.revenue = parseFloat(parseFloat(income).toFixed(2))
+                result.category = category
+                Item.update(result)
+            }
+            catch(e){
+                console.log(e)
+                res.status(500).send("พบบางอย่างผิดพลาดที่ระบบข้อมูล", e)
+            }
+            finally{
+                await Db.saveDatabase();
+            }
+            res.status(200).send(result)
+        }
+        else{
+            res.status(500).send("สินค้าไม่ถูกต้อง กรุณาลองใหม่อีกครั้ง")
+            return
+        }
+        
     })
 
     app.delete('/api/item/delete/:itemId',requireLogin,async (req,res) => {

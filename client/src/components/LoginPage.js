@@ -35,9 +35,9 @@ export class LoginPage extends Component {
                 <div
                   className="col s6"
                   style={marginForInput}>
-                  <button className="btn waves-effect waves-light" type="submit">Submit
+                  <a className="btn waves-effect waves-light" type="submit">Submit
                     <i className="material-icons right">send</i>
-                  </button>
+                  </a>
                 </div>
               </form>
             </div>

@@ -47,6 +47,15 @@ export class EditItemForm extends Component {
             />
         </div>
         <div className="row">
+            {!this.state.loadingCategory &&
+                <Field
+                    component={NewItemCategory}
+                    name="category"
+                    type={"text"}
+                    icon={"tag"}
+                    keyLabel={"หมวดหมู่สินค้า"}
+                    
+            />}
             {this.state.loadingCategory &&
             <Field
                 component={NewItemCategory}
