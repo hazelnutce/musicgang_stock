@@ -51,8 +51,8 @@ export class ItemPage extends Component {
                                     <p>คุณต้องการจะลบสินค้า <b>{item.itemName}</b> ใช่หรือไม่ ?</p>
                                 </div>
                                 <div className="modal-footer">
-                                    <a onClick={() => this.props.deleteItem(item._id, stockId)} className="green modal-close waves-effect waves-light btn" style={{position: "relative", right: "20px"}}><i className="material-icons right">add_circle</i>ยืนยัน</a> 
-                                    <a className="red modal-close waves-effect waves-light btn"><i className="material-icons right">cancel</i>ยกเลิก</a>
+                                    <button onClick={() => this.props.deleteItem(item._id, stockId)} className="green modal-close waves-effect waves-light btn" style={{position: "relative", right: "20px"}}><i className="material-icons right">add_circle</i>ยืนยัน</button> 
+                                    <button className="red modal-close waves-effect waves-light btn"><i className="material-icons right">cancel</i>ยกเลิก</button>
                                 </div>
                             </div> 
                         </td>

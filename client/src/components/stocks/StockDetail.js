@@ -3,6 +3,7 @@ import {connect} from 'react-redux'
 import {Link, withRouter} from 'react-router-dom'
 
 import {deleteStock} from '../../actions/stock'
+import '../commons/linkButton.css'
 
 export class StockDetail extends Component {
     render() { 
@@ -12,7 +13,7 @@ export class StockDetail extends Component {
             <div> 
                 <div className="card-panel amber lighten-1" style={{marginLeft: "10px",top:"-20px",position:"relative"}}>
                     <span>
-                        <span className="right modal-trigger" href={"#"+stock._id}><a className="material-icons black-text">delete_forever</a></span>
+                        <span className="right modal-trigger" href={"#"+stock._id}><button className="link-button material-icons black-text">delete_forever</button></span>
                         <div style={{left:"-20px",position:"relative"}}>
                             <span className="new badge red black-text" data-badge-caption="สินค้าหมด">{stock.itemDanger}</span>
                             <span className="new badge yellow black-text" data-badge-caption="สินค้าใกล้หมด">{stock.itemWarning}</span>
@@ -31,8 +32,8 @@ export class StockDetail extends Component {
                         <p>คุณต้องการจะลบคลังสินค้า <b>{stock.stockName}</b> ใช่หรือไม่ ?</p>
                     </div>
                     <div className="modal-footer">
-                        <a className="red modal-close waves-effect waves-light btn right"><i className="material-icons right">cancel</i>ยกเลิก</a>
-                        <a onClick={() => this.props.deleteStock(stock._id)} className="green modal-close waves-effect waves-light btn right" style={{position: "relative", right: "20px"}}><i className="material-icons right">add_circle</i>ยืนยัน</a> 
+                        <button className="red modal-close waves-effect waves-light btn right"><i className="material-icons right">cancel</i>ยกเลิก</button>
+                        <button onClick={() => this.props.deleteStock(stock._id)} className="green modal-close waves-effect waves-light btn right" style={{position: "relative", right: "20px"}}><i className="material-icons right">add_circle</i>ยืนยัน</button> 
                     </div>
                     
                 </div>

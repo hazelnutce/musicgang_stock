@@ -1,6 +1,5 @@
 import axios from 'axios'
 import {FETCH_CATEGORY, FETCH_ITEMS, FETCH_ITEM, ERROR_CREATE_ITEM, ERROR_EDIT_ITEM} from './types'
-import { reset } from 'redux-form';
 
 export const fetchItems = (stockId) => async dispatch => {
     const res = await axios.get(`/api/item/${stockId}`);
@@ -26,9 +25,7 @@ export const addNewItems = (values, stockId, stockName, history) => async dispat
         })
     }).catch(error => {
         if (error.response) {
-            console.log("errorrrrr")
             dispatch({type: ERROR_CREATE_ITEM, payload: error.response.data})
-            dispatch(reset('newItemForm'))
         }
     })
     console.log(values)

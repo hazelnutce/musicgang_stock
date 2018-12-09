@@ -22,6 +22,7 @@ export class EditItemPage extends Component {
   }
 
   render() {
+    console.log(this.props.editError)
     const {category, handleSubmit, history} = this.props
     const {stockId, stockName} = this.props.location.state
     var currentLocation = this.props.location.pathname.toString()
@@ -35,7 +36,7 @@ export class EditItemPage extends Component {
               <EditItemForm category={category} stockId={stockId}/>
             </div>
             <div className="row">
-              <a onClick={handleSubmit((values) => this.props.editItem(values, itemId, stockId, stockName, history))} className="col xl2 push-xl7 l2 push-l7 m3 push-m6 s5 push-s2 green modal-close waves-effect waves-light btn" style={{marginRight: "20px"}}><i className="material-icons right">add_circle</i>Confirm</a> 
+              <button onClick={handleSubmit((values) => this.props.editItem(values, itemId, stockId, stockName, history))} className="col xl2 push-xl7 l2 push-l7 m3 push-m6 s5 push-s2 green modal-close waves-effect waves-light btn" style={{marginRight: "20px"}}><i className="material-icons right">add_circle</i>Confirm</button> 
               <Link to={{ state: {stockName}, pathname: `/items/${stockId}`}} className="col xl2 push-xl7 l2 push-l7 m3 push-m6 s5 push-s2 red modal-close waves-effect waves-light btn"><i className="material-icons right">cancel</i>Cancel</Link>
             </div>
             {/* <div className="row">
@@ -47,7 +48,7 @@ export class EditItemPage extends Component {
 }
 
 function mapStateToProps(state){
-  return {category: state.category}
+  return {category: state.category, editError: state.item.errorEditMessage}
 }
 
 export default reduxForm({

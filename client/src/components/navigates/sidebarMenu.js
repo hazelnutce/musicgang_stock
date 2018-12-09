@@ -3,6 +3,7 @@ import {SidebarMenuContent} from './sidebarMenuContent'
 import M from 'materialize-css'
 import { Link } from 'react-router-dom';
 import './sidebarMenu.css'
+import '../commons/linkButton.css'
 
 export class SidebarMenu extends Component {
     componentDidMount (){
@@ -22,7 +23,7 @@ export class SidebarMenu extends Component {
                 <div className="nav-wrapper amber darken-1">
                     <ul className="left">
                         <li><Link to="" data-target="slide-out" className="button-collapse sidenav-trigger"><i className="material-icons medium">menu</i></Link></li>
-                        <li><a onClick={() => this.props.history.goBack()}><i className="material-icons medium">keyboard_backspace</i></a></li>
+                        <li><Link to="" className="link-button" onClick={() => this.props.history.goBack()}><i className="material-icons medium">keyboard_backspace</i></Link></li>
                         <li><div><Link to="/">หน้าแรก</Link></div></li>
                     </ul>
                     <ul className="right">

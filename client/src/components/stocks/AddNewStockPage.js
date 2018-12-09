@@ -28,7 +28,7 @@ export class AddNewStockPage extends Component {
         </div>
         <div className="row">
             <span className="right">
-                <a onClick={this.props.handleSubmit((values) => this.props.addNewStock(values,history))} className="green waves-effect waves-light btn" style={{position: "relative", right: "10px"}}><i className="material-icons right">add_circle</i>ยืนยัน</a>
+                <button onClick={this.props.handleSubmit((values) => this.props.addNewStock(values,history))} className="green waves-effect waves-light btn" style={{position: "relative", right: "10px"}}><i className="material-icons right">add_circle</i>ยืนยัน</button>
                 <Link to="/stocks" className="red waves-effect waves-light btn"><i className="material-icons right">cancel</i>ยกเลิก</Link>
             </span>   
         </div>
