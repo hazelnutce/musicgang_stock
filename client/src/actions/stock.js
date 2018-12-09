@@ -13,8 +13,8 @@ export const addNewStock = (values,history) => async dispatch => {
     })
 }
 
-export const clearErrorCreateStock = () => async dispatch => {
-    dispatch({type: ERROR_CREATE_STOCK, payload: ""})
+export const resetErrorCreateStock = () => async dispatch => {
+    dispatch({type: ERROR_CREATE_STOCK, payload: null})
 }
 
 export const fetchStock = () => async dispatch => {

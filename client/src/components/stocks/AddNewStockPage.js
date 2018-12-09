@@ -2,42 +2,67 @@ import React, { Component } from 'react'
 import {Link, withRouter} from 'react-router-dom'
 import {reduxForm} from 'redux-form'
 import {connect} from 'react-redux'
+import ReactNotification from "react-notifications-component";
 
 import NewStockForm from '../forms/newstock/NewStockForm'
-import {addNewStock,clearErrorCreateStock} from '../../actions/stock'
-import {ErrorFormNotification} from '../commons/ErrorFormNotification'
+import {addNewStock, resetErrorCreateStock} from '../../actions/stock'
+import "react-notifications-component/dist/theme.css";
+
 
 export class AddNewStockPage extends Component {
-  render() {
-    const {history,stocks,clearErrorCreateStock} = this.props
-    return (
-      <div className="container" style={{position: "relative", top: "5px"}}>
-        <div className="row">
-            <h5 className="header col s6">เพิ่มคลังสินค้า
-                <i className="material-icons" style={{marginLeft: "10px"}}>input</i>
-            </h5>
-        </div>
-        {
-            stocks.errorCreateStock !== "" &&
-            <ErrorFormNotification errorMessage={stocks.errorCreateStock} clearErrorMessage={clearErrorCreateStock} specificColumn={"col s12"}/>
+    constructor(props) {
+        super(props);
+        this.notificationDOMRef = React.createRef();
+    }
+
+    addNotification = (message) => {
+        this.notificationDOMRef.current.addNotification({
+          title: "ข้อผิดพลาด",
+          message: message,
+          type: "danger",
+          insert: "buttom",
+          container: "top-right",
+          animationIn: ["animated", "fadeIn"],
+          animationOut: ["animated", "fadeOut"],
+          dismiss: { duration: 2000 },
+          dismissable: { click: true }
+        });
+    }
+
+    componentDidUpdate(prevProps){
+        if(this.props.stocks.errorCreateStock !== prevProps.stocks.errorCreateStock){
+          if(this.props.stocks.errorCreateStock != null){
+            this.addNotification(this.props.stocks.errorCreateStock)
+          }
         }
-        <div className="row">
-            <div className="card small col s12 amber lighten-1" style={{height: "150px"}}>
-                <NewStockForm />
+      }
+
+    render() {
+        const {history} = this.props
+        return (
+        <div className="container" style={{position: "relative", top: "5px"}}>
+            <div className="row">
+                <h5 className="header col s6">เพิ่มคลังสินค้า
+                    <i className="material-icons" style={{marginLeft: "10px"}}>input</i>
+                </h5>
             </div>
+            <div className="row">
+                <div className="card small col s12 amber lighten-1" style={{height: "150px"}}>
+                    <NewStockForm />
+                </div>
+            </div>
+            <div className="row">
+                <span className="right">
+                    <button onClick={this.props.handleSubmit((values) => this.props.addNewStock(values,history))} className="green waves-effect waves-light btn" style={{position: "relative", right: "10px"}}><i className="material-icons right">add_circle</i>ยืนยัน</button>
+                    <Link to="/stocks" className="red waves-effect waves-light btn"><i className="material-icons right">cancel</i>ยกเลิก</Link>
+                </span>   
+            </div>
+            <ReactNotification ref={this.notificationDOMRef} onNotificationRemoval={() => {
+              this.props.resetErrorCreateStock()
+            }} />
         </div>
-        <div className="row">
-            <span className="right">
-                <button onClick={this.props.handleSubmit((values) => this.props.addNewStock(values,history))} className="green waves-effect waves-light btn" style={{position: "relative", right: "10px"}}><i className="material-icons right">add_circle</i>ยืนยัน</button>
-                <Link to="/stocks" className="red waves-effect waves-light btn"><i className="material-icons right">cancel</i>ยกเลิก</Link>
-            </span>   
-        </div>
-        <div>
-        
-        </div>
-      </div>
-    )
-  }
+        )
+    }
 }
 
 function validate(values){
@@ -61,4 +86,4 @@ function mapStateToProps(state){
 export default reduxForm({
     form : 'newStockForm',
     validate
-})(connect(mapStateToProps,{addNewStock,clearErrorCreateStock})(withRouter(AddNewStockPage)))
+})(connect(mapStateToProps,{addNewStock,resetErrorCreateStock})(withRouter(AddNewStockPage)))

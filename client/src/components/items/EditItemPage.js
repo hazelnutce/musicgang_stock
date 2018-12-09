@@ -3,14 +3,33 @@ import EditItemForm from '../forms/newitem/EditItemForm'
 import { reduxForm } from 'redux-form'
 import { connect } from 'react-redux'
 import {Link} from 'react-router-dom'
+import ReactNotification from "react-notifications-component";
 
-import {fetchCategory, fetchItem, editItem} from '../../actions/item'
+import {fetchCategory, fetchItem, editItem, resetEditError} from '../../actions/item'
+import "react-notifications-component/dist/theme.css";
 
 export class EditItemPage extends Component {
+  constructor(props) {
+    super(props);
+    this.notificationDOMRef = React.createRef();
+  }
+
+  addNotification = (message) => {
+    this.notificationDOMRef.current.addNotification({
+      title: "ข้อผิดพลาด",
+      message: message,
+      type: "danger",
+      insert: "buttom",
+      container: "top-right",
+      animationIn: ["animated", "fadeIn"],
+      animationOut: ["animated", "fadeOut"],
+      dismiss: { duration: 2000 },
+      dismissable: { click: true }
+    });
+  }
 
   componentDidMount(){
     const {itemName, category, cost, revenue, itemWarning} = this.props.location.state
-
     this.props.fetchCategory()
     this.props.initialize({
       itemName,
@@ -21,8 +40,15 @@ export class EditItemPage extends Component {
     })
   }
 
+  componentDidUpdate(prevProps){
+    if(this.props.editError !== prevProps.editError){
+      if(this.props.editError != null){
+        this.addNotification(this.props.editError)
+      }
+    }
+  }
+
   render() {
-    console.log(this.props.editError)
     const {category, handleSubmit, history} = this.props
     const {stockId, stockName} = this.props.location.state
     var currentLocation = this.props.location.pathname.toString()
@@ -39,9 +65,9 @@ export class EditItemPage extends Component {
               <button onClick={handleSubmit((values) => this.props.editItem(values, itemId, stockId, stockName, history))} className="col xl2 push-xl7 l2 push-l7 m3 push-m6 s5 push-s2 green modal-close waves-effect waves-light btn" style={{marginRight: "20px"}}><i className="material-icons right">add_circle</i>Confirm</button> 
               <Link to={{ state: {stockName}, pathname: `/items/${stockId}`}} className="col xl2 push-xl7 l2 push-l7 m3 push-m6 s5 push-s2 red modal-close waves-effect waves-light btn"><i className="material-icons right">cancel</i>Cancel</Link>
             </div>
-            {/* <div className="row">
-              <a onClick={this.createNotification('info')} className="col xl2 push-xl7 l2 push-l7 m3 push-m6 s5 push-s2 green modal-close waves-effect waves-light btn">test</a>
-            </div> */}
+            <ReactNotification ref={this.notificationDOMRef} onNotificationRemoval={() => {
+              this.props.resetEditError()
+            }} />
       </div>
     )
   }
@@ -53,4 +79,4 @@ function mapStateToProps(state){
 
 export default reduxForm({
   form : 'EditItemPage',
-})(connect(mapStateToProps, {fetchCategory, fetchItem, editItem})(EditItemPage))
+})(connect(mapStateToProps, {fetchCategory, fetchItem, editItem, resetEditError})(EditItemPage))

@@ -2,7 +2,7 @@ import {ADD_STOCK,ERROR_CREATE_STOCK} from '../actions/types';
 
 const initState = {
     stockList : null,
-    errorCreateStock : ""
+    errorCreateStock : null
 }
 
 export default function(state = initState,action){

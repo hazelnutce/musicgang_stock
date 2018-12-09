@@ -64,6 +64,11 @@ module.exports = (app, Db, Item, Category) => {
             res.status(500).send("หมวดหมู่สินค้าไม่ถูกต้อง กรุณาลองใหม่อีกครั้ง")
             return
         }
+        const item = await Item.findOne({itemName: itemName, _id: { '$ne' : itemId.toString() }})
+        if(item){
+            res.status(500).send("สินค้าชื่อนี้มีอยู่ในระบบแล้ว กรุณาลองใหม่อีกครั้ง")
+            return 
+        }
         var result = Item.findOne({_id: itemId.toString()})
         if(result){
             try{

@@ -28,7 +28,6 @@ export const addNewItems = (values, stockId, stockName, history) => async dispat
             dispatch({type: ERROR_CREATE_ITEM, payload: error.response.data})
         }
     })
-    console.log(values)
 }
 
 export const editItem = (values, itemId, stockId, stockName, history) => async dispatch => {
@@ -39,7 +38,6 @@ export const editItem = (values, itemId, stockId, stockName, history) => async d
         })
     }).catch(error => {
         if (error.response) {
-            console.log("errorrrrr")
             dispatch({type: ERROR_EDIT_ITEM, payload: error.response.data})
         }
     })
@@ -50,5 +48,13 @@ export const deleteItem = (itemId, stockId) => async dispatch => {
     const res = await axios.delete(`/api/item/delete/${itemId}`,{ data: { values } });
     console.log(res)
     dispatch({type: FETCH_ITEMS, payload: res.data})
+}
+
+export const resetEditError = () => async dispatch => {
+    dispatch({type: ERROR_EDIT_ITEM, payload: null})
+}
+
+export const resetCreateError = () => async dispatch => {
+    dispatch({type: ERROR_CREATE_ITEM, payload: null})
 }
 

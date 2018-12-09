@@ -2,16 +2,46 @@ import React, { Component } from 'react'
 import {reduxForm} from 'redux-form'
 import {connect} from 'react-redux'
 import {Link} from 'react-router-dom'
+import ReactNotification from "react-notifications-component";
 
 import {NewItemForm} from '../forms/newitem/NewItemForm'
-import {fetchCategory, addNewItems} from '../../actions/item'
+import {fetchCategory, addNewItems, resetCreateError} from '../../actions/item'
+import "react-notifications-component/dist/theme.css";
 
 export class AddNewItemPage extends Component {
+  constructor(props) {
+    super(props);
+    this.notificationDOMRef = React.createRef();
+  }
+
   componentDidMount = () => {
     this.props.fetchCategory()
   }
+
+  addNotification = (message) => {
+    this.notificationDOMRef.current.addNotification({
+      title: "ข้อผิดพลาด",
+      message: message,
+      type: "danger",
+      insert: "buttom",
+      container: "top-right",
+      animationIn: ["animated", "fadeIn"],
+      animationOut: ["animated", "fadeOut"],
+      dismiss: { duration: 2000 },
+      dismissable: { click: true }
+    });
+  }
+
+  componentDidUpdate(prevProps){
+    if(this.props.createError !== prevProps.createError){
+      if(this.props.createError != null){
+        this.addNotification(this.props.createError)
+      }
+    }
+  }
   
   render() {
+    console.log(this.props.createError)
     const {category, history} = this.props
     var currentLocation = this.props.location.pathname.toString()
     var stockId = currentLocation.replace("/items/add/new/", "")
@@ -28,13 +58,16 @@ export class AddNewItemPage extends Component {
             <button onClick={this.props.handleSubmit((values) => this.props.addNewItems(values, stockId, stockName, history))} className="col xl2 push-xl7 l2 push-l7 m3 push-m6 s5 push-s2 green modal-close waves-effect waves-light btn" style={{marginRight: "20px"}}><i className="material-icons right">add_circle</i>Confirm</button> 
             <Link to={{ state: {stockName}, pathname: `/items/${stockId}`}} className="col xl2 push-xl7 l2 push-l7 m3 push-m6 s5 push-s2 red modal-close waves-effect waves-light btn"><i className="material-icons right">cancel</i>Cancel</Link>
           </div>
+          <ReactNotification ref={this.notificationDOMRef} onNotificationRemoval={() => {
+              this.props.resetCreateError();
+            }} />
         </div>
     )
   }
 }
 
 function mapStateToProps(state){
-  return {category: state.category}
+  return {category: state.category, createError: state.item.errorCreateMessage}
 }
 
 function validate(values){
@@ -70,4 +103,4 @@ function validate(values){
 export default reduxForm({
   form : 'newItemForm',
   validate
-})(connect(mapStateToProps,{fetchCategory, addNewItems})(AddNewItemPage))
+})(connect(mapStateToProps,{fetchCategory, addNewItems, resetCreateError})(AddNewItemPage))
