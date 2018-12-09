@@ -9,3 +9,6 @@ export const FETCH_CATEGORY = "fetch_category"
 export const FETCH_STOCK_IN_CATEGORY = "fetch_stock_in_category"
 
 export const FETCH_ITEM = "fetch_item"
+export const FETCH_ITEMS = "fetch_items"
+export const ERROR_CREATE_ITEM = "error_create_item"
+export const ERROR_EDIT_ITEM = "error_edit_item"

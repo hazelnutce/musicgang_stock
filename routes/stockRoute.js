@@ -16,7 +16,8 @@ module.exports = (app, Db, Stock) => {
         const {stockName, description} = req.body
         const stock = await Stock.findOne({stockName: stockName})
         if(stock){
-            res.status(500).send("This stock name already exist")
+            res.status(500).send("คลังสินค้าชื่อนี้มีอยู่ในระบบแล้ว กรุณาลองใหม่อีกครั้ง")
+            return 
         }
         //new data
         var newStock = {
@@ -37,7 +38,7 @@ module.exports = (app, Db, Stock) => {
         }
         catch(e){
             console.log(e)
-            res.status(500).send("something error on database", e)
+            res.status(500).send("พบบางอย่างผิดพลาดที่ระบบข้อมูล", e)
         }
         finally{
             await Db.saveDatabase();

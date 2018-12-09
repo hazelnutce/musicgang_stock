@@ -4,13 +4,14 @@ import {LoaderSpinner} from '../commons/LoaderSpinner'
 import M from 'materialize-css'
 import {reduxForm} from 'redux-form'
 import _ from 'lodash'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 
 import {fetchCategory,addCategory,deleteCategory} from '../../actions/category'
 import {NewCategoryForm} from '../forms/newcategory/NewCategoryForm'
 import './CategoryPage.css'
 
 const buttonInLine = <span className="right">
-<a data-target="addCategory" className="waves-effect waves-light btn-small amber darken-3 modal-trigger"><i className="material-icons right">add</i>Add category</a>
+<button data-target="addCategory" className="waves-effect waves-light btn-small amber darken-3 modal-trigger"><i className="material-icons right">add</i>เพิ่มหมวดหมู่</button>
 </span>
 
 export class CategoryPage extends Component {
@@ -29,7 +30,7 @@ export class CategoryPage extends Component {
               <div className="card-panel yellow darken-1" style={{marginLeft: "10px",top:"-20px",position:"relative"}}>
                 <span className="white-text">
                   <span><i className="material-icons" style={{marginLeft: "10px",top:"5px",position:"relative"}}>warning</i></span>
-                  <span style={{marginLeft: "10px"}}>You didn't have any categories. Please create one.</span>
+                  <span style={{marginLeft: "10px"}}>คุณไม่ได้สร้างการจัดการหมวดหมู่ไว้ที่คลังสินค้านี้</span>
                 </span>
               </div>
             )
@@ -70,12 +71,12 @@ export class CategoryPage extends Component {
                     </div>
                     <div id={category._id} className="modal deleteCategory">
                         <div className="modal-content">
-                            <h4>Confirm delete</h4>
-                            <p>Are you sure for delete <b>{category.categoryName}</b> category ?</p>
+                            <h4>ยืนยันการลบ</h4>
+                            <p>คุณต้องการจะลบหมวดหมู่ <b>{category.categoryName}</b> ใช่หรือไม่ ?</p>
                         </div>
                         <div className="modal-footer">
-                            <a  className="red modal-close waves-effect waves-light btn right"><i className="material-icons right">cancel</i>Cancel</a>
-                            <a  onClick={() => this.props.deleteCategory(category._id)} className="green modal-close waves-effect waves-light btn right" style={{position: "relative", right: "20px"}}><i className="material-icons right">add_circle</i>Confirm</a> 
+                            <button className="red modal-close waves-effect waves-light btn right"><i className="material-icons right">cancel</i>ยกเลิก</button>
+                            <button onClick={() => this.props.deleteCategory(category._id)} className="green modal-close waves-effect waves-light btn right" style={{position: "relative", right: "20px"}}><i className="material-icons right">add_circle</i>ยืนยัน</button> 
                         </div>
                     </div>
                 </div>
@@ -122,10 +123,10 @@ export class CategoryPage extends Component {
             )
           }
         return (
-
+            
             <div className="container" style={{top: "5px", position: "relative"}}>
                 <div className="row">
-                <h5 className="col s12">Categories {buttonInLine}</h5>
+                <h5 className="col s12"><i><FontAwesomeIcon icon="tags"/></i><span style={{marginLeft: "20px"}}>หมวดหมู่สินค้า</span>{buttonInLine}</h5>
                 </div>
                 <div className="row">
                     {this.renderCategories(category)}
@@ -133,12 +134,12 @@ export class CategoryPage extends Component {
                 <div className="row">
                     <div id="addCategory" className="modal col s6 offset-s1">
                         <div className="modal-content">
-                            <h5>New Category</h5>
+                            <h5>เพิ่มหมวดหมู่สินค้า</h5>
                             <NewCategoryForm />
                         </div>
                         <div className="modal-footer">
-                            <a className="red modal-close waves-effect waves-light btn right"><i className="material-icons right">cancel</i>Cancel</a>
-                            <a onClick={this.props.handleSubmit((values) => this.props.addCategory(values,stockDetails))} className="green modal-close waves-effect waves-light btn right" style={{position: "relative", right: "20px"}}><i className="material-icons right">add_circle</i>Confirm</a> 
+                            <button className="red modal-close waves-effect waves-light btn right"><i className="material-icons right">cancel</i>Cancel</button>
+                            <button onClick={this.props.handleSubmit((values) => this.props.addCategory(values,stockDetails))} className="green modal-close waves-effect waves-light btn right" style={{position: "relative", right: "20px"}}><i className="material-icons right">add_circle</i>Confirm</button> 
                         </div>
                     </div>
                 </div>

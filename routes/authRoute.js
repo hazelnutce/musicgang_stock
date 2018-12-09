@@ -22,6 +22,6 @@ module.exports = app => {
 
     app.get('/api/autherror',(req,res,next) => {
         res.status(401)
-        res.json({message: 'Invalid username or password'})
+        res.json({message: 'ชื่อหรือผู้ใช้งานไม่ถูกต้อง กรุณาลองใหม่อีกครั้ง'})
     })
 }

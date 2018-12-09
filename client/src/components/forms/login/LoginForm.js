@@ -11,7 +11,7 @@ export class LoginForm extends Component {
             name="username"
             type={"text"}
             icon={"account_circle"}
-            keyLabel={"User Name"}
+            keyLabel={"ชื่อผู้ใช้งาน"}
         />
 
         <Field 
@@ -19,7 +19,7 @@ export class LoginForm extends Component {
             name="password"
             type={"password"}
             icon={"lock_open"}
-            keyLabel={"Password"}
+            keyLabel={"รหัสผ่าน"}
         />
       </div>
     )

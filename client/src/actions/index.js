@@ -22,5 +22,5 @@ export const loggedInUser = (values,history) => dispatch => {
 }
 
 export const clearErrorAuth = () => dispatch => {
-    dispatch({type: LOGIN_USER_FAILED, payload: ""})
+    dispatch({type: LOGIN_USER_FAILED, payload: null})
 }

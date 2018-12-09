@@ -1,13 +1,12 @@
 import React, { Component } from 'react'
 import {Link} from 'react-router-dom'
 import {connect} from 'react-redux'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import M from 'materialize-css'
+import _ from 'lodash'
 
 import {LoaderSpinner} from '../commons/LoaderSpinner'
-import {fetchItems} from '../../actions/item'
-
-const buttonInLine = <span className="right">
-<Link to="/items/add/new" className="waves-effect waves-light btn-small amber darken-3"><i className="material-icons right">add</i>Add item</Link>
-</span>
+import {fetchItems ,deleteItem} from '../../actions/item'
 
 export class ItemPage extends Component {
     constructor(props){
@@ -18,42 +17,67 @@ export class ItemPage extends Component {
         }
     }
 
-    renderItemTable = () => {
-        return (
-            
+    renderButtonForAddItem = () => {
+        var currentLocation = this.props.location.pathname.toString()
+        var stockId = currentLocation.replace("/items/", "")
+        const buttonInLine = <span className="right">
+            <Link to={{ pathname: `/items/add/new/${stockId}`, state: {stockName : this.props.history.location.state.stockName}}}  className="waves-effect waves-light btn-small amber darken-3"><i className="material-icons right">add</i>เพิ่มสินค้า</Link>
+        </span>
+
+        return buttonInLine
+    }
+
+    renderItem = (stockId, stockName) => {
+        return _.map(this.props.item.items, item => {
+            const {itemName, category, cost, revenue, itemWarning} = item
+            return(
+                    <tr key={item._id}>
+                        <td>{item.itemName}</td>
+                        <td>{item.category}</td>
+                        <td>{item.cost}</td>
+                        <td>{item.revenue}</td>
+                        <td>{item.itemRemaining}</td>
+                        <td>
+                            <Link to={{ pathname: `/items/edit/${item._id}`, 
+                                state: { stockId, stockName, itemName, category, cost, revenue, itemWarning} }} 
+                                className="material-icons black-text">edit
+                            </Link>
+                            <a className="modal-trigger" href={"#"+item._id}><i className="material-icons black-text">delete</i></a>
+                        </td>
+                        <td>
+                            <div id={item._id} className="modal">
+                                <div className="modal-content">
+                                    <h4>ยืนยันการลบ</h4>
+                                    <p>คุณต้องการจะลบสินค้า <b>{item.itemName}</b> ใช่หรือไม่ ?</p>
+                                </div>
+                                <div className="modal-footer">
+                                    <button onClick={() => this.props.deleteItem(item._id, stockId)} className="green modal-close waves-effect waves-light btn" style={{position: "relative", right: "20px"}}><i className="material-icons right">add_circle</i>ยืนยัน</button> 
+                                    <button className="red modal-close waves-effect waves-light btn"><i className="material-icons right">cancel</i>ยกเลิก</button>
+                                </div>
+                            </div> 
+                        </td>
+                         
+                    </tr>          
+            )
+        })
+    }
+
+    renderItemTable = (stockId, stockName) => {
+        return (   
             <table className="highlight reponsive-table">
                 <thead>
                 <tr>
-                    <th>Item Name</th>
-                    <th>Tag</th>
-                    <th>Item Cost</th>
-                    <th>Item Price</th>
-                    <th>Remaining</th>
+                    <th>ชื่อสินค้า</th>
+                    <th>หมวดหมู่</th>
+                    <th>ราคาต้นทุน</th>
+                    <th>ราคาขาย</th>
+                    <th>จำนวนคงเหลือ</th>
+                    <th></th>
                 </tr>
                 </thead>
 
                 <tbody>
-                <tr>
-                    <td>D'addario</td>
-                    <td>Guitar</td>
-                    <td>142</td>
-                    <td>190</td>
-                    <td>6</td>
-                </tr>
-                <tr>
-                    <td>Ernie Ball</td>
-                    <td>Guitar</td>
-                    <td>135</td>
-                    <td>180</td>
-                    <td>4</td>
-                </tr>
-                <tr>
-                    <td>Drum stick Nova 5A</td>
-                    <td>Drum</td>
-                    <td>124</td>
-                    <td>150</td>
-                    <td>14</td>
-                </tr>
+                    {this.renderItem(stockId, stockName)}
                 </tbody>
             </table>  
     
@@ -66,8 +90,25 @@ export class ItemPage extends Component {
         this.props.fetchItems(stockId)
         this.setState({loadingItem: true})
     }
-    
+
+    componentDidUpdate = (prevProps) => {
+        if (prevProps.item.items !== this.props.item.items) {
+          if(this.props.item !== "" || this.props.item !== null){
+            this.setState({loadingItem: true},() => {
+              var elems = document.querySelectorAll('.modal');
+              M.Modal.init(elems, {
+                opacity: 0.6
+              });
+            }) 
+          }
+        }
+    }
+
     render() {
+        var currentLocation = this.props.location.pathname.toString()
+        var stockId = currentLocation.replace("/items/", "")
+        const {stockName} = this.props.location.state
+
         if(!this.state.loadingItem){
             return (
               <LoaderSpinner loading={this.state.loadingCategory} color={'#123abc'}/>
@@ -76,14 +117,18 @@ export class ItemPage extends Component {
         return (
             <div className="container" style={{position: "relative", top: "5px"}}>
                 <div className="row">
-                    <h5 className="col s12">Items {buttonInLine}</h5>
+                    <h5 className="col s12"><i><FontAwesomeIcon icon="boxes"/></i><span style={{marginLeft: "20px"}}>สินค้า / คลัง : {stockName}</span> {this.renderButtonForAddItem()}</h5>
                 </div>
                 <div className="row">
-                    {this.renderItemTable()}
+                    {this.renderItemTable(stockId, stockName)}
                 </div>
             </div>
         )
     }
 }
 
-export default connect(null, {fetchItems})(ItemPage)
+function mapStateToProps(state){
+    return { item: state.item}
+}
+
+export default connect(mapStateToProps, {fetchItems, deleteItem})(ItemPage)

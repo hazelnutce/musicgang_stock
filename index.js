@@ -21,6 +21,8 @@ db.loadDatabase({}, function(err) {
     }
     else {
       console.log("database loaded.");
+      //----------------------- initalize part ------------------------------
+
       var Stock = db.getCollection('stock');
       if(!Stock){
         Stock = db.addCollection('stock')
@@ -35,6 +37,8 @@ db.loadDatabase({}, function(err) {
       if(!Item){
           Item = db.addCollection('item')
       }
+
+      //----------------------- end of initalize part ------------------------------
 
       mongoose.connect(keys.mongoUrl,{ useNewUrlParser: true });
 
@@ -54,7 +58,7 @@ db.loadDatabase({}, function(err) {
         require('./routes/authRoute')(app)
         require('./routes/stockRoute')(app, db, Stock)
         require('./routes/categoryRoute')(app, db, Category)
-        require('./routes/itemRoute')(app, db, Item)
+        require('./routes/itemRoute')(app, db, Item, Category)
 
         if(!(process.env.NODE_ENV && process.env.NODE_ENV.trim() === 'development')){
             //express will serve up production asset

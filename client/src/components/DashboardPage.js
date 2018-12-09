@@ -4,7 +4,7 @@ export class DashboardPage extends Component {
   render() {
     return (
       <div className="container" style={{position: "relative", top: "5px"}}>
-        Hello dashboard page
+        กำลังอยู่ในช่วงพัฒนาแอพพลิเคชั่น ขออภัยในความไม่สะดวก
       </div>
     )
   }
