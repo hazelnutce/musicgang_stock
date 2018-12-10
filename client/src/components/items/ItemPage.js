@@ -29,18 +29,22 @@ export class ItemPage extends Component {
 
     renderItem = (stockId, stockName) => {
         return _.map(this.props.item.items, item => {
-            const {itemName, category, cost, revenue, itemWarning} = item
+            const {itemName, category, cost, revenue, itemWarning, itemRemaining} = item
             return(
                     <tr key={item._id}>
-                        <td>{item.itemName}</td>
-                        <td>{item.category}</td>
-                        <td>{item.cost}</td>
-                        <td>{item.revenue}</td>
-                        <td>{item.itemRemaining}</td>
+                        <td>{itemName}</td>
+                        <td>{category}</td>
+                        <td>{cost}</td>
+                        <td>{revenue}</td>
+                        <td>{itemRemaining}</td>
                         <td>
                             <Link to={{ pathname: `/items/edit/${item._id}`, 
                                 state: { stockId, stockName, itemName, category, cost, revenue, itemWarning} }} 
                                 className="material-icons black-text">edit
+                            </Link>
+                            <Link to={{ pathname: `/items/add/new/${stockId}`, 
+                                state: { stockId, stockName, itemName, category, cost, revenue, itemWarning, itemRemaining} }} 
+                                className="material-icons black-text">content_copy
                             </Link>
                             <a className="modal-trigger" href={"#"+item._id}><i className="material-icons black-text">delete</i></a>
                         </td>
