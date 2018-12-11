@@ -46,7 +46,6 @@ export const editItem = (values, itemId, stockId, stockName, history) => async d
 export const deleteItem = (itemId, stockId) => async dispatch => {
     var values = {stockId}
     const res = await axios.delete(`/api/item/delete/${itemId}`,{ data: { values } });
-    console.log(res)
     dispatch({type: FETCH_ITEMS, payload: res.data})
 }
 

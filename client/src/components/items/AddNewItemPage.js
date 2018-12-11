@@ -16,7 +16,8 @@ export class AddNewItemPage extends Component {
 
   componentDidMount = () => {
     this.props.fetchCategory()
-    const {itemName, category, cost, revenue, itemWarning, itemRemaining} = this.props.location.state
+    const {itemName, category, cost, revenue, itemWarning, itemRemaining, items} = this.props.location.state
+    console.log(items)
     this.props.fetchCategory()
     if(itemName != null && category != null && cost != null &&
       revenue != null && itemWarning != null && itemRemaining != null)
@@ -28,7 +29,7 @@ export class AddNewItemPage extends Component {
         else{
           var stringArray = newitemName.split("#")
           var newOrder = parseInt(stringArray[1])
-          newitemName = stringArray[0].concat(` #${newOrder + 1}`);
+          newitemName = stringArray[0].trim().concat(` #${newOrder + 1}`);
         }
         this.props.initialize({
           itemName : newitemName,

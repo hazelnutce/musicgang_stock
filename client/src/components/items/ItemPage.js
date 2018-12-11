@@ -7,13 +7,28 @@ import _ from 'lodash'
 
 import {LoaderSpinner} from '../commons/LoaderSpinner'
 import {fetchItems ,deleteItem} from '../../actions/item'
+import '../commons/linkButton.css'
+import {sortItemNameASC,
+    sortCategoryASC,
+    sortCostASC,
+    sortRevenueASC,
+    sortItemRemainingASC, 
+    sortItemNameDESC, 
+    sortCategoryDESC, 
+    sortCostDESC, 
+    sortRevenueDESC, 
+    sortItemRemainingDESC} from './sortItemFunctions'
 
 export class ItemPage extends Component {
     constructor(props){
         super(props)
     
         this.state = {
-          loadingItem: false
+          loadingItem: false,
+          currentSorting: {
+              direction: "ASC",
+              sortColumn: "itemName"
+          }
         }
     }
 
@@ -28,7 +43,37 @@ export class ItemPage extends Component {
     }
 
     renderItem = (stockId, stockName) => {
-        return _.map(this.props.item.items, item => {
+        var allItems = this.props.item.items
+        console.log(this.state.currentSorting.sortColumn, this.state.currentSorting.direction)
+        if(allItems != null){
+            var sortingColumn = this.state.currentSorting.sortColumn
+            var direction = this.state.currentSorting.direction
+            if(direction === "ASC"){
+                if(sortingColumn === "itemName")
+                    allItems.sort(sortItemNameASC)
+                else if(sortingColumn === "category")
+                    allItems.sort(sortCategoryASC)
+                else if(sortingColumn === "cost")
+                    allItems.sort(sortCostASC)
+                else if(sortingColumn === "revenue")
+                    allItems.sort(sortRevenueASC)
+                else if(sortingColumn === "itemRemaining")
+                    allItems.sort(sortItemRemainingASC)
+            }
+            else if(direction === "DESC"){
+                if(sortingColumn === "itemName")
+                    allItems.sort(sortItemNameDESC)
+                else if(sortingColumn === "category")
+                    allItems.sort(sortCategoryDESC)
+                else if(sortingColumn === "cost")
+                    allItems.sort(sortCostDESC)
+                else if(sortingColumn === "revenue")
+                    allItems.sort(sortRevenueDESC)
+                else if(sortingColumn === "itemRemaining")
+                    allItems.sort(sortItemRemainingDESC)
+            }
+        }
+        return _.map(allItems, (item, itemIndex, items) => {
             const {itemName, category, cost, revenue, itemWarning, itemRemaining} = item
             return(
                     <tr key={item._id}>
@@ -43,7 +88,7 @@ export class ItemPage extends Component {
                                 className="material-icons black-text">edit
                             </Link>
                             <Link to={{ pathname: `/items/add/new/${stockId}`, 
-                                state: { stockId, stockName, itemName, category, cost, revenue, itemWarning, itemRemaining} }} 
+                                state: { stockId, stockName, itemName, category, cost, revenue, itemWarning, itemRemaining, itemIndex, items} }} 
                                 className="material-icons black-text">content_copy
                             </Link>
                             <a className="modal-trigger" href={"#"+item._id}><i className="material-icons black-text">delete</i></a>
@@ -66,16 +111,31 @@ export class ItemPage extends Component {
         })
     }
 
+    handleSortClick(sortColumn){
+        if(sortColumn === this.state.currentSorting.sortColumn){
+            if(this.state.currentSorting.direction === "ASC"){
+                this.setState({currentSorting: {direction: "DESC", sortColumn: sortColumn}})
+            }
+            else{
+                this.setState({currentSorting: {direction: "ASC", sortColumn: sortColumn}})
+            }
+
+        }
+        else{
+            this.setState({currentSorting: {direction: "ASC", sortColumn: sortColumn}})
+        }
+    }
+
     renderItemTable = (stockId, stockName) => {
         return (   
-            <table className="highlight reponsive-table">
+            <table className="highlight reponsive-table centered">
                 <thead>
                 <tr>
-                    <th>ชื่อสินค้า</th>
-                    <th>หมวดหมู่</th>
-                    <th>ราคาต้นทุน</th>
-                    <th>ราคาขาย</th>
-                    <th>จำนวนคงเหลือ</th>
+                    <th><button onClick={() => this.handleSortClick("itemName")} className="btn-flat waves-effect waves-teal">ชื่อสินค้า</button></th>
+                    <th><button onClick={() => this.handleSortClick("category")} className="btn-flat waves-effect waves-teal">หมวดหมู่</button></th>
+                    <th><button onClick={() => this.handleSortClick("cost")} className="btn-flat waves-effect waves-teal">ราคาต้นทุน</button></th>
+                    <th><button onClick={() => this.handleSortClick("revenue")} className="btn-flat waves-effect waves-teal">ราคาขาย</button></th>
+                    <th><button onClick={() => this.handleSortClick("itemRemaining")} className="btn-flat waves-effect waves-teal">จำนวนคงเหลือ</button></th>
                     <th></th>
                 </tr>
                 </thead>
