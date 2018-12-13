@@ -6,8 +6,8 @@ import {deleteStock} from '../../actions/stock'
 import '../commons/linkButton.css'
 
 export class StockDetail extends Component {
+
     render() { 
-        
         const stock = this.props
         return (
             <div> 

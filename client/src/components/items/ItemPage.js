@@ -27,7 +27,8 @@ export class ItemPage extends Component {
           loadingItem: false,
           currentSorting: {
               direction: "ASC",
-              sortColumn: "itemName"
+              sortColumn: "itemName",
+              sortIcon: "arrow_drop_up"
           }
         }
     }
@@ -42,36 +43,39 @@ export class ItemPage extends Component {
         return buttonInLine
     }
 
+    handleSorting(allItems, sortingColumn, direction){
+        if(direction === "ASC"){
+            if(sortingColumn === "itemName")
+                allItems.sort(sortItemNameASC)
+            else if(sortingColumn === "category")
+                allItems.sort(sortCategoryASC)
+            else if(sortingColumn === "cost")
+                allItems.sort(sortCostASC)
+            else if(sortingColumn === "revenue")
+                allItems.sort(sortRevenueASC)
+            else if(sortingColumn === "itemRemaining")
+                allItems.sort(sortItemRemainingASC)
+        }
+        else if(direction === "DESC"){
+            if(sortingColumn === "itemName")
+                allItems.sort(sortItemNameDESC)
+            else if(sortingColumn === "category")
+                allItems.sort(sortCategoryDESC)
+            else if(sortingColumn === "cost")
+                allItems.sort(sortCostDESC)
+            else if(sortingColumn === "revenue")
+                allItems.sort(sortRevenueDESC)
+            else if(sortingColumn === "itemRemaining")
+                allItems.sort(sortItemRemainingDESC)
+        }
+    }
+
     renderItem = (stockId, stockName) => {
         var allItems = this.props.item.items
-        console.log(this.state.currentSorting.sortColumn, this.state.currentSorting.direction)
         if(allItems != null){
             var sortingColumn = this.state.currentSorting.sortColumn
             var direction = this.state.currentSorting.direction
-            if(direction === "ASC"){
-                if(sortingColumn === "itemName")
-                    allItems.sort(sortItemNameASC)
-                else if(sortingColumn === "category")
-                    allItems.sort(sortCategoryASC)
-                else if(sortingColumn === "cost")
-                    allItems.sort(sortCostASC)
-                else if(sortingColumn === "revenue")
-                    allItems.sort(sortRevenueASC)
-                else if(sortingColumn === "itemRemaining")
-                    allItems.sort(sortItemRemainingASC)
-            }
-            else if(direction === "DESC"){
-                if(sortingColumn === "itemName")
-                    allItems.sort(sortItemNameDESC)
-                else if(sortingColumn === "category")
-                    allItems.sort(sortCategoryDESC)
-                else if(sortingColumn === "cost")
-                    allItems.sort(sortCostDESC)
-                else if(sortingColumn === "revenue")
-                    allItems.sort(sortRevenueDESC)
-                else if(sortingColumn === "itemRemaining")
-                    allItems.sort(sortItemRemainingDESC)
-            }
+            this.handleSorting(allItems, sortingColumn, direction)
         }
         return _.map(allItems, (item, itemIndex, items) => {
             const {itemName, category, cost, revenue, itemWarning, itemRemaining} = item
@@ -114,28 +118,50 @@ export class ItemPage extends Component {
     handleSortClick(sortColumn){
         if(sortColumn === this.state.currentSorting.sortColumn){
             if(this.state.currentSorting.direction === "ASC"){
-                this.setState({currentSorting: {direction: "DESC", sortColumn: sortColumn}})
+                this.setState({currentSorting: {direction: "DESC", sortColumn: sortColumn, sortIcon: "arrow_drop_down"}})
             }
             else{
-                this.setState({currentSorting: {direction: "ASC", sortColumn: sortColumn}})
+                this.setState({currentSorting: {direction: "ASC", sortColumn: sortColumn, sortIcon: "arrow_drop_up"}})
             }
 
         }
         else{
-            this.setState({currentSorting: {direction: "ASC", sortColumn: sortColumn}})
+            this.setState({currentSorting: {direction: "ASC", sortColumn: sortColumn, sortIcon: "arrow_drop_up"}})
         }
     }
 
     renderItemTable = (stockId, stockName) => {
+        const buttonClassName = "btn-flat waves-effect"
         return (   
             <table className="highlight reponsive-table centered">
                 <thead>
                 <tr>
-                    <th><button onClick={() => this.handleSortClick("itemName")} className="btn-flat waves-effect waves-teal">ชื่อสินค้า</button></th>
-                    <th><button onClick={() => this.handleSortClick("category")} className="btn-flat waves-effect waves-teal">หมวดหมู่</button></th>
-                    <th><button onClick={() => this.handleSortClick("cost")} className="btn-flat waves-effect waves-teal">ราคาต้นทุน</button></th>
-                    <th><button onClick={() => this.handleSortClick("revenue")} className="btn-flat waves-effect waves-teal">ราคาขาย</button></th>
-                    <th><button onClick={() => this.handleSortClick("itemRemaining")} className="btn-flat waves-effect waves-teal">จำนวนคงเหลือ</button></th>
+                    <th>
+                        <button onClick={() => this.handleSortClick("itemName")} className={buttonClassName}>ชื่อสินค้า
+                        </button>
+                        <i className="material-icons">{this.state.currentSorting.sortColumn === "itemName" && this.state.currentSorting.sortIcon}</i>
+                    </th>
+                    <th>
+                        <button onClick={() => this.handleSortClick("category")} className={buttonClassName}>หมวดหมู่   
+                        </button>
+                        <i className="material-icons">{this.state.currentSorting.sortColumn === "category" && this.state.currentSorting.sortIcon}</i>
+                    </th>
+                    <th>
+                        <button onClick={() => this.handleSortClick("cost")} className={buttonClassName}>ราคาต้นทุน
+                        </button>
+                        <i className="material-icons">{this.state.currentSorting.sortColumn === "cost" && this.state.currentSorting.sortIcon}</i>
+                    </th>
+                    <th>
+                        <button onClick={() => this.handleSortClick("revenue")} className={buttonClassName}>ราคาขาย  
+                        </button>
+                        
+                        <i className="material-icons">{this.state.currentSorting.sortColumn === "revenue" && this.state.currentSorting.sortIcon}</i>
+                        </th>
+                    <th>
+                        <button onClick={() => this.handleSortClick("itemRemaining")} className={buttonClassName}>จำนวนคงเหลือ
+                        </button>
+                        <i className="material-icons">{this.state.currentSorting.sortColumn === "itemRemaining" && this.state.currentSorting.sortIcon}</i>
+                    </th>
                     <th></th>
                 </tr>
                 </thead>
