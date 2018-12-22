@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
 import {connect} from 'react-redux'
+import {Link} from 'react-router-dom'
 import {LoaderSpinner} from '../commons/LoaderSpinner'
 import M from 'materialize-css'
 import {reduxForm} from 'redux-form'
@@ -10,10 +11,6 @@ import {fetchCategory,addCategory,deleteCategory} from '../../actions/category'
 import {NewCategoryForm} from '../forms/newcategory/NewCategoryForm'
 import './CategoryPage.css'
 
-const buttonInLine = <span className="right">
-<button data-target="addCategory" className="waves-effect waves-light btn-small amber darken-3 modal-trigger"><i className="material-icons right">add</i>เพิ่มหมวดหมู่</button>
-</span>
-
 export class CategoryPage extends Component {
     constructor(props){
         super(props)
@@ -22,6 +19,14 @@ export class CategoryPage extends Component {
           loadingCategory: false,
           loadingStock: false
         }
+    }
+
+    renderButtonForAddCategory = () => {
+        const buttonInLine = <span className="right">
+            <Link to={{ pathname: "/categories/new", }}  className="waves-effect waves-light btn-small amber darken-3"><i className="material-icons right">add</i>เพิ่มหมวดหมู่สินค้า</Link>
+        </span>
+
+        return buttonInLine
     }
 
     renderCategories = (category) => {
@@ -126,7 +131,7 @@ export class CategoryPage extends Component {
             
             <div className="container" style={{top: "5px", position: "relative"}}>
                 <div className="row">
-                <h5 className="col s12"><i><FontAwesomeIcon icon="tags"/></i><span style={{marginLeft: "20px"}}>หมวดหมู่สินค้า</span>{buttonInLine}</h5>
+                <h5 className="col s12"><i><FontAwesomeIcon icon="tags"/></i><span style={{marginLeft: "20px"}}>หมวดหมู่สินค้า</span>{this.renderButtonForAddCategory()}</h5>
                 </div>
                 <div className="row">
                     {this.renderCategories(category)}

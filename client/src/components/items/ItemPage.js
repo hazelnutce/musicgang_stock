@@ -130,38 +130,29 @@ export class ItemPage extends Component {
         }
     }
 
-    renderItemTable = (stockId, stockName) => {
+    renderColumnHeader = () => {
+        const criteriaArray = ["itemName", "category", "cost", "revenue", "itemRemaining"]
+        const columnName = ["ชื่อสินค้า", "หมวดหมู่", "ราคาต้นทุน", "ราคาขาย", "จำนวนคงเหลือ"]
         const buttonClassName = "btn-flat waves-effect"
+
+        return _.map(criteriaArray, (criteria, index) => {
+            return (
+                <th key={criteria}>
+                    <button onClick={() => this.handleSortClick(criteria)} className={buttonClassName}>{columnName[index]}
+                    </button>
+                    <i className="material-icons">{this.state.currentSorting.sortColumn === criteria && this.state.currentSorting.sortIcon}</i>
+                </th>
+            )
+        })
+    }
+
+    renderItemTable = (stockId, stockName) => {
+        
         return (   
             <table className="highlight reponsive-table centered">
                 <thead>
                 <tr>
-                    <th>
-                        <button onClick={() => this.handleSortClick("itemName")} className={buttonClassName}>ชื่อสินค้า
-                        </button>
-                        <i className="material-icons">{this.state.currentSorting.sortColumn === "itemName" && this.state.currentSorting.sortIcon}</i>
-                    </th>
-                    <th>
-                        <button onClick={() => this.handleSortClick("category")} className={buttonClassName}>หมวดหมู่   
-                        </button>
-                        <i className="material-icons">{this.state.currentSorting.sortColumn === "category" && this.state.currentSorting.sortIcon}</i>
-                    </th>
-                    <th>
-                        <button onClick={() => this.handleSortClick("cost")} className={buttonClassName}>ราคาต้นทุน
-                        </button>
-                        <i className="material-icons">{this.state.currentSorting.sortColumn === "cost" && this.state.currentSorting.sortIcon}</i>
-                    </th>
-                    <th>
-                        <button onClick={() => this.handleSortClick("revenue")} className={buttonClassName}>ราคาขาย  
-                        </button>
-                        
-                        <i className="material-icons">{this.state.currentSorting.sortColumn === "revenue" && this.state.currentSorting.sortIcon}</i>
-                        </th>
-                    <th>
-                        <button onClick={() => this.handleSortClick("itemRemaining")} className={buttonClassName}>จำนวนคงเหลือ
-                        </button>
-                        <i className="material-icons">{this.state.currentSorting.sortColumn === "itemRemaining" && this.state.currentSorting.sortIcon}</i>
-                    </th>
+                    {this.renderColumnHeader()}
                     <th></th>
                 </tr>
                 </thead>

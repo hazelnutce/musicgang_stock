@@ -4,6 +4,7 @@ const passport = require('passport')
 const cookieSession = require('cookie-session')
 const bodyParser = require('body-parser')
 const lokijs = require('lokijs')
+var cors = require('cors')
 
 const keys = require('./config/key')
 
@@ -53,6 +54,7 @@ db.loadDatabase({}, function(err) {
 
         app.use(passport.initialize())
         app.use(passport.session())
+        app.use(cors({credentials: true, origin:'http://localhost:3000'})) // allows receiving of cookies from front-end
 
         require('./routes/testingRoute')(app)
         require('./routes/authRoute')(app)
