@@ -9,14 +9,8 @@ export const fetchCategory = () => async dispatch => {
     dispatch({type: FETCH_STOCK_IN_CATEGORY, payload: stockRes.data})
 }
 
-export const addCategory = (values) => async dispatch => {
+export const addCategory = (values, stocks) => async dispatch => {
     console.log(values)
-}
-
-export const addCategory2 = (values,categoryDetail) => async dispatch => {
-    var query = (categoryDetail.filter((item) => item.stockName === values.stockSelector))
-    const res = await app.post('/api/category/new',{...values, id : query[0]._id})
-    dispatch({type: FETCH_CATEGORY, payload: res.data})
 }
 
 export const deleteCategory = (categoryId) => async dispatch => {

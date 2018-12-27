@@ -23,14 +23,17 @@ export class NewCategoryForm extends Component {
               icon={"label"}
               keyLabel={"ชื่อภาษาอังกฤษ(EN)"}
             />
+          </div>
+          <div className="row">
             <Field
-              component={NewCategoryDropdown}
-              name="stockName"
-              type={"text"}
-              icon={"boxes"}
-              keyLabel={"ชื่อคลังสินค้า"}
-              faRequire={true}
-            />
+                component={NewCategoryDropdown}
+                name="stockName"
+                type={"text"}
+                icon={"boxes"}
+                keyLabel={"ชื่อคลังสินค้า"}
+                stockName={this.props.stockName}
+                faRequire={true}
+              />
           </div>
           <div className="row">
             <Field

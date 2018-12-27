@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import {BrowserRouter,Route} from 'react-router-dom'
+import {BrowserRouter,Route, Switch} from 'react-router-dom'
 import { fetchUser } from '../actions'
 import {connect} from 'react-redux'
 import { library } from '@fortawesome/fontawesome-svg-core'
@@ -21,6 +21,7 @@ import AddNewItemPage from './items/AddNewItemPage'
 import EditItemPage from './items/EditItemPage'
 import MainMenu from './MainMenu';
 import AddNewCategoryPage from './categories/AddNewCategoryPage'
+import ErrorNoticePage from './commons/ErrorProcessNotice'
 
 library.add([faTag, faGhost, faDollarSign, faHandHoldingUsd, faExclamation, faTags, faBoxes, faBoxes,
   faSignOutAlt])
@@ -36,14 +37,17 @@ class App extends Component {
         <BrowserRouter>
           <div>
             <MainMenu />
-            <Route exact path="/" component={Landing}></Route>
-            <Route exact path="/stocks" component={StockPage}></Route>
-            <Route path="/stocks/new" component={AddNewStockPage}></Route>
-            <Route exact path="/categories" component={CategoryPage}></Route>
-            <Route exact path="/categories/new" component={AddNewCategoryPage}></Route>
-            <Route exact path="/items/:stockId" component={ItemPage}></Route>
-            <Route path="/items/add/new/:stockId" component={AddNewItemPage}></Route>
-            <Route path="/items/edit/:itemId" component={EditItemPage}></Route>
+              <Switch>
+                <Route exact path="/" component={Landing}></Route>
+                <Route exact path="/stocks" component={StockPage}></Route>
+                <Route path="/stocks/new" component={AddNewStockPage}></Route>
+                <Route exact path="/categories" component={CategoryPage}></Route>
+                <Route exact path="/categories/new" component={AddNewCategoryPage}></Route>
+                <Route exact path="/items/:stockId" component={ItemPage}></Route>
+                <Route path="/items/add/new/:stockId" component={AddNewItemPage}></Route>
+                <Route path="/items/edit/:itemId" component={EditItemPage}></Route>
+                <Route component={ErrorNoticePage} />
+              </Switch>
             {/* <Route path="/setting" component={SettingPage}></Route> */}
           </div>
         </BrowserRouter>

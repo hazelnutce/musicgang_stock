@@ -1,12 +1,18 @@
 import React, { Component } from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-
+import _ from 'lodash'
 
 export class NewCategoryDropdown extends Component {
 
     handleStockNameChange = (e) => {
         e.preventDefault()
         return this.props.input.onChange(e.target.value)
+    }
+
+    renderOption(stocks){
+        return _.map(stocks, stock => {
+            return <option value={stock.stockName} key={stock._id}>{stock.stockName}</option>
+        })
     }
 
     render() {
@@ -16,11 +22,9 @@ export class NewCategoryDropdown extends Component {
                 <div className="input-field col s12 m6 l6 xl6">
                     <i className="material-icons prefix"><FontAwesomeIcon icon={icon}/></i>
                     <select onChange={(e) => this.handleStockNameChange(e)}>
-                        <option value="1">Option 1</option>
-                        <option value="2">Option 2</option>
-                        <option value="3">Option 3</option>
+                        {this.renderOption(this.props.stockName)}
                     </select>
-                    <label>Materialize Select</label>
+                    <label>คลังสินค้า</label>
                 </div>     
             )
         }

@@ -2,12 +2,12 @@ import React, { Component } from 'react'
 import {connect} from 'react-redux'
 import {Link} from 'react-router-dom'
 import {LoaderSpinner} from '../commons/LoaderSpinner'
-import M from 'materialize-css'
 import {reduxForm} from 'redux-form'
 import _ from 'lodash'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 
 import {fetchCategory,addCategory,deleteCategory} from '../../actions/category'
+import {fetchStock} from '../../actions/stock'
 import {NewCategoryForm} from '../forms/newcategory/NewCategoryForm'
 import './CategoryPage.css'
 
@@ -23,26 +23,16 @@ export class CategoryPage extends Component {
 
     renderButtonForAddCategory = () => {
         const buttonInLine = <span className="right">
-            <Link to={{ pathname: "/categories/new", }}  className="waves-effect waves-light btn-small amber darken-3"><i className="material-icons right">add</i>เพิ่มหมวดหมู่สินค้า</Link>
+            <Link to={{ pathname: "/categories/new", state: {stockName : this.props.stocks} }}  className="waves-effect waves-light btn-small amber darken-3"><i className="material-icons right">add</i>เพิ่มหมวดหมู่สินค้า</Link>
         </span>
 
         return buttonInLine
     }
 
-    renderCategories = (category) => {
-        if(category.categories.length === 0 && category.stockDetails.length === 0){
-            return(
-              <div className="card-panel yellow darken-1" style={{marginLeft: "10px",top:"-20px",position:"relative"}}>
-                <span className="white-text">
-                  <span><i className="material-icons" style={{marginLeft: "10px",top:"5px",position:"relative"}}>warning</i></span>
-                  <span style={{marginLeft: "10px"}}>คุณไม่ได้สร้างการจัดการหมวดหมู่ไว้ที่คลังสินค้านี้</span>
-                </span>
-              </div>
-            )
-        }
-        else if(category.stockDetails.length > 0){
-            return _.map(category.stockDetails,stock => {
-                var query = (category.categories.filter((item) => item._stock === stock._id))
+    renderCategories = (stocks, categories) => {
+        if(stocks.length > 0){
+            return _.map(stocks,stock => {
+                var query = (categories.filter((item) => item._stock === stock._id))
                 return (
                     <div key={stock._id}>
                         <div className="row">
@@ -58,7 +48,6 @@ export class CategoryPage extends Component {
     }
 
     renderCategoryPanels = (categorys) => {
-        
         if(categorys.length === 0){
             return(
                 <div className="row">
@@ -91,73 +80,77 @@ export class CategoryPage extends Component {
         
     }
 
+   
+
     componentDidMount = () => {
         this.props.fetchCategory()
-        
+        this.props.fetchStock()
     }
 
-    componentDidUpdate = (prevProps, prevState) => {
-      const {categories, stockDetails} = prevProps.category
-      if(categories !== this.props.category.categories){
-        this.setState({loadingCategory: true})
-      }
-      if(stockDetails !== this.props.category.stockDetails){
-        this.setState({loadingStock: true})
-      }
-      if(prevState !== this.state){
-        if(this.state.loadingCategory && this.state.loadingStock){
-            var elems = document.querySelectorAll('#addCategory');
-              M.Modal.init(elems, {
-                opacity: 0.6
-            });
-            var elems2 = document.querySelectorAll('.deleteCategory');
-            M.Modal.init(elems2, {
-                opacity: 0.6
+    componentDidUpdate = (prevProps) => {
+     if(prevProps.stocks !== this.props.stocks || prevProps.category.categories !== this.props.category.categories){
+        if(this.props.stocks != null && this.props.category.categories != null){
+            this.setState({
+                loadingCategory: true,
+                loadingStock: true
             })
-        }
-      }
-      
+          }
+     }
     }
     
     render() {
-        const {category} = this.props
-        const {stockDetails} = category
         if(!(this.state.loadingCategory && this.state.loadingStock)){
             return (
               <LoaderSpinner loading={this.state.loadingCategory && this.state.loadingStock} color={'#123abc'}/>
             )
           }
-        return (
-            
-            <div className="container" style={{top: "5px", position: "relative"}}>
-                <div className="row">
-                <h5 className="col s12"><i><FontAwesomeIcon icon="tags"/></i><span style={{marginLeft: "20px"}}>หมวดหมู่สินค้า</span>{this.renderButtonForAddCategory()}</h5>
-                </div>
-                <div className="row">
-                    {this.renderCategories(category)}
-                </div>
-                <div className="row">
-                    <div id="addCategory" className="modal col s6 offset-s1">
-                        <div className="modal-content">
-                            <h5>เพิ่มหมวดหมู่สินค้า</h5>
-                            <NewCategoryForm />
+        else{
+            if(this.props.stocks.length === 0){
+                return(
+                    <div className="container" style={{top: "5px", position: "relative"}}>
+                        <div className="row">
+                            <h5 className="col s12"><i><FontAwesomeIcon icon="tags"/></i><span style={{marginLeft: "20px"}}>หมวดหมู่สินค้า</span></h5>
                         </div>
-                        <div className="modal-footer">
-                            <button className="red modal-close waves-effect waves-light btn right"><i className="material-icons right">cancel</i>Cancel</button>
-                            <button onClick={this.props.handleSubmit((values) => this.props.addCategory(values,stockDetails))} className="green modal-close waves-effect waves-light btn right" style={{position: "relative", right: "20px"}}><i className="material-icons right">add_circle</i>Confirm</button> 
+                        <div className="row">
+                            <p>คุณยังไม่มีคลังสินค้าใดๆในระบบนี้ <Link to="/stocks/new">สร้างคลังสินค้าใหม่</Link></p>
                         </div>
                     </div>
-                </div>
-            </div>
-        
-        )
+                )
+                
+            }
+            else{
+                return (
+                    <div className="container" style={{top: "5px", position: "relative"}}>
+                        <div className="row">
+                        <h5 className="col s12"><i><FontAwesomeIcon icon="tags"/></i><span style={{marginLeft: "20px"}}>หมวดหมู่สินค้า</span>{this.renderButtonForAddCategory()}</h5>
+                        </div>
+                        <div className="row">
+                            {this.renderCategories(this.props.stocks, this.props.category.categories)}
+                        </div>
+                        <div className="row">
+                            <div id="addCategory" className="modal col s6 offset-s1">
+                                <div className="modal-content">
+                                    <h5>เพิ่มหมวดหมู่สินค้า</h5>
+                                    <NewCategoryForm />
+                                </div>
+                                <div className="modal-footer">
+                                    <button className="red modal-close waves-effect waves-light btn right"><i className="material-icons right">cancel</i>Cancel</button>
+                                    <button onClick={this.props.handleSubmit((values) => this.props.addCategory(values,this.props.stocks))} className="green modal-close waves-effect waves-light btn right" style={{position: "relative", right: "20px"}}><i className="material-icons right">add_circle</i>Confirm</button> 
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                )
+            }
+        }
+
     }
 }
 
 function mapStateToProps(state) {
-    return { category: state.category}
+    return { category: state.category, stocks: state.stocks.stockList}
 }
 
 export default reduxForm({
     form: 'newCategoryForm'
-})(connect(mapStateToProps,{fetchCategory,addCategory,deleteCategory})(CategoryPage))
+})(connect(mapStateToProps,{fetchCategory,addCategory,deleteCategory,fetchStock})(CategoryPage))
