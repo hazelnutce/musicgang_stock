@@ -72,7 +72,6 @@ module.exports = (app, Db, Item, Category) => {
         var result = Item.findOne({_id: itemId.toString()})
         if(result){
             try{
-                console.log(itemName,itemWarning,cost,income,category)
                 result.itemName = itemName
                 result.itemWarning = parseInt(itemWarning)
                 result.cost = parseFloat(parseFloat(cost).toFixed(2))

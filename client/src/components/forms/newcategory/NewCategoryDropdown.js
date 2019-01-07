@@ -9,13 +9,16 @@ export class NewCategoryDropdown extends Component {
         return this.props.input.onChange(e.target.value)
     }
 
-    renderOption(stocks){
+    renderOption(stocks){   
         return _.map(stocks, stock => {
-            return <option value={stock.stockName} key={stock._id}>{stock.stockName}</option>
+            if(stock != null){
+                return <option value={stock.stockName} key={stock._id}>{stock.stockName}</option>
+            }
         })
     }
 
     render() {
+        
         const {faRequire,icon} = this.props
         if(faRequire){
             return(
