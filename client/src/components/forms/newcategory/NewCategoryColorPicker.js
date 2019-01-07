@@ -23,7 +23,7 @@ export class NewCategoryColorPicker extends Component {
       <div className="input-field col s12 m12 l6 xl6">
         <label style={{bottom: "20px", position: "relative"}}>{this.props.label}</label>
         <div style={{top: "10px", position: "relative"}}>
-          <CirclePicker color={this.props.input.value} onChangeComplete={ this.handleChangeComplete } colors={allColor} width="345"/>
+          <CirclePicker color={this.props.input.value} onChangeComplete={ this.handleChangeComplete } width="300" colors={allColor} circleSpacing={16} circleSize={35}/>
         </div>
       </div>
     )

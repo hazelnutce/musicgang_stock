@@ -10,6 +10,11 @@ import M from 'materialize-css'
 import {fetchCategory,addCategory,deleteCategory} from '../../actions/category'
 import {fetchStock} from '../../actions/stock'
 import './CategoryPage.css'
+import {sortCategoryNameThASC,
+        sortCategoryNameEnASC,
+        sortCategoryNameThDESC,
+        sortCategoryNameEnDESC
+} from './sortCategoryFunction'
 
 export class CategoryPage extends Component {
     constructor(props){
@@ -18,7 +23,27 @@ export class CategoryPage extends Component {
         this.state = {
           loadingCategory: false,
           loadingStock: false,
-          currentStock: ""
+          currentStock: "",
+          currentSorting: {
+            direction: "ASC",
+            sortColumn: "categoryNameTh",
+            sortIcon: "arrow_drop_up"
+          }
+        }
+    }
+
+    handleSorting(allItems, sortingColumn, direction){
+        if(direction === "ASC"){
+            if(sortingColumn === "categoryNameTh")
+                allItems.sort(sortCategoryNameThASC)
+            else if(sortingColumn === "categoryNameEn")
+                allItems.sort(sortCategoryNameEnASC)
+        }
+        else if(direction === "DESC"){
+            if(sortingColumn === "categoryNameTh")
+                allItems.sort(sortCategoryNameThDESC)
+            else if(sortingColumn === "categoryNameEn")
+                allItems.sort(sortCategoryNameEnDESC)
         }
     }
 
@@ -39,24 +64,42 @@ export class CategoryPage extends Component {
     }
 
     renderColumnHeader = () => {
-        const criteriaArray = ["categoryNameTh", "categoryEn", "ExampleTag"]
+        const criteriaArray = ["categoryNameTh", "categoryNameEn", "ExampleTag"]
         const columnName = ["หมวดหมู่สินค้า (Thai)", "หมวดหมู่สินค้า (Eng)", "แท็กตัวอย่าง"]
         const buttonClassName = "btn-flat waves-effect"
 
         return _.map(criteriaArray, (criteria, index) => {
+            if(index == 2){
+                return (
+                    <th key={criteria}>
+                        <button className={buttonClassName}>{columnName[index]}
+                        </button>
+                    </th>
+                )
+            }
             return (
                 <th key={criteria}>
-                    <button className={buttonClassName}>{columnName[index]}
+                    <button onClick={() => this.handleSortClick(criteria)} className={buttonClassName}>{columnName[index]}
                     </button>
+                    <i className="material-icons">{this.state.currentSorting.sortColumn === criteria && this.state.currentSorting.sortIcon}</i>
                 </th>
             )
         })
     }
 
     renderItem(categorys){
+        //filter by current stock
         const filteredCategory = categorys.filter(x => {
             return x.stockName === this.state.currentStock
         })
+
+        //filter by current sorting
+        if(filteredCategory != null){
+            var sortingColumn = this.state.currentSorting.sortColumn
+            var direction = this.state.currentSorting.direction
+            this.handleSorting(filteredCategory, sortingColumn, direction)
+        }
+
         return _.map(filteredCategory, (item) => {
             const {categoryNameTh, categoryNameEn, labelColor, textColor, _id, stockName} = item
             return(
@@ -125,6 +168,21 @@ export class CategoryPage extends Component {
         
             ) 
         }  
+    }
+
+    handleSortClick(sortColumn){
+        if(sortColumn === this.state.currentSorting.sortColumn){
+            if(this.state.currentSorting.direction === "ASC"){
+                this.setState({currentSorting: {direction: "DESC", sortColumn: sortColumn, sortIcon: "arrow_drop_down"}})
+            }
+            else{
+                this.setState({currentSorting: {direction: "ASC", sortColumn: sortColumn, sortIcon: "arrow_drop_up"}})
+            }
+
+        }
+        else{
+            this.setState({currentSorting: {direction: "ASC", sortColumn: sortColumn, sortIcon: "arrow_drop_up"}})
+        }
     }
 
     handleStockNameChange(e){
