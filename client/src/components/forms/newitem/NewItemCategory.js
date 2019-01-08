@@ -15,7 +15,7 @@ export class NewItemCategory extends Component {
         const {options} = this.props
         if(options != null){
             var autocompleteData = {}
-            options.map(x => autocompleteData[x.categoryName] = null)
+            options.map(x => autocompleteData[`${x.categoryNameTh}(${x.categoryNameEn})`] = null)
             var elem = document.querySelector(".autocomplete");
             var autocompleteOption = {
                 data : autocompleteData,

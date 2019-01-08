@@ -78,21 +78,23 @@ export class ItemPage extends Component {
             this.handleSorting(allItems, sortingColumn, direction)
         }
         return _.map(allItems, (item, itemIndex, items) => {
-            const {itemName, category, cost, revenue, itemWarning, itemRemaining} = item
+            const {itemName, _category : {categoryNameTh, categoryNameEn, labelColor, textColor}, cost, revenue, itemWarning, itemRemaining} = item
             return(
                     <tr key={item._id}>
                         <td>{itemName}</td>
-                        <td>{category}</td>
+                        <td>
+                            <span style={{backgroundColor : labelColor, color: textColor, fontWeight: "bold"}} className="new badge " data-badge-caption={categoryNameTh}></span>
+                        </td>
                         <td>{cost}</td>
                         <td>{revenue}</td>
                         <td>{itemRemaining}</td>
                         <td>
                             <Link to={{ pathname: `/items/edit/${item._id}`, 
-                                state: { stockId, stockName, itemName, category, cost, revenue, itemWarning} }} 
+                                state: { stockId, stockName, itemName, category: `${categoryNameTh}(${categoryNameEn})`, cost, revenue, itemWarning} }} 
                                 className="material-icons black-text">edit
                             </Link>
                             <Link to={{ pathname: `/items/add/new/${stockId}`, 
-                                state: { stockId, stockName, itemName, category, cost, revenue, itemWarning, itemRemaining, itemIndex, items} }} 
+                                state: { stockId, stockName, itemName, category: `${categoryNameTh}(${categoryNameEn})`, cost, revenue, itemWarning, itemRemaining, itemIndex, items} }} 
                                 className="material-icons black-text">content_copy
                             </Link>
                             <a className="modal-trigger" href={"#"+item._id}><i className="material-icons black-text">delete</i></a>

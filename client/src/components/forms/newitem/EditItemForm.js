@@ -20,8 +20,8 @@ export class EditItemForm extends Component {
     }
 
     flattenObject(categorys){
-        var query = (categorys.filter((item) => item._stock === this.props.stockId))
-        var allCategoryName =  query.map(x => (({ categoryName}) => ({categoryName}))(x))
+        var query = (categorys.filter((item) => item.stockName === this.props.stockName))
+        var allCategoryName =  query.map(x => (({ categoryNameTh, categoryNameEn }) => ({categoryNameTh, categoryNameEn}))(x))
         return allCategoryName
       }
 

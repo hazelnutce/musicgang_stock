@@ -23,7 +23,8 @@ module.exports = (app, Db, Item, Category) => {
             res.status(500).send("สินค้าชื่อนี้มีอยู่ในระบบแล้ว กรุณาลองใหม่อีกครั้ง")
             return 
         }
-        const existCategory = await Category.findOne({categoryName: category})
+        var arr = category.split("(");
+        const existCategory = await Category.findOne({categoryNameTh: arr[0]})
         if(!existCategory){
             res.status(500).send("หมวดหมู่สินค้าไม่ถูกต้อง กรุณาลองใหม่อีกครั้ง")
             return
@@ -35,7 +36,7 @@ module.exports = (app, Db, Item, Category) => {
             cost: parseFloat(parseFloat(cost).toFixed(2)),
             revenue: parseFloat(parseFloat(income).toFixed(2)),
             category: category,
-            _category: existCategory._id,
+            _category: existCategory,
             _stock: stockId,
             _id: guid()
         }
@@ -59,7 +60,8 @@ module.exports = (app, Db, Item, Category) => {
         console.log("edit route")
         const {itemName, itemWarning, cost, income, category} = req.body
         const itemId = req.params.itemId
-        const existCategory = await Category.findOne({categoryName: category})
+        var arr = category.split("(");
+        const existCategory = await Category.findOne({categoryNameTh: arr[0]})
         if(!existCategory){
             res.status(500).send("หมวดหมู่สินค้าไม่ถูกต้อง กรุณาลองใหม่อีกครั้ง")
             return
@@ -77,6 +79,7 @@ module.exports = (app, Db, Item, Category) => {
                 result.cost = parseFloat(parseFloat(cost).toFixed(2))
                 result.revenue = parseFloat(parseFloat(income).toFixed(2))
                 result.category = category
+                result._category = existCategory
                 Item.update(result)
             }
             catch(e){

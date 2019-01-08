@@ -16,17 +16,17 @@ export const sortItemNameDESC = (a,b) => {
 }
 
 export const sortCategoryASC = (a,b) => {
-    if(a.category < b.category)
+    if(a._category.categoryNameTh < b._category.categoryNameTh)
         return -1
-    if(a.category > b.category)
+    if(a._category.categoryNameTh > b._category.categoryNameTh)
         return 1
     return 0
 }
 
 export const sortCategoryDESC = (a,b) => {
-    if(a.category < b.category)
+    if(a._category.categoryNameTh < b._category.categoryNameTh)
         return 1
-    if(a.category > b.category)
+    if(a._category.categoryNameTh > b._category.categoryNameTh)
         return -1
     return 0
 }

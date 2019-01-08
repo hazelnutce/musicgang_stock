@@ -55,7 +55,7 @@ export class CategoryPage extends Component {
         return buttonInLine
     }
 
-    renderCategories = (stocks, categories) => {
+    renderCategories = (categories) => {
         return(
             <div>
                 {this.renderCategoryPanels(categories)}
@@ -69,7 +69,7 @@ export class CategoryPage extends Component {
         const buttonClassName = "btn-flat waves-effect"
 
         return _.map(criteriaArray, (criteria, index) => {
-            if(index == 2){
+            if(index === 2){
                 return (
                     <th key={criteria}>
                         <button className={buttonClassName}>{columnName[index]}
@@ -270,7 +270,7 @@ export class CategoryPage extends Component {
                             </div>
                         </div>
                         <div className="row" style={{top: "-30px", position: "relative"}}>
-                            {this.renderCategories(this.props.stocks, this.props.category.categories)}
+                            {this.renderCategories(this.props.category.categories)}
                         </div>
                     </div>
                 )
