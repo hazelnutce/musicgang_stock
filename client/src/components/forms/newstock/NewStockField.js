@@ -11,7 +11,7 @@ export default ({input,keyLabel,type,icon, meta: {error,touched}}) => {
         className="input-field col s5 black-text"
         style={marginForInput}>
             <i className="material-icons prefix">{icon}</i>
-            <input {...input} id={keyLabel} type={type} className="validate black-text"/>
+            <input {...input} id={keyLabel} type={type} autoComplete="off" className="validate black-text"/>
             <label htmlFor={keyLabel} className="black-text">{keyLabel}</label>
             {
                 touched && error && 

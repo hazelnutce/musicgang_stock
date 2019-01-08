@@ -33,7 +33,7 @@ export class NewItemCategory extends Component {
         return(
                 <div className="input-field col s12 m6 l6 xl6">
                     <i className="prefix"><FontAwesomeIcon icon={icon}/></i>
-                    <input {...input} id="autocomplete-input" type={type} className="autocomplete validate"/>
+                    <input {...input} id="autocomplete-input" autoComplete="off" type={type} className="autocomplete validate"/>
                     <label className="active" htmlFor="autocomplete-input">{keyLabel}</label>
                     {
                     touched && error && 
