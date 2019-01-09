@@ -9,7 +9,7 @@ export class SidebarMenuContent extends Component {
             <ul style={{top: "30px",position:"relative"}}>
                 <li><Link to="/stocks" className="sidenav-close"><i className="material-icons">storage</i>คลังสินค้า</Link></li>
                 <li><Link to="/categories" className="sidenav-close"><i><FontAwesomeIcon className="fas fa-lg" icon="tags"/></i>จัดการหมวดหมู่สินค้า</Link></li>
-                <li><a href="/api/logout"><i><FontAwesomeIcon className="fas fa-lg" icon="sign-out-alt"/></i>ออกจากระบบ</a></li>
+                <li><Link to={{ pathname: "/", state: {signal: "logout"} }} className="sidenav-close"><i><FontAwesomeIcon className="fas fa-lg" icon="sign-out-alt"/></i>ออกจากระบบ</Link></li>
             </ul>  
         </ul>
     )

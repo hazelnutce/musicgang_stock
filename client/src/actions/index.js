@@ -7,10 +7,20 @@ export const fetchUser = () => async dispatch => {
     dispatch({ type: FETCH_USER , payload: res});
 }
 
+export const loggedOutUser = () => async dispatch => {
+    app.get("/api/logout").then(async res => {
+        const userRes = await app.get('/api/currentuser')
+        dispatch({ type: FETCH_USER , payload: userRes});
+    })
+}
+
 export const loggedInUser = (values,history) => dispatch => {
     app.post('/api/login',values).then(async res => {
         const userRes = await app.get('/api/currentuser')
-        history.push('/')
+        history.push({
+            pathname: "/",
+            state: { signal: "login" }
+        })
         dispatch({ type: FETCH_USER , payload: userRes});
     }).catch(error => {
         if (error.response) {
