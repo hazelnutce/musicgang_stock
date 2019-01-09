@@ -6,7 +6,7 @@ import M from 'materialize-css'
 import _ from 'lodash'
 
 import {LoaderSpinner} from '../commons/LoaderSpinner'
-import {fetchItems ,deleteItem} from '../../actions/item'
+import {fetchItems ,deleteItem, fetchCategory} from '../../actions/item'
 import '../commons/linkButton.css'
 import {sortItemNameASC,
     sortCategoryASC,
@@ -77,16 +77,21 @@ export class ItemPage extends Component {
             var direction = this.state.currentSorting.direction
             this.handleSorting(allItems, sortingColumn, direction)
         }
+        
         return _.map(allItems, (item, itemIndex, items) => {
-            const {itemName, _category : {categoryNameTh, categoryNameEn, labelColor, textColor}, cost, revenue, itemWarning, itemRemaining} = item
+            console.log(this.props.allCategory)
+            if(this.props.allCategory.categories != null){
+                item._category = this.props.allCategory.categories.filter(x => (x._id === item._category._id))[0]
+            }
+            const {itemName, _category : {categoryNameTh, categoryNameEn, labelColor, textColor}, cost, revenue, formatCost, formatRevenue, itemWarning, itemRemaining} = item
             return(
                     <tr key={item._id}>
                         <td>{itemName}</td>
                         <td>
                             <span style={{backgroundColor : labelColor, color: textColor, fontWeight: "bold"}} className="new badge " data-badge-caption={categoryNameTh}></span>
                         </td>
-                        <td>{cost}</td>
-                        <td>{revenue}</td>
+                        <td>{formatCost}</td>
+                        <td>{formatRevenue}</td>
                         <td>{itemRemaining}</td>
                         <td>
                             <Link to={{ pathname: `/items/edit/${item._id}`, 
@@ -171,6 +176,7 @@ export class ItemPage extends Component {
         var currentLocation = this.props.location.pathname.toString()
         var stockId = currentLocation.replace("/items/", "")
         this.props.fetchItems(stockId)
+        this.props.fetchCategory()
         this.setState({loadingItem: true})
     }
 
@@ -191,7 +197,6 @@ export class ItemPage extends Component {
         var currentLocation = this.props.location.pathname.toString()
         var stockId = currentLocation.replace("/items/", "")
         const {stockName} = this.props.location.state
-
         if(!this.state.loadingItem){
             return (
               <LoaderSpinner loading={this.state.loadingCategory} color={'#123abc'}/>
@@ -211,7 +216,7 @@ export class ItemPage extends Component {
 }
 
 function mapStateToProps(state){
-    return { item: state.item}
+    return { item: state.item, allCategory: state.category}
 }
 
-export default connect(mapStateToProps, {fetchItems, deleteItem})(ItemPage)
+export default connect(mapStateToProps, {fetchItems, deleteItem, fetchCategory})(ItemPage)

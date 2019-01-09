@@ -50,7 +50,6 @@ module.exports = (app, Db, Category) => {
     })
 
     app.post('/api/category/edit', requireLogin, async (req,res) => {
-        console.log(req.body)
         const {categoryNameTh, categoryNameEn, labelColor, textColor, _id, stockName} = req.body
 
         const category = await Category.find({
@@ -63,13 +62,6 @@ module.exports = (app, Db, Category) => {
             stockName : {'$eq' : stockName.toString()}
         });
 
-        // category = await category.find({
-        //     '$or' : [{
-        //         categoryNameTh : categoryNameTh,
-        //         categoryNameEn : categoryNameEn
-        //     }]
-        // });
-        console.log(category)
         if(category != null && category.length !== 0){
             res.status(500).send("หมวดหมู่สินค้าชื่อนี้มีอยู่ในระบบแล้ว กรุณาลองใหม่อีกครั้ง")
             return 
