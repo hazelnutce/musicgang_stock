@@ -39,7 +39,13 @@ export const resetCreateError = () => async dispatch => {
 } 
 
 export const deleteCategory = (categoryId) => async dispatch => {
-    const res = await app.delete(`/api/category/delete/${categoryId}`);
-    dispatch({type: FETCH_CATEGORY, payload: res.data})
+    await app.delete(`/api/category/delete/${categoryId}`).then(async res => {
+        dispatch({type: FETCH_CATEGORY, payload: res.data})
+    }).catch(error => {
+        if (error.response) {
+            dispatch({type: ERROR_CREATE_CATEGORY, payload: error.response.data})
+        }
+    });
+    
 }
 

@@ -6,8 +6,9 @@ import {reduxForm} from 'redux-form'
 import _ from 'lodash'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import M from 'materialize-css'
+import ReactNotification from "react-notifications-component";
 
-import {fetchCategory,addCategory,deleteCategory} from '../../actions/category'
+import {fetchCategory,addCategory,deleteCategory, resetCreateError} from '../../actions/category'
 import {fetchStock} from '../../actions/stock'
 import './CategoryPage.css'
 import {sortCategoryNameThASC,
@@ -28,9 +29,25 @@ export class CategoryPage extends Component {
             direction: "ASC",
             sortColumn: "categoryNameTh",
             sortIcon: "arrow_drop_up"
-          }
+          },
         }
+
+        this.notificationDOMRef = React.createRef();
     }
+
+    addNotification = (message) => {
+        this.notificationDOMRef.current.addNotification({
+          title: "ข้อผิดพลาด",
+          message: message,
+          type: "danger",
+          insert: "buttom",
+          container: "top-right",
+          animationIn: ["animated", "fadeIn"],
+          animationOut: ["animated", "fadeOut"],
+          dismiss: { duration: 3000 },
+          dismissable: { click: true }
+        });
+      }
 
     handleSorting(allItems, sortingColumn, direction){
         if(direction === "ASC"){
@@ -99,6 +116,8 @@ export class CategoryPage extends Component {
             var direction = this.state.currentSorting.direction
             this.handleSorting(filteredCategory, sortingColumn, direction)
         }
+
+        window.addEventListener('load', this.initModal());
 
         return _.map(filteredCategory, (item) => {
             const {categoryNameTh, categoryNameEn, labelColor, textColor, _id, stockName} = item
@@ -216,24 +235,35 @@ export class CategoryPage extends Component {
         this.props.fetchStock() 
     }
 
-    componentDidUpdate = (prevProps) => {
-     if(prevProps.stocks !== this.props.stocks || prevProps.category.categories !== this.props.category.categories){
-        if(this.props.stocks != null && this.props.category.categories != null){
-            this.setState({
-                loadingCategory: true,
-                loadingStock: true
-            }, () => {
-                this.setState({currentStock: this.props.stocks[0].stockName})
-                var elems = document.querySelectorAll('.modal');
-                M.Modal.init(elems, {
-                    opacity: 0.6
-                });
-                elems = document.querySelectorAll('.stockselector');
-                M.FormSelect.init(elems, {});
-            })
-          }
-     }
+    initModal = () => {
+        var elems = document.querySelectorAll('.modal');
+            M.Modal.init(elems, {
+                opacity: 0.6
+        });
     }
+
+    componentDidUpdate = (prevProps) => {
+        if(prevProps.stocks !== this.props.stocks || prevProps.category.categories !== this.props.category.categories){
+            if(this.props.stocks != null && this.props.category.categories != null){
+                this.setState({
+                    loadingCategory: true,
+                    loadingStock: true
+                }, () => {
+                    this.setState({currentStock: this.props.stocks[0].stockName})
+                    var elems = document.querySelectorAll('.modal');
+                    M.Modal.init(elems, {
+                        opacity: 0.6
+                    });
+                    elems = document.querySelectorAll('.stockselector');
+                    M.FormSelect.init(elems, {});
+                })
+            }
+        }
+        if(this.props.editError != null){
+            this.addNotification(this.props.editError)
+        }
+        
+    }   
     
     render() {
         if(!(this.state.loadingCategory && this.state.loadingStock)){
@@ -272,6 +302,7 @@ export class CategoryPage extends Component {
                         <div className="row" style={{top: "-30px", position: "relative"}}>
                             {this.renderCategories(this.props.category.categories)}
                         </div>
+                        <ReactNotification ref={this.notificationDOMRef} />
                     </div>
                 )
             }
@@ -281,9 +312,9 @@ export class CategoryPage extends Component {
 }
 
 function mapStateToProps(state) {
-    return { category: state.category, stocks: state.stocks.stockList}
+    return { category: state.category, stocks: state.stocks.stockList, editError: state.category.errorMessage}
 }
 
 export default reduxForm({
     form: 'newCategoryForm'
-})(connect(mapStateToProps,{fetchCategory,addCategory,deleteCategory,fetchStock})(CategoryPage))
+})(connect(mapStateToProps,{fetchCategory,addCategory,deleteCategory,fetchStock, resetCreateError})(CategoryPage))

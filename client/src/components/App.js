@@ -41,8 +41,8 @@ class App extends Component {
                 <Route exact path="/" component={Landing}></Route>
                 <Route exact path="/stocks" component={StockPage}></Route>
                 <Route path="/stocks/new" component={AddNewStockPage}></Route>
-                <Route exact path="/categories" component={CategoryPage}></Route>
                 <Route exact path="/categories/new" component={AddNewCategoryPage}></Route>
+                <Route exact path="/categories" component={CategoryPage}></Route>
                 <Route exact path="/items/:stockId" component={ItemPage}></Route>
                 <Route path="/items/add/new/:stockId" component={AddNewItemPage}></Route>
                 <Route path="/items/edit/:itemId" component={EditItemPage}></Route>

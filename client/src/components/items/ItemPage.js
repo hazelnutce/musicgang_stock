@@ -70,6 +70,13 @@ export class ItemPage extends Component {
         }
     }
 
+    initModal = () => {
+        var elems = document.querySelectorAll('.modal');
+              M.Modal.init(elems, {
+             opacity: 0.6
+        });
+    }
+
     renderItem = (stockId, stockName) => {
         var allItems = this.props.item.items
         if(allItems != null){
@@ -79,10 +86,12 @@ export class ItemPage extends Component {
         }
         
         return _.map(allItems, (item, itemIndex, items) => {
-            console.log(this.props.allCategory)
             if(this.props.allCategory.categories != null){
                 item._category = this.props.allCategory.categories.filter(x => (x._id === item._category._id))[0]
             }
+
+            window.addEventListener('load', this.initModal());
+
             const {itemName, _category : {categoryNameTh, categoryNameEn, labelColor, textColor}, cost, revenue, formatCost, formatRevenue, itemWarning, itemRemaining} = item
             return(
                     <tr key={item._id}>
@@ -183,12 +192,7 @@ export class ItemPage extends Component {
     componentDidUpdate = (prevProps) => {
         if (prevProps.item.items !== this.props.item.items) {
           if(this.props.item !== "" || this.props.item !== null){
-            this.setState({loadingItem: true},() => {
-              var elems = document.querySelectorAll('.modal');
-              M.Modal.init(elems, {
-                opacity: 0.6
-              });
-            }) 
+            this.setState({loadingItem: true}) 
           }
         }
     }

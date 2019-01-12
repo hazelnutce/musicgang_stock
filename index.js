@@ -59,7 +59,7 @@ db.loadDatabase({}, function(err) {
         require('./routes/testingRoute')(app)
         require('./routes/authRoute')(app)
         require('./routes/stockRoute')(app, db, Stock, Item)
-        require('./routes/categoryRoute')(app, db, Category)
+        require('./routes/categoryRoute')(app, db, Category, Item)
         require('./routes/itemRoute')(app, db, Item, Category)
 
         if(!(process.env.NODE_ENV && process.env.NODE_ENV.trim() === 'development')){

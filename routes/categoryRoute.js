@@ -2,7 +2,7 @@ const requireLogin = require('../middleware/requireLogin')
 const guid = require('../services/guid')
 //const Category = mongoose.model('categories')
 
-module.exports = (app, Db, Category) => {
+module.exports = (app, Db, Category, Item) => {
     app.get('/api/category',requireLogin,(req,res) => {
         var result = Category.find({_user: req.user.id.toString()})
         res.send(result)
@@ -94,7 +94,17 @@ module.exports = (app, Db, Category) => {
 
     app.delete('/api/category/delete/:categoryId',requireLogin, async (req,res) => {
         const categoryId = req.params.categoryId
-        console.log(categoryId)
+
+        const item = Item.where((obj) => {
+            return obj._category._id === categoryId.toString()
+        })
+
+        console.log(item)
+        if(item != null && item.length !== 0){
+            res.status(500).send("ไม่สามารถลบหมวดหมู่นี้ได้ กรุณาลบสินค้าทั้งหมดที่เกี่ยวข้องกับหมวดหมู่นี้")
+            return 
+        }
+
         try{
             await Category.removeWhere({_id: categoryId.toString()})
         }
