@@ -1,8 +1,9 @@
-import {FETCH_CATEGORY,FETCH_STOCK_IN_CATEGORY} from '../actions/types'
+import {FETCH_CATEGORY,FETCH_STOCK_IN_CATEGORY,ERROR_CREATE_CATEGORY} from '../actions/types'
 
 const initState = {
     categories: null,
-    stockDetails: null
+    stockDetails: null,
+    errorMessage: null
 }
 
 export default function(state = initState,action){
@@ -11,6 +12,8 @@ export default function(state = initState,action){
             return {...state, categories: action.payload}
         case FETCH_STOCK_IN_CATEGORY:
             return {...state, stockDetails: action.payload}
+        case ERROR_CREATE_CATEGORY:
+            return {...state, errorMessage: action.payload}
         default:
             return state
     }

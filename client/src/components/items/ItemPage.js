@@ -6,14 +6,30 @@ import M from 'materialize-css'
 import _ from 'lodash'
 
 import {LoaderSpinner} from '../commons/LoaderSpinner'
-import {fetchItems ,deleteItem} from '../../actions/item'
+import {fetchItems ,deleteItem, fetchCategory} from '../../actions/item'
+import '../commons/linkButton.css'
+import {sortItemNameASC,
+    sortCategoryASC,
+    sortCostASC,
+    sortRevenueASC,
+    sortItemRemainingASC, 
+    sortItemNameDESC, 
+    sortCategoryDESC, 
+    sortCostDESC, 
+    sortRevenueDESC, 
+    sortItemRemainingDESC} from './sortItemFunctions'
 
 export class ItemPage extends Component {
     constructor(props){
         super(props)
     
         this.state = {
-          loadingItem: false
+          loadingItem: false,
+          currentSorting: {
+              direction: "ASC",
+              sortColumn: "itemName",
+              sortIcon: "arrow_drop_up"
+          }
         }
     }
 
@@ -27,20 +43,73 @@ export class ItemPage extends Component {
         return buttonInLine
     }
 
+    handleSorting(allItems, sortingColumn, direction){
+        if(direction === "ASC"){
+            if(sortingColumn === "itemName")
+                allItems.sort(sortItemNameASC)
+            else if(sortingColumn === "category")
+                allItems.sort(sortCategoryASC)
+            else if(sortingColumn === "cost")
+                allItems.sort(sortCostASC)
+            else if(sortingColumn === "revenue")
+                allItems.sort(sortRevenueASC)
+            else if(sortingColumn === "itemRemaining")
+                allItems.sort(sortItemRemainingASC)
+        }
+        else if(direction === "DESC"){
+            if(sortingColumn === "itemName")
+                allItems.sort(sortItemNameDESC)
+            else if(sortingColumn === "category")
+                allItems.sort(sortCategoryDESC)
+            else if(sortingColumn === "cost")
+                allItems.sort(sortCostDESC)
+            else if(sortingColumn === "revenue")
+                allItems.sort(sortRevenueDESC)
+            else if(sortingColumn === "itemRemaining")
+                allItems.sort(sortItemRemainingDESC)
+        }
+    }
+
+    initModal = () => {
+        var elems = document.querySelectorAll('.modal');
+              M.Modal.init(elems, {
+             opacity: 0.6
+        });
+    }
+
     renderItem = (stockId, stockName) => {
-        return _.map(this.props.item.items, item => {
-            const {itemName, category, cost, revenue, itemWarning} = item
+        var allItems = this.props.item.items
+        if(allItems != null){
+            var sortingColumn = this.state.currentSorting.sortColumn
+            var direction = this.state.currentSorting.direction
+            this.handleSorting(allItems, sortingColumn, direction)
+        }
+        
+        return _.map(allItems, (item, itemIndex, items) => {
+            if(this.props.allCategory.categories != null){
+                item._category = this.props.allCategory.categories.filter(x => (x._id === item._category._id))[0]
+            }
+
+            window.addEventListener('load', this.initModal());
+
+            const {itemName, _category : {categoryNameTh, categoryNameEn, labelColor, textColor}, cost, revenue, formatCost, formatRevenue, itemWarning, itemRemaining} = item
             return(
                     <tr key={item._id}>
-                        <td>{item.itemName}</td>
-                        <td>{item.category}</td>
-                        <td>{item.cost}</td>
-                        <td>{item.revenue}</td>
-                        <td>{item.itemRemaining}</td>
+                        <td>{itemName}</td>
+                        <td>
+                            <span style={{backgroundColor : labelColor, color: textColor, fontWeight: "bold"}} className="new badge " data-badge-caption={categoryNameTh}></span>
+                        </td>
+                        <td>{formatCost}</td>
+                        <td>{formatRevenue}</td>
+                        <td>{itemRemaining}</td>
                         <td>
                             <Link to={{ pathname: `/items/edit/${item._id}`, 
-                                state: { stockId, stockName, itemName, category, cost, revenue, itemWarning} }} 
+                                state: { stockId, stockName, itemName, category: `${categoryNameTh}(${categoryNameEn})`, cost, revenue, itemWarning} }} 
                                 className="material-icons black-text">edit
+                            </Link>
+                            <Link to={{ pathname: `/items/add/new/${stockId}`, 
+                                state: { stockId, stockName, itemName, category: `${categoryNameTh}(${categoryNameEn})`, cost, revenue, itemWarning, itemRemaining, itemIndex, items} }} 
+                                className="material-icons black-text">content_copy
                             </Link>
                             <a className="modal-trigger" href={"#"+item._id}><i className="material-icons black-text">delete</i></a>
                         </td>
@@ -62,16 +131,44 @@ export class ItemPage extends Component {
         })
     }
 
+    handleSortClick(sortColumn){
+        if(sortColumn === this.state.currentSorting.sortColumn){
+            if(this.state.currentSorting.direction === "ASC"){
+                this.setState({currentSorting: {direction: "DESC", sortColumn: sortColumn, sortIcon: "arrow_drop_down"}})
+            }
+            else{
+                this.setState({currentSorting: {direction: "ASC", sortColumn: sortColumn, sortIcon: "arrow_drop_up"}})
+            }
+
+        }
+        else{
+            this.setState({currentSorting: {direction: "ASC", sortColumn: sortColumn, sortIcon: "arrow_drop_up"}})
+        }
+    }
+
+    renderColumnHeader = () => {
+        const criteriaArray = ["itemName", "category", "cost", "revenue", "itemRemaining"]
+        const columnName = ["ชื่อสินค้า", "หมวดหมู่", "ราคาต้นทุน", "ราคาขาย", "จำนวนคงเหลือ"]
+        const buttonClassName = "btn-flat waves-effect"
+
+        return _.map(criteriaArray, (criteria, index) => {
+            return (
+                <th key={criteria}>
+                    <button onClick={() => this.handleSortClick(criteria)} className={buttonClassName}>{columnName[index]}
+                    </button>
+                    <i className="material-icons">{this.state.currentSorting.sortColumn === criteria && this.state.currentSorting.sortIcon}</i>
+                </th>
+            )
+        })
+    }
+
     renderItemTable = (stockId, stockName) => {
+        
         return (   
-            <table className="highlight reponsive-table">
+            <table className="highlight reponsive-table centered">
                 <thead>
                 <tr>
-                    <th>ชื่อสินค้า</th>
-                    <th>หมวดหมู่</th>
-                    <th>ราคาต้นทุน</th>
-                    <th>ราคาขาย</th>
-                    <th>จำนวนคงเหลือ</th>
+                    {this.renderColumnHeader()}
                     <th></th>
                 </tr>
                 </thead>
@@ -88,18 +185,14 @@ export class ItemPage extends Component {
         var currentLocation = this.props.location.pathname.toString()
         var stockId = currentLocation.replace("/items/", "")
         this.props.fetchItems(stockId)
+        this.props.fetchCategory()
         this.setState({loadingItem: true})
     }
 
     componentDidUpdate = (prevProps) => {
         if (prevProps.item.items !== this.props.item.items) {
           if(this.props.item !== "" || this.props.item !== null){
-            this.setState({loadingItem: true},() => {
-              var elems = document.querySelectorAll('.modal');
-              M.Modal.init(elems, {
-                opacity: 0.6
-              });
-            }) 
+            this.setState({loadingItem: true}) 
           }
         }
     }
@@ -108,7 +201,6 @@ export class ItemPage extends Component {
         var currentLocation = this.props.location.pathname.toString()
         var stockId = currentLocation.replace("/items/", "")
         const {stockName} = this.props.location.state
-
         if(!this.state.loadingItem){
             return (
               <LoaderSpinner loading={this.state.loadingCategory} color={'#123abc'}/>
@@ -128,7 +220,7 @@ export class ItemPage extends Component {
 }
 
 function mapStateToProps(state){
-    return { item: state.item}
+    return { item: state.item, allCategory: state.category}
 }
 
-export default connect(mapStateToProps, {fetchItems, deleteItem})(ItemPage)
+export default connect(mapStateToProps, {fetchItems, deleteItem, fetchCategory})(ItemPage)

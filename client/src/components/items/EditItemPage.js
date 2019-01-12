@@ -59,7 +59,7 @@ export class EditItemPage extends Component {
                 <h5 className="col s12"><i className="material-icons">edit</i><span style={{marginLeft: "20px"}}>แก้ไขสินค้า</span></h5>
             </div>
             <div className="row" style={{position: "relative", bottom: "10px"}}>
-              <EditItemForm category={category} stockId={stockId}/>
+              <EditItemForm category={category} stockName={stockName}/>
             </div>
             <div className="row">
               <button onClick={handleSubmit((values) => this.props.editItem(values, itemId, stockId, stockName, history))} className="col xl2 push-xl7 l2 push-l7 m3 push-m6 s5 push-s2 green modal-close waves-effect waves-light btn" style={{marginRight: "20px"}}><i className="material-icons right">add_circle</i>Confirm</button> 
