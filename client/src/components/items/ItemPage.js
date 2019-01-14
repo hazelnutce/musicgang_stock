@@ -163,7 +163,6 @@ export class ItemPage extends Component {
     }
 
     renderItemTable = (stockId, stockName) => {
-        
         return (   
             <table className="highlight reponsive-table centered">
                 <thead>

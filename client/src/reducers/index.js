@@ -6,6 +6,7 @@ import authErrorReducer from './authErrorReducer'
 import stockReducer from './stockReducer'
 import categoryReducer from './categoryReducer'
 import itemReducer from './itemReducer';
+import transactionReducer from './transactionReducer';
 
 export default combineReducers({
     auth: authReducer,
@@ -14,4 +15,5 @@ export default combineReducers({
     category: categoryReducer,
     item : itemReducer,
     form: formReducer,
+    transaction: transactionReducer
 });

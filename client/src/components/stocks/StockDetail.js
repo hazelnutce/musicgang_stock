@@ -11,7 +11,7 @@ export class StockDetail extends Component {
         const stock = this.props
         return (
             <div> 
-                <div className="card-panel amber lighten-1" style={{marginLeft: "10px",top:"-20px",position:"relative"}}>
+                <div className="card-panel grey lighten-3" style={{marginLeft: "10px",top:"-20px",position:"relative"}}>
                     <span>
                         <span className="right modal-trigger" href={"#"+stock._id}><button className="link-button material-icons black-text">delete_forever</button></span>
                         <div style={{left:"-20px",position:"relative"}}>

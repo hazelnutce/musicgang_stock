@@ -5,20 +5,20 @@ module.exports = (app, Db, Item, Category) => {
     app.get('/api/itemdetail/:itemId', requireLogin, (req,res) => {
         const itemId = req.params.itemId
 
-        var result = Item.find({_id: itemId.toString()})
+        var result = Item.find({_id: itemId.toString(), _user: req.user.id.toString()})
         res.send(result[0])
     })
 
     app.get('/api/item/:stockId',requireLogin,(req,res) => {
         const stockId = req.params.stockId
 
-        var result = Item.find({_stock: stockId.toString()})
+        var result = Item.find({_stock: stockId.toString(), _user: req.user.id.toString()})
         res.send(result)
     })
 
     app.post('/api/item/add', requireLogin, async (req,res) => {
         const {itemName, initialItem, itemWarning, cost, income, category, stockId} = req.body
-        const item = await Item.findOne({itemName: itemName})
+        const item = await Item.findOne({itemName: itemName, _user: req.user.id.toString()})
         if(item){
             res.status(500).send("สินค้าชื่อนี้มีอยู่ในระบบแล้ว กรุณาลองใหม่อีกครั้ง")
             return 
@@ -40,6 +40,7 @@ module.exports = (app, Db, Item, Category) => {
             formatCost: parseFloat(cost).toFixed(2),
             formatRevenue: parseFloat(income).toFixed(2),
             category: category,
+            _user:  req.user.id.toString(),
             _category: existCategory,
             _stock: stockId,
             _id: guid()
@@ -64,12 +65,12 @@ module.exports = (app, Db, Item, Category) => {
         const {itemName, itemWarning, cost, income, category} = req.body
         const itemId = req.params.itemId
         var arr = category.split("(");
-        const existCategory = await Category.findOne({categoryNameTh: arr[0]})
+        const existCategory = await Category.findOne({categoryNameTh: arr[0], _user: req.user.id.toString()})
         if(!existCategory){
             res.status(500).send("หมวดหมู่สินค้าไม่ถูกต้อง กรุณาลองใหม่อีกครั้ง")
             return
         }
-        const item = await Item.findOne({itemName: itemName, _id: { '$ne' : itemId.toString() }})
+        const item = await Item.findOne({itemName: itemName, _id: { '$ne' : itemId.toString(), _user: req.user.id.toString() }})
         if(item){
             res.status(500).send("สินค้าชื่อนี้มีอยู่ในระบบแล้ว กรุณาลองใหม่อีกครั้ง")
             return 
