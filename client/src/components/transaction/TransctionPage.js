@@ -11,7 +11,6 @@ const shiftLeftMinus45 = {
     position: "relative"
 }
 
-
 export class TransctionPage extends Component {
 
   constructor(props){
