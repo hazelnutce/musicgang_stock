@@ -7,7 +7,6 @@ import {Link} from 'react-router-dom'
 export class TransactionDetail extends Component {
     initCollapsible = () => {
         var elems = document.querySelectorAll('.collapsible');
-        console.log(elems)
         M.Collapsible.init(elems, {});
     }
 

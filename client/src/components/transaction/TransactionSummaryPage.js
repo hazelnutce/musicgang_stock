@@ -85,10 +85,10 @@ export class TransactionSummaryPage extends Component {
                 </div>
                 <div className="col xl3 l3 m4 s12">
                     <div className="col xl12 l12 m12 s12" style={{top: "15px", position: "relative"}}>
-                        <Link to={{ pathname: `/`, state: {stockName : "test"}}}  className="waves-effect waves-light btn-small green accent-3"><i className="material-icons right">arrow_upward</i>นำเข้า</Link>
+                        <Link to={{ pathname: `/transactions/new/import`, state: {stockName : stockName}}}  className="waves-effect waves-light btn-small green accent-3"><i className="material-icons right">arrow_upward</i>นำเข้า</Link>
                     </div>
                     <div className="col xl12 l12 m12 s12" style={{top: "25px", position: "relative"}}>
-                        <Link to={{ pathname: `/`, state: {stockName : "test"}}}  className="waves-effect waves-light btn-small red accent-2"><i className="material-icons right">arrow_downward</i>นำออก</Link>
+                        <Link to={{ pathname: `/transactions/new/export`, state: {stockName : stockName}}}  className="waves-effect waves-light btn-small red accent-2"><i className="material-icons right">arrow_downward</i>นำออก</Link>
                     </div>
                 </div>
             </div>

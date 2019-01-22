@@ -25,6 +25,8 @@ import MainMenu from './MainMenu';
 import AddNewCategoryPage from './categories/AddNewCategoryPage'
 import TransactionPage from './transaction/TransctionPage'
 import TransactionSummaryPage from './transaction/TransactionSummaryPage'
+import TransactionImport from './transaction/AddNewTransactionIn'
+import TransactionExport from './transaction/AddNewTransactionOut'
 import ErrorNoticePage from './commons/ErrorProcessNotice'
 
 library.add([faTag, faGhost, faDollarSign, faHandHoldingUsd, faExclamation, faTags, faBoxes, faBoxes,
@@ -51,6 +53,8 @@ class App extends Component {
                 <Route path="/items/add/new/:stockId" component={AddNewItemPage}></Route>
                 <Route path="/items/edit/:itemId" component={EditItemPage}></Route>
                 <Route exact path="/transactions" component={TransactionPage}></Route>
+                <Route exact path="/transactions/new/import" component={TransactionImport}></Route>
+                <Route exact path="/transactions/new/export" component={TransactionExport}></Route>
                 <Route exact path="/transactions/:stockId" component={TransactionSummaryPage}></Route>
                 <Route component={ErrorNoticePage} />
               </Switch>
