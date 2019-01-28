@@ -10,7 +10,7 @@ export class TransactionListSummaryPage extends Component {
         var y = d.getFullYear()
 
         this.state = {
-            currentMonth : (y + 543) * 12 + n
+            currentMonth :  y * 12 + n
         }
     }
 
