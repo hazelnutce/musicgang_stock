@@ -12,7 +12,9 @@ import { faGhost,
   faBoxes,
   faSignOutAlt,
   faArrowUp,
-  faArrowDown } from '@fortawesome/free-solid-svg-icons'
+  faArrowDown,
+  faPlusSquare,
+  faMinusSquare } from '@fortawesome/free-solid-svg-icons'
 
 import Landing from './Landing'
 import StockPage from './stocks/StockPage';
@@ -30,7 +32,7 @@ import TransactionExport from './transaction/AddNewTransactionOut'
 import ErrorNoticePage from './commons/ErrorProcessNotice'
 
 library.add([faTag, faGhost, faDollarSign, faHandHoldingUsd, faExclamation, faTags, faBoxes, faBoxes,
-  faSignOutAlt, faArrowUp, faArrowDown])
+  faSignOutAlt, faArrowUp, faArrowDown, faPlusSquare, faMinusSquare])
 
 class App extends Component {
   componentDidMount = () => {
@@ -55,7 +57,7 @@ class App extends Component {
                 <Route exact path="/transactions" component={TransactionPage}></Route>
                 <Route exact path="/transactions/new/import" component={TransactionImport}></Route>
                 <Route exact path="/transactions/new/export" component={TransactionExport}></Route>
-                <Route exact path="/transactions/:stockId" component={TransactionSummaryPage}></Route>
+                <Route exact path="/transactions/detail" component={TransactionSummaryPage}></Route>
                 <Route component={ErrorNoticePage} />
               </Switch>
             {/* <Route path="/setting" component={SettingPage}></Route> */}

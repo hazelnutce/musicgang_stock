@@ -21,7 +21,7 @@ export class TransactionDetail extends Component {
             return(
               <ul className="collapsible" style={{backgroundColor: "#eeeeee"}} key={stock._id}>
                 <li>
-                  <div className="collapsible-header"><i className="material-icons"><FontAwesomeIcon className="fas fa-sm" icon="boxes"/></i><Link to={{ state: {stockName : stock.stockName}, pathname: `/transactions/${stock._id}`}}>{stock.stockName}</Link></div>
+                  <div className="collapsible-header"><i className="material-icons"><FontAwesomeIcon className="fas fa-sm" icon="boxes"/></i><Link to={{ state: {stockName : stock.stockName, stockId: stock._id}, pathname: `/transactions/detail`}}>{stock.stockName}</Link></div>
                   <div className="collapsible-body">
                     <span>Lorem ipsum dolor sit amet.</span>
                   </div>
@@ -33,4 +33,4 @@ export class TransactionDetail extends Component {
   }
 }
 
-export default TransactionDetail
+export default (TransactionDetail)

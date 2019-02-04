@@ -1,8 +1,11 @@
 import React, { Component } from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import {ErrorProcessNotice} from '../commons/ErrorProcessNotice'
 import {Link} from 'react-router-dom'
+import {connect} from 'react-redux'
 import TransactionListSummaryPage from './TransactionListSummaryPage';
+import {fetchItems} from '../../actions/item'
+import {LoaderSpinner} from '../commons/LoaderSpinner'
+import {ErrorProcessNotice} from '../commons/ErrorProcessNotice'
 
 const shiftLeftMinus45 = {
     left: "-45px",
@@ -17,6 +20,7 @@ export class TransactionSummaryPage extends Component {
             isSelectAllTransaction : true,
             isSelectTransactionIn : true,
             isSelectTransactionOut : true,
+            isLoadingItem: false
         }
     }
 
@@ -44,19 +48,34 @@ export class TransactionSummaryPage extends Component {
                 isSelectTransactionOut : true,
             })
         }
-        console.log(buttonString)
+    }
+
+    componentDidUpdate = (prevProps) => {
+        if (prevProps.allItemProperties.items !== this.props.allItemProperties.items) {
+            this.setState({isLoadingItem: true}) 
+        }
+    }
+
+    componentDidMount = () => {
+        const {stockId} = this.props.location.state
+        this.props.fetchItems(stockId)
     }
 
     render() {
-        const {stockName} = this.props.location.state
-        if(stockName == null){
+        const {stockName, stockId} = this.props.location.state
+        if(stockName == null || stockId == null){
             return(
                 <ErrorProcessNotice />
             )
         }
 
+        if(!this.state.isLoadingItem){
+            return (
+              <LoaderSpinner loading={this.state.loadingCategory} color={'#123abc'}/>
+            )
+        }
+
         return (
-        
         <div className="container" style={{position: "relative", top: "5px"}}>
             <div className="row">
                 <div className="col xl9 l9 m8 s12">
@@ -85,10 +104,10 @@ export class TransactionSummaryPage extends Component {
                 </div>
                 <div className="col xl3 l3 m4 s12">
                     <div className="col xl12 l12 m12 s12" style={{top: "15px", position: "relative"}}>
-                        <Link to={{ pathname: `/transactions/new/import`, state: {stockName : stockName}}}  className="waves-effect waves-light btn-small green accent-3"><i className="material-icons right">arrow_upward</i>นำเข้า</Link>
+                        <Link to={{ pathname: `/transactions/new/import`, state: {stockName : stockName, stockId: stockId, items: this.props.allItemProperties.items}}}  className="waves-effect waves-light btn-small green accent-3"><i className="material-icons right">arrow_upward</i>นำเข้า</Link>
                     </div>
                     <div className="col xl12 l12 m12 s12" style={{top: "25px", position: "relative"}}>
-                        <Link to={{ pathname: `/transactions/new/export`, state: {stockName : stockName}}}  className="waves-effect waves-light btn-small red accent-2"><i className="material-icons right">arrow_downward</i>นำออก</Link>
+                        <Link to={{ pathname: `/transactions/new/export`, state: {stockName : stockName, stockId: stockId, items: this.props.allItemProperties.items}}}  className="waves-effect waves-light btn-small red accent-2"><i className="material-icons right">arrow_downward</i>นำออก</Link>
                     </div>
                 </div>
             </div>
@@ -102,4 +121,8 @@ export class TransactionSummaryPage extends Component {
     }
 }
 
-export default TransactionSummaryPage
+function mapStateToProps(state){
+    return {allItemProperties: state.item}
+}
+
+export default connect(mapStateToProps, {fetchItems})(TransactionSummaryPage)
