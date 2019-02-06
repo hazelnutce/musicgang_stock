@@ -3,6 +3,7 @@ import {Field} from 'redux-form';
 
 import { NewTransactionItem } from "./NewTransactionItem";
 import { NewTransactionCounter } from './NewTransactionCounter'
+import { NewTransactionField } from './NewTransactionField'
 
 export class NewTransactionForm extends Component {
   render() {
@@ -21,8 +22,31 @@ export class NewTransactionForm extends Component {
           <Field
             component={NewTransactionCounter}
             name="itemAmount"
+            keyLabel={"จำนวนสินค้า : "}
           />
         </div>
+        <div className="row">
+          <Field 
+              component={NewTransactionField}
+              name="discount"
+              type={"number"}
+              icon={"dollar-sign"}
+              keyLabel={"ส่วนลดเพิ่มเติม (บาท)"}
+              haveCheckBox={true}
+              checkBoxLabel={"ส่วนลดเพิ่มเติม"}
+          />
+          </div>
+          <div className="row" style={{marginTop: "-20px"}}>
+            <Field 
+                component={NewTransactionField}
+                name="overcost"
+                type={"number"}
+                icon={"dollar-sign"}
+                keyLabel={"สว่นคิดเงินเกิน (บาท)"}
+                haveCheckBox={true}
+                checkBoxLabel={"คิดเงินเกิน"}
+            />
+          </div>
       </div>
     )
   }

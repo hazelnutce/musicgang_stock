@@ -13,8 +13,8 @@ import { faGhost,
   faSignOutAlt,
   faArrowUp,
   faArrowDown,
-  faPlusSquare,
-  faMinusSquare } from '@fortawesome/free-solid-svg-icons'
+  faPlus,
+  faMinus } from '@fortawesome/free-solid-svg-icons'
 
 import Landing from './Landing'
 import StockPage from './stocks/StockPage';
@@ -32,7 +32,7 @@ import TransactionExport from './transaction/AddNewTransactionOut'
 import ErrorNoticePage from './commons/ErrorProcessNotice'
 
 library.add([faTag, faGhost, faDollarSign, faHandHoldingUsd, faExclamation, faTags, faBoxes, faBoxes,
-  faSignOutAlt, faArrowUp, faArrowDown, faPlusSquare, faMinusSquare])
+  faSignOutAlt, faArrowUp, faArrowDown, faPlus, faMinus])
 
 class App extends Component {
   componentDidMount = () => {

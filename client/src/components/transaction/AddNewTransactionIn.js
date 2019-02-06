@@ -25,7 +25,9 @@ export class AddNewTransactionIn extends Component {
   }
 
   componentDidMount(){
-    this.props.fetchItems()
+    this.props.initialize({
+      itemAmount: 1
+    })
     var elems = document.querySelectorAll('.modal');
     M.Modal.init(elems, {
       opacity: 0.6,
