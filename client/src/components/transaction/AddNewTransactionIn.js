@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import {ErrorProcessNotice} from '../commons/ErrorProcessNotice'
 import DayPickerInput from 'react-day-picker/DayPickerInput'
-import {reduxForm} from 'redux-form'
+import {reduxForm, formValueSelector} from 'redux-form'
 import {connect} from 'react-redux'
 import {NewTransactionForm} from '../forms/newtransaction/NewTransactionForm'
 import M from 'materialize-css'
@@ -24,11 +24,70 @@ export class AddNewTransactionIn extends Component {
     }
   }
 
+  calculateSummaryRow = (itemProperties) => {
+    console.log(itemProperties)
+    if(itemProperties.itemName != null){
+      const filteredItem = this.props.location.state.items.filter(item => item.itemName === itemProperties.itemName)
+      if(filteredItem.length !== 1){
+        return(
+          <h6>ชื่อสินค้าไม่ถูกต้อง</h6>
+        )
+      }
+      else{
+        const item = filteredItem[0]
+        let total = item.revenue * itemProperties.itemAmount
+        if(itemProperties.overcost > 0){
+          total += itemProperties.overcost
+        }
+        if(itemProperties.discount > 0){
+          total -= itemProperties.discount
+        }
+        if(itemProperties.isUsedInMusicGang){
+          total = 0
+        }
+        if(itemProperties.discountBy5 === true && itemProperties.discountBy10 === false){
+          total = total * 0.95
+        }
+        if(itemProperties.discountBy10){
+          total = total * 0.9
+        }
+        
+        
+        return(
+          <div className="section"> 
+            <h6>สรุปรายการสินค้า</h6>
+            <p>
+              ชื่อสินค้า : {item.itemName} <br/> 
+              ราคาสินค้า  : {item.revenue} บาท <br />
+              จำนวนสินค้า : {itemProperties.itemAmount} ชิ้น <br />
+              ราคารวม : {total} บาท
+            </p>
+          </div>
+          
+        )
+      }
+    }
+    else{
+      return(
+        <h6>ไม่มีการระบุสินค้า</h6>
+      )
+    }
+
+  }
+
+  addOneTransaction(values){
+    console.log(values)
+  }
+
   componentDidMount(){
     this.props.initialize({
-      itemAmount: 1
+      itemAmount: 1,
+      discount: 0,
+      overcost: 0,
+      discountBy5 : false,
+      discountBy10 : false
     })
-    var elems = document.querySelectorAll('.modal');
+    var elems = document.querySelectorAll('#modal1');
     M.Modal.init(elems, {
       opacity: 0.6,
       endingTop: '20%',
@@ -82,12 +141,19 @@ export class AddNewTransactionIn extends Component {
             </div>
           </div>
         </div> {/*row*/}
-        <div id="modal1" className="modal">
+        <div id="modal1" className="modal modal-fixed-footer">
           <div className="modal-content">
-            <NewTransactionForm items={items}/>
+              <div className="container-fluid">
+                <NewTransactionForm items={items} mode={"In"}/>
+              </div>
+              <div className="divider"></div>
+              <div className="container-fluid">
+                {this.calculateSummaryRow(this.props.itemProperties)}
+              </div>
           </div>
           <div className="modal-footer"> 
-            <button className="modal-close waves-effect waves-green btn-flat">close</button>
+            <button onClick={this.props.handleSubmit((values) => this.addOneTransaction(values))} className="modal-close waves-effect green btn-flat white-text" style={{marginRight: "20px"}}>บันทึก</button>
+            <button className="modal-close waves-effect red btn-flat white-text" style={{marginRight: "20px"}}>ยกเลิก</button>
           </div>
         </div>
     </div> //container
@@ -95,13 +161,46 @@ export class AddNewTransactionIn extends Component {
   }
 }
 
-function mapStateToProps(state) {
-  return {
-    items: state.items
+function validate(values, props){
+  const errors = {}
+
+  if(!values.itemName){
+      errors.itemName = "กรุณาระบุชื่อสินค้า"
   }
+
+  if(values.itemName){
+    var filteredItem = props.location.state.items.filter(item => item.itemName === values.itemName)
+    if(filteredItem === null || filteredItem.length === 0){
+      errors.itemName = "กรุณาระบุชื่อสินค้าที่มีอยู่ในคลังสินค้า"
+    }
+  }
+
+  return errors
 }
 
-export default reduxForm({
-  form: "newTransactionForm"
-})(connect(mapStateToProps, {fetchItems})(AddNewTransactionIn))
+AddNewTransactionIn = reduxForm({
+  form: 'newTransactionForm',
+  validate
+})(AddNewTransactionIn)
+
+const selector = formValueSelector('newTransactionForm')
+
+AddNewTransactionIn = connect(
+  state => {
+    const itemProperties = {}
+    itemProperties.itemName = selector(state, 'itemName')
+    itemProperties.itemAmount = selector(state, 'itemAmount')
+    itemProperties.discount = parseInt(selector(state, 'discount'))
+    itemProperties.discountBy5 = selector(state, 'discountBy5')
+    itemProperties.discountBy10 = selector(state, 'discountBy10')
+    itemProperties.isUsedInMusicGang = selector(state, 'isUsedInMusicGang')
+    itemProperties.overcost = parseInt(selector(state, 'overcost'))
+    return{
+      itemProperties,
+      items: state.items
+    }
+  }, {fetchItems}
+)(AddNewTransactionIn)
+
+export default AddNewTransactionIn
 

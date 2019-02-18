@@ -6,12 +6,23 @@ export class NewTransactionField extends Component {
     super(props)
 
     this.state = {
-      isCheck: false
+      isCheck: false,
+      currentValue: 0
     }
   }
 
   handleOnChange(){
-    this.setState({isCheck: !this.state.isCheck})
+    //false -> true
+    if(this.state.isCheck === false){
+      this.props.input.onChange(this.state.currentValue)
+      this.setState({isCheck: !this.state.isCheck})
+    }
+    //true -> false
+    else{
+      this.props.input.onChange(0)
+      this.setState({isCheck: !this.state.isCheck, currentValue: this.props.input.value})
+    }
+    
   }
 
   render() {
@@ -31,7 +42,7 @@ export class NewTransactionField extends Component {
               <div className="input-field col s12 m6 l6 xl6" style={{margin: "auto"}}>
                 <i className="material-icons prefix"><FontAwesomeIcon icon={icon}/></i>
                 <input {...input} id={keyLabel} type={type} autoComplete="off" className="validate"/>
-                <label htmlFor={keyLabel}>{keyLabel}</label>
+                <label htmlFor={keyLabel} className="active">{keyLabel}</label>
                 {
                 touched && error && 
                 <span className="red-text" style={{marginLeft: '45px'}}>
