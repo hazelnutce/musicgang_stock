@@ -7,7 +7,7 @@ export class NewTransactionField extends Component {
 
     this.state = {
       isCheck: false,
-      currentValue: 0
+      currentValue: ""
     }
   }
 
@@ -19,10 +19,14 @@ export class NewTransactionField extends Component {
     }
     //true -> false
     else{
-      this.props.input.onChange(0)
+      this.props.input.onChange("")
       this.setState({isCheck: !this.state.isCheck, currentValue: this.props.input.value})
     }
     
+  }
+
+  handleActiveLabel(){
+    return this.state.currentValue !== "" ? "active" : ""
   }
 
   render() {
@@ -39,10 +43,10 @@ export class NewTransactionField extends Component {
           </div>
           { this.state.isCheck && (
             <div>
-              <div className="input-field col s12 m6 l6 xl6" style={{margin: "auto"}}>
+              <div className="input-field col s12 m8 l9 xl9" style={{margin: "auto"}}>
                 <i className="material-icons prefix"><FontAwesomeIcon icon={icon}/></i>
                 <input {...input} id={keyLabel} type={type} autoComplete="off" className="validate"/>
-                <label htmlFor={keyLabel} className="active">{keyLabel}</label>
+                <label htmlFor={keyLabel} className={this.handleActiveLabel()}>{keyLabel}</label>
                 {
                 touched && error && 
                 <span className="red-text" style={{marginLeft: '45px'}}>
@@ -63,7 +67,7 @@ export class NewTransactionField extends Component {
         <div className="input-field col s12 m6 l6 xl6">
             <i className="material-icons prefix"><FontAwesomeIcon icon={icon}/></i>
             <input {...input} id={keyLabel} type={type} autoComplete="off" className="validate"/>
-            <label className="active" htmlFor={keyLabel}>{keyLabel}</label>
+            <label htmlFor={keyLabel} className={this.handleActiveLabel()}>{keyLabel}</label>
             {
             touched && error && 
             <span className="red-text" style={{marginLeft: '45px'}}>

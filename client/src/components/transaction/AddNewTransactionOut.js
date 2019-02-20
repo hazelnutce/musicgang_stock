@@ -82,7 +82,6 @@ export class AddNewTransactionOut extends Component {
   componentDidMount(){
     this.props.initialize({
       itemAmount: 1,
-      discount: 0,
       overcost: 0,
       discountBy5 : false,
       discountBy10 : false
@@ -144,7 +143,7 @@ export class AddNewTransactionOut extends Component {
         <div id="modal1" className="modal modal-fixed-footer">
           <div className="modal-content">
               <div className="container-fluid">
-                <NewTransactionForm items={items} mode={"Out"}/>
+                <NewTransactionForm items={items} mode={"Export"}/>
               </div>
               <div className="divider"></div>
               <div className="container-fluid">
@@ -152,7 +151,7 @@ export class AddNewTransactionOut extends Component {
               </div>
           </div>
           <div className="modal-footer"> 
-            <button onClick={this.props.handleSubmit((values) => this.addOneTransaction(values))} className="modal-close waves-effect green btn-flat white-text" style={{marginRight: "20px"}}>บันทึก</button>
+            <button onClick={this.props.handleSubmit((values) => this.addOneTransaction(values))} className="modal-close waves-effect green btn btn-flat white-text" style={{marginRight: "20px"}}>บันทึก</button>
             <button className="modal-close waves-effect red btn-flat white-text" style={{marginRight: "20px"}}>ยกเลิก</button>
           </div>
         </div>
@@ -179,11 +178,11 @@ function validate(values, props){
 }
 
 AddNewTransactionOut = reduxForm({
-  form: 'newTransactionForm',
+  form: 'newTransactionFormExport',
   validate
 })(AddNewTransactionOut)
 
-const selector = formValueSelector('newTransactionForm')
+const selector = formValueSelector('newTransactionFormExport')
 
 AddNewTransactionOut = connect(
   state => {

@@ -11,8 +11,7 @@ export class NewTransactionForm extends Component {
   
   render() {
     const {items, mode} = this.props
-    
-    if(mode === "In"){
+    if(mode === "Import"){
       return (
         <div>
           <div className="row">
@@ -34,11 +33,18 @@ export class NewTransactionForm extends Component {
             <Field 
                 component={NewTransactionField}
                 name="discount"
-                type={"number"}
+                type={"text"}
                 icon={"dollar-sign"}
                 keyLabel={"ส่วนลดเพิ่มเติม (บาท)"}
                 haveCheckBox={true}
                 checkBoxLabel={"ส่วนลดเพิ่มเติม"}
+                normalize={(val, prevVal) => {
+                  if (val) {
+                    return (/^\d+$/.test(val)) ? val : prevVal
+                  }
+                  return val;
+                }}
+                inputmode="numeric"
             />
             </div>
             <div className="row" style={{marginTop: "-15px"}}>
@@ -55,7 +61,7 @@ export class NewTransactionForm extends Component {
         </div> 
       )
     }
-    else if(mode === "Out"){
+    else if(mode === "Export"){
       return (
         <div>
           <div className="row">
