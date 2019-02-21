@@ -10,6 +10,10 @@ export class NewTransactionItem extends Component {
         }
     }
 
+    handleActiveLabel(){
+        return this.props.input.value !== "" ? "active" : ""
+    }
+
     componentDidMount (){
         const {items} = this.props
         if(items != null){
@@ -34,7 +38,7 @@ export class NewTransactionItem extends Component {
          <div className="input-field col s12 m6 l6 xl6">
             <i className="prefix"><FontAwesomeIcon icon={icon}/></i>
             <input {...input} id="autocomplete-input" autoComplete="off" type={type} className="autocomplete validate"/>
-            <label htmlFor="autocomplete-input">{keyLabel}</label>
+            <label htmlFor="autocomplete-input" className={this.handleActiveLabel()}>{keyLabel}</label>
             {
             touched && error && 
             <span className="red-text" style={{marginLeft: '45px'}}>

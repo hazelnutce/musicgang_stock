@@ -40,7 +40,7 @@ export class NewTransactionForm extends Component {
                 checkBoxLabel={"ส่วนลดเพิ่มเติม"}
                 normalize={(val, prevVal) => {
                   if (val) {
-                    return (/^\d+$/.test(val)) ? val : prevVal
+                    return (/^\d+\.{0,1}\d{0,2}$/.test(val)) ? val : prevVal
                   }
                   return val;
                 }}
@@ -51,11 +51,18 @@ export class NewTransactionForm extends Component {
               <Field 
                   component={NewTransactionField}
                   name="overcost"
-                  type={"number"}
+                  type={"text"}
                   icon={"dollar-sign"}
                   keyLabel={"ส่วนคิดเงินเกิน (บาท)"}
                   haveCheckBox={true}
                   checkBoxLabel={"คิดเงินเกิน"}
+                  normalize={(val, prevVal) => {
+                    if (val) {
+                      return (/^\d+\.{0,1}\d{0,2}$/.test(val)) ? val : prevVal
+                    }
+                    return val;
+                  }}
+                  inputmode="numeric"
               />
             </div>
         </div> 
@@ -83,36 +90,36 @@ export class NewTransactionForm extends Component {
             <Field 
                 component={NewTransactionField}
                 name="discount"
-                type={"number"}
+                type={"text"}
                 icon={"dollar-sign"}
                 keyLabel={"ส่วนลดเพิ่มเติม (บาท)"}
                 haveCheckBox={true}
                 checkBoxLabel={"ส่วนลดเพิ่มเติม"}
+                normalize={(val, prevVal) => {
+                  if (val) {
+                    return (/^\d+\.{0,1}\d{0,2}$/.test(val)) ? val : prevVal
+                  }
+                  return val;
+                }}
+                inputmode="numeric"
             />
             </div>
             <div className="row" style={{marginTop: "-15px"}}>
               <Field 
                   component={NewTransactionField}
                   name="overcost"
-                  type={"number"}
+                  type={"text"}
                   icon={"dollar-sign"}
                   keyLabel={"ส่วนคิดเงินเกิน (บาท)"}
                   haveCheckBox={true}
                   checkBoxLabel={"คิดเงินเกิน"}
-              />
-            </div>
-            <div className="row" style={{marginTop: "-15px"}}>
-              <Field 
-                  component={NewTransactionCheckbox}
-                  name="discountBy5"
-                  checkBoxLabel={"ลด 5 เปอร์เซ็นต์"}
-              />
-            </div>
-            <div className="row" style={{marginTop: "-15px"}}>
-              <Field 
-                  component={NewTransactionCheckbox}
-                  name="discountBy10"
-                  checkBoxLabel={"ลด 10 เปอร์เซ็นต์"}
+                  normalize={(val, prevVal) => {
+                    if (val) {
+                      return (/^\d+\.{0,1}\d{0,2}$/.test(val)) ? val : prevVal
+                    }
+                    return val;
+                  }}
+                  inputmode="numeric"
               />
             </div>
             <div className="row" style={{marginTop: "-15px"}}>

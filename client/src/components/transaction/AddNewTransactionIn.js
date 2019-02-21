@@ -79,9 +79,10 @@ export class AddNewTransactionIn extends Component {
   }
 
   addOneTransaction(values){
+    this.props.reset()
     const {cost, formatCost} = this.filterItem(values.itemName)[0]
     values.cost = formatCost
-    values.total = parseFloat(cost * values.itemAmount - (parseInt(values.discount) || 0) + (parseInt(values.overcost) || 0)).toFixed(2)
+    values.total = parseFloat(cost * values.itemAmount - (parseFloat(values.discount) || 0) + (parseFloat(values.overcost) || 0)).toFixed(2)
     values._id = this.guid()
     this.setState({allRecordedItem: [...this.state.allRecordedItem, values]})
   }
@@ -94,8 +95,8 @@ export class AddNewTransactionIn extends Component {
             <td>{item.itemName}</td>
             <td>{item.cost}</td>
             <td>{item.itemAmount}</td>
-            <td>{item.discount != null ? item.discount : "-"}</td>
-            <td>{item.overcost != null ? item.overcost : "-"}</td>
+            <td>{item.discount != null ? parseFloat(item.discount).toFixed(2) : "-"}</td>
+            <td>{item.overcost != null ? parseFloat(item.overcost).toFixed(2) : "-"}</td>
             <td>{item.total}</td>
           </tr>
         )
@@ -145,6 +146,8 @@ export class AddNewTransactionIn extends Component {
 
   render() {
     const {stockName, items} = this.props.location.state
+    const {invalid} = this.props
+    var submitButtonClassName = invalid ? "disabled" : ""
     if(stockName == null || items == null){
         return(
             <ErrorProcessNotice />
@@ -199,7 +202,7 @@ export class AddNewTransactionIn extends Component {
               </div>
           </div>
           <div className="modal-footer"> 
-            <div onClick={this.props.handleSubmit((values) => this.addOneTransaction(values))} className="modal-close waves-effect waves-light btn-small green white-text" style={{marginRight: "20px"}}>บันทึก</div>
+            <div onClick={this.props.handleSubmit((values) => this.addOneTransaction(values))} className={`modal-close waves-effect waves-light btn-small green white-text ${submitButtonClassName}`} style={{marginRight: "20px"}}>บันทึก</div>
             <div className="modal-close waves-effect waves-light btn-small red white-text" style={{marginRight: "20px"}}>ยกเลิก</div>
           </div>
         </div>
@@ -221,13 +224,13 @@ function validate(values, props){
       errors.itemName = "กรุณาระบุชื่อสินค้าที่มีอยู่ในคลังสินค้า"
     }
     else if(filteredItem.length === 1){
-      if(parseInt(values.discount) >= filteredItem[0].cost){
+      if(parseFloat(values.discount) >= filteredItem[0].cost){
         errors.discount = "ส่วนลดสินค้าต้องน้อยกว่าราคาสินค้า"
       }
     }
   }
 
-  if(parseInt(values.overcost) >= 1000){
+  if(parseFloat(values.overcost) >= 1000){
     errors.overcost = "ส่วนเกินสินค้าไม่ควรเกิน 1,000 บาท"
   }
 
@@ -246,8 +249,8 @@ AddNewTransactionIn = connect(
     const itemProperties = {}
     itemProperties.itemName = selector(state, 'itemName')
     itemProperties.itemAmount = selector(state, 'itemAmount')
-    itemProperties.discount = parseInt(selector(state, 'discount'))
-    itemProperties.overcost = parseInt(selector(state, 'overcost'))
+    itemProperties.discount = parseFloat(selector(state, 'discount'))
+    itemProperties.overcost = parseFloat(selector(state, 'overcost'))
     return{
       itemProperties,
       items: state.items

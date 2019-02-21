@@ -26,7 +26,7 @@ export class NewTransactionField extends Component {
   }
 
   handleActiveLabel(){
-    return this.state.currentValue !== "" ? "active" : ""
+    return this.props.input.value !== "" ? "active" : ""
   }
 
   render() {
