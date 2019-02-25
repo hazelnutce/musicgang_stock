@@ -22,7 +22,9 @@ export class AddNewTransactionOut extends Component {
 
     this.state = {
       selectedDay: undefined,
-      allRecordedItem: []
+      allRecordedItem: [],
+      lastCurrentAction: "create",
+      currentItemId: null
     }
   }
 
@@ -82,13 +84,59 @@ export class AddNewTransactionOut extends Component {
 
   }
 
+  handleCurrentAction(action, item = null){
+    this.setState({lastCurrentAction: action, currentItemId: item != null ? item._id : null})
+    if(action === "create"){
+      this.props.initialize({
+        itemName: "",
+        itemAmount: 1,
+      })
+    }
+    else if(action === "edit"){
+      this.props.initialize({
+        itemName: item.itemName,
+        itemAmount: item.itemAmount,
+        discount: item.discount,
+        overcost: item.overcost
+      })
+    }
+  }
+
   addOneTransaction(values){
-    this.props.reset()
-    const {cost, formatCost} = this.filterItem(values.itemName)[0]
-    values.cost = formatCost
-    values.total = parseFloat(cost * values.itemAmount - (parseFloat(values.discount) || 0) + (parseFloat(values.overcost) || 0)).toFixed(2)
-    values._id = this.guid()
-    this.setState({allRecordedItem: [...this.state.allRecordedItem, values]})
+    if(this.state.lastCurrentAction === "create"){
+      //reset form
+      this.props.reset()
+
+      //prepare value
+      const {cost, formatCost} = this.filterItem(values.itemName)[0]
+      values.discount = values.discount === "" ? null :  values.discount
+      values.overcost = values.overcost === "" ? null :  values.overcost
+      values.cost = formatCost
+      values.total = parseFloat(cost * values.itemAmount - (parseFloat(values.discount) || 0) + (parseFloat(values.overcost) || 0)).toFixed(2)
+      values._id = this.guid()
+
+      //set state with new value
+      this.setState({allRecordedItem: [...this.state.allRecordedItem, values]})
+    }
+    else if(this.state.lastCurrentAction === "edit"){
+      //reset form
+      this.props.reset()
+
+      //prepare value
+      const {cost, formatCost} = this.filterItem(values.itemName)[0]
+      values.cost = formatCost
+      values.total = parseFloat(cost * values.itemAmount - (parseFloat(values.discount) || 0) + (parseFloat(values.overcost) || 0)).toFixed(2)
+      var currentItem = this.state.allRecordedItem
+      var arrayIndex = currentItem.findIndex(obj => obj._id === this.state.currentItemId)
+      values._id = this.guid()
+      values.discount = values.discount === "" ? null :  values.discount
+      values.overcost = values.overcost === "" ? null :  values.overcost
+      currentItem[arrayIndex] = values
+
+      //set state with new value
+      this.setState({allRecordedItem: currentItem})
+    }
+    
   }
 
   renderRecordedItemBody(){
@@ -102,6 +150,22 @@ export class AddNewTransactionOut extends Component {
             <td>{item.discount != null ? parseFloat(item.discount).toFixed(2) : "-"}</td>
             <td>{item.overcost != null ? parseFloat(item.overcost).toFixed(2) : "-"}</td>
             <td>{item.total}</td>
+            <td>
+              <div className="modal-trigger" onClick={() => this.handleCurrentAction("edit", item)} style={{display: "inline-block", marginRight: "10px", cursor: "pointer"}} data-target="addModal"><i className="material-icons black-text">edit</i></div>
+              <div className="modal-trigger" style={{display: "inline-block", cursor: "pointer"}} data-target="deleteModal"><i className="material-icons black-text">delete</i></div>
+            </td>
+            <td>
+              <div id={item._id} className="modal">
+                <div className="modal-content">
+                    <h4>ยืนยันการลบ</h4>
+                    <p>คุณต้องการจะลบสินค้า <b>{item.itemName}</b> ใช่หรือไม่ ?</p>
+                </div>
+                <div className="modal-footer">
+                    <button className="green modal-close waves-effect waves-light btn" style={{position: "relative", right: "20px"}}><i className="material-icons right">add_circle</i>ยืนยัน</button> 
+                    <button className="red modal-close waves-effect waves-light btn"><i className="material-icons right">cancel</i>ยกเลิก</button>
+                </div>
+              </div>
+            </td>
           </tr>
         )
       })
@@ -114,7 +178,7 @@ export class AddNewTransactionOut extends Component {
   renderRecordedItem(){
     return(
       <table className="highlight reponsive-table centered">
-        <thead >
+        <thead>
           <tr>
               <td style={{textAlign: "center"}}>ชื่อสินค้า</td>
               <td style={{textAlign: "center"}}>ราคา</td>
@@ -122,6 +186,7 @@ export class AddNewTransactionOut extends Component {
               <td style={{textAlign: "center"}}>ส่วนลด</td>
               <td style={{textAlign: "center"}}>คิดเงินเกิน</td>
               <td style={{textAlign: "center"}}>ราคารวม</td>
+              <td style={{textAlign: "center"}}></td>
           </tr>
         </thead>
 
@@ -130,7 +195,6 @@ export class AddNewTransactionOut extends Component {
         </tbody>
       </table>  
     )
-    
   }
 
   componentDidMount(){
@@ -139,7 +203,7 @@ export class AddNewTransactionOut extends Component {
       discountBy5 : false,
       discountBy10 : false
     })
-    var elems = document.querySelectorAll('#modal1');
+    var elems = document.querySelectorAll('#addModal');
     M.Modal.init(elems, {
       opacity: 0.6,
       endingTop: '20%',
@@ -162,10 +226,10 @@ export class AddNewTransactionOut extends Component {
     return (
       <div className="container" style={{position: "relative", top: "5px"}}>
         <div className="row">
-          <h6>นำเข้าสินค้า / คลัง : {stockName}</h6>
+          <h6>นำออกสินค้า / คลัง : {stockName}</h6>
         </div>
         <div className="row">
-          <label className="left">วันที่นำเข้า</label>
+          <label className="left">วันที่นำออก</label>
         </div>
         <div className="row" style={{bottom: "35px", position: "relative"}}>
               <DayPickerInput 
@@ -187,17 +251,23 @@ export class AddNewTransactionOut extends Component {
         </div>
         <div className="row" style={{bottom: "35px", position: "relative"}}>
           <div className="col xl12 l12 m12 s12">
-            {this.state.allRecordedItem.length === 0 ? <div>No record</div> : 
+            {this.state.allRecordedItem.length === 0 ? 
+            <div className="card-panel yellow darken-1">
+              <span className="white-text">
+                <span><i className="material-icons" style={{marginLeft: "10px",top:"5px",position:"relative"}}>warning</i></span>
+                <span style={{marginLeft: "10px"}}>ไม่มีรายการที่ต้องการบันทึก กรุณาเพิ่มรายการสินค้า</span>
+              </span>
+            </div> : 
               this.renderRecordedItem()
             }
           </div>
-          <div className="col xl12 l12 m12 s12"  style={{marginTop: "10px"}}>
-            <div data-target="modal1" className="waves-effect waves-light btn-small modal-trigger" style={{position: "absolute", left: 0, zIndex: 0}}>
+          <div className="col xl12 l12 m12 s12" style={{marginTop: "10px"}}>
+            <div onClick={() => this.handleCurrentAction("create")} data-target="addModal" className="waves-effect waves-light btn-small modal-trigger" style={{position: "absolute", left: 0, zIndex: 0}}>
                 เพิ่มรายการสินค้า  
             </div>
           </div>
         </div> {/*row*/}
-        <div id="modal1" className="modal modal-fixed-footer">
+        <div id="addModal" className="modal modal-fixed-footer">
           <div className="modal-content">
               <div className="container-fluid">
                 <NewTransactionForm items={items} mode={"Export"}/>
