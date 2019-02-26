@@ -92,10 +92,22 @@ export class AddNewTransactionIn extends Component {
       this.props.initialize({
         itemName: item.itemName,
         itemAmount: item.itemAmount,
-        discount: item.discount,
-        overcost: item.overcost
+        discount: item.formatDiscount,
+        overcost: item.formatOvercost
       })
     }
+  }
+
+  deleteOneTransaction(transactionId){
+    var currentItem = this.state.allRecordedItem
+    var arrayIndex = currentItem.findIndex(obj => obj._id === transactionId)
+    if(arrayIndex > -1){
+      currentItem.splice(arrayIndex, 1)
+    }
+
+    //set state with new value
+    this.setState({allRecordedItem: currentItem})
+
   }
 
   addOneTransaction(values){
@@ -105,10 +117,14 @@ export class AddNewTransactionIn extends Component {
 
       //prepare value
       const {cost, formatCost} = this.filterItem(values.itemName)[0]
-      values.discount = values.discount === "" ? null :  values.discount
-      values.overcost = values.overcost === "" ? null :  values.overcost
-      values.cost = formatCost
-      values.total = parseFloat(cost * values.itemAmount - (parseFloat(values.discount) || 0) + (parseFloat(values.overcost) || 0)).toFixed(2)
+      values.discount = parseFloat(values.discount) || 0
+      values.formatDiscount = values.discount === "" ? null :  values.discount
+      values.overcost = parseFloat(values.overcost) || 0
+      values.formatOvercost = values.overcost === "" ? null :  values.overcost
+      values.cost = cost
+      values.formatCost = formatCost
+      values.total = parseFloat(cost * values.itemAmount - (parseFloat(values.discount) || 0) + (parseFloat(values.overcost) || 0))
+      values.formatTotal = parseFloat(cost * values.itemAmount - (parseFloat(values.discount) || 0) + (parseFloat(values.overcost) || 0)).toFixed(2)
       values._id = this.guid()
 
       //set state with new value
@@ -120,13 +136,17 @@ export class AddNewTransactionIn extends Component {
 
       //prepare value
       const {cost, formatCost} = this.filterItem(values.itemName)[0]
-      values.cost = formatCost
-      values.total = parseFloat(cost * values.itemAmount - (parseFloat(values.discount) || 0) + (parseFloat(values.overcost) || 0)).toFixed(2)
+      values.cost = cost
+      values.formatCost = formatCost
+      values.total = parseFloat(cost * values.itemAmount - (parseFloat(values.discount) || 0) + (parseFloat(values.overcost) || 0))
+      values.formatTotal = parseFloat(cost * values.itemAmount - (parseFloat(values.discount) || 0) + (parseFloat(values.overcost) || 0)).toFixed(2)
       var currentItem = this.state.allRecordedItem
       var arrayIndex = currentItem.findIndex(obj => obj._id === this.state.currentItemId)
       values._id = this.guid()
-      values.discount = values.discount === "" ? null :  values.discount
-      values.overcost = values.overcost === "" ? null :  values.overcost
+      values.discount = parseFloat(values.discount) || 0
+      values.formatDiscount = values.discount === "" ? null :  values.discount
+      values.overcost = parseFloat(values.overcost) || 0
+      values.formatOvercost = values.overcost === "" ? null :  values.overcost
       currentItem[arrayIndex] = values
 
       //set state with new value
@@ -141,14 +161,14 @@ export class AddNewTransactionIn extends Component {
         return (
           <tr key={item._id}>
             <td>{item.itemName}</td>
-            <td>{item.cost}</td>
+            <td>{item.formatCost}</td>
             <td>{item.itemAmount}</td>
-            <td>{item.discount != null ? parseFloat(item.discount).toFixed(2) : "-"}</td>
-            <td>{item.overcost != null ? parseFloat(item.overcost).toFixed(2) : "-"}</td>
-            <td>{item.total}</td>
+            <td>{item.formatDiscount != null ? parseFloat(item.formatDiscount).toFixed(2) : "-"}</td>
+            <td>{item.formatOvercost != null ? parseFloat(item.formatOvercost).toFixed(2) : "-"}</td>
+            <td>{item.formatTotal}</td>
             <td>
               <div className="modal-trigger" onClick={() => this.handleCurrentAction("edit", item)} style={{display: "inline-block", marginRight: "10px", cursor: "pointer"}} data-target="addModal"><i className="material-icons black-text">edit</i></div>
-              <div className="modal-trigger" style={{display: "inline-block", cursor: "pointer"}} data-target="deleteModal"><i className="material-icons black-text">delete</i></div>
+              <div className="modal-trigger" onClick={() => this.deleteOneTransaction(item._id)} style={{display: "inline-block", cursor: "pointer"}} data-target="deleteModal"><i className="material-icons black-text">delete</i></div>
             </td>
             <td>
               <div id={item._id} className="modal">
@@ -192,6 +212,15 @@ export class AddNewTransactionIn extends Component {
       </table>  
     )
     
+  }
+
+  calculateTotalCost(){
+    var currentItem = this.state.allRecordedItem
+    var total = currentItem.reduce(function(prev, cur) {
+      return prev + cur.total;
+    }, 0);
+
+    return parseFloat(total).toFixed(2)
   }
 
   componentDidMount(){
@@ -259,6 +288,9 @@ export class AddNewTransactionIn extends Component {
             </div> : 
               this.renderRecordedItem()
             }
+          </div>
+          <div className="col xl12 l12 m12 s12">
+            <h6 className="right">ยอดรวม : {this.calculateTotalCost()}</h6>
           </div>
           <div className="col xl12 l12 m12 s12" style={{marginTop: "10px"}}>
             <div onClick={() => this.handleCurrentAction("create")} data-target="addModal" className="waves-effect waves-light btn-small modal-trigger" style={{position: "absolute", left: 0, zIndex: 0}}>
