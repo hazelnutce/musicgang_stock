@@ -37,7 +37,7 @@ export class NewTransactionItem extends Component {
     return (
          <div className="input-field col s12 m6 l6 xl6">
             <i className="prefix"><FontAwesomeIcon icon={icon}/></i>
-            <input {...input} id="autocomplete-input" autoComplete="off" type={type} className="autocomplete validate"/>
+            <input {...input} id="autocomplete-input" autoComplete="off" type={type} className="autocomplete"/>
             <label htmlFor="autocomplete-input" className={this.handleActiveLabel()}>{keyLabel}</label>
             {
             touched && error && 

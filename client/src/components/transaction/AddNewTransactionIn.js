@@ -23,7 +23,8 @@ export class AddNewTransactionIn extends Component {
       selectedDay: undefined,
       allRecordedItem: [],
       lastCurrentAction: "create",
-      currentItemId: null
+      currentItemId: null,
+      resetSignal: false
     }
   }
 
@@ -38,6 +39,15 @@ export class AddNewTransactionIn extends Component {
         .substring(1);
     }
     return s4() + s4() + '-' + s4() + '-' + s4() + '-' + s4() + '-' + s4() + s4() + s4();
+  }
+
+  numberWithCommas(x) {
+    if(x != null){
+      var parts = x.toString().split(".");
+      parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+      return parts.join(".");
+    }
+    return null
   }
 
   calculateSummaryRow = (itemProperties) => {
@@ -63,9 +73,9 @@ export class AddNewTransactionIn extends Component {
             <h6>สรุปรายการสินค้า</h6>
             <p>
               ชื่อสินค้า : {item.itemName} <br/> 
-              ราคาสินค้า  : {parseFloat(item.cost).toFixed(2)} บาท <br />
+              ราคาสินค้า  : {this.numberWithCommas(parseFloat(item.cost).toFixed(2))} บาท <br />
               จำนวนสินค้า : {itemProperties.itemAmount} ชิ้น <br />
-              ราคารวม : {parseFloat(total).toFixed(2)} บาท
+              ราคารวม : {this.numberWithCommas(parseFloat(total).toFixed(2))} บาท
             </p>
           </div>
           
@@ -114,17 +124,21 @@ export class AddNewTransactionIn extends Component {
     if(this.state.lastCurrentAction === "create"){
       //reset form
       this.props.reset()
+      this.setState({resetSignal: true})
+      setTimeout(() => {
+        this.setState({resetSignal: false})
+      }, 250)
 
       //prepare value
       const {cost, formatCost} = this.filterItem(values.itemName)[0]
       values.discount = parseFloat(values.discount) || 0
-      values.formatDiscount = values.discount === "" ? null :  values.discount
+      values.formatDiscount = this.numberWithCommas(values.discount === "" ? null :  parseFloat(values.discount).toFixed(2))
       values.overcost = parseFloat(values.overcost) || 0
-      values.formatOvercost = values.overcost === "" ? null :  values.overcost
+      values.formatOvercost = this.numberWithCommas(values.overcost === "" ? null :  parseFloat(values.overcost).toFixed(2))
       values.cost = cost
-      values.formatCost = formatCost
+      values.formatCost = this.numberWithCommas(formatCost)
       values.total = parseFloat(cost * values.itemAmount - (parseFloat(values.discount) || 0) + (parseFloat(values.overcost) || 0))
-      values.formatTotal = parseFloat(cost * values.itemAmount - (parseFloat(values.discount) || 0) + (parseFloat(values.overcost) || 0)).toFixed(2)
+      values.formatTotal = this.numberWithCommas(parseFloat(cost * values.itemAmount - (parseFloat(values.discount) || 0) + (parseFloat(values.overcost) || 0)).toFixed(2))
       values._id = this.guid()
 
       //set state with new value
@@ -133,20 +147,24 @@ export class AddNewTransactionIn extends Component {
     else if(this.state.lastCurrentAction === "edit"){
       //reset form
       this.props.reset()
+      this.setState({resetSignal: true})
+      setTimeout(() => {
+        this.setState({resetSignal: false})
+      }, 250)
 
       //prepare value
       const {cost, formatCost} = this.filterItem(values.itemName)[0]
       values.cost = cost
-      values.formatCost = formatCost
+      values.formatCost = this.numberWithCommas(formatCost)
       values.total = parseFloat(cost * values.itemAmount - (parseFloat(values.discount) || 0) + (parseFloat(values.overcost) || 0))
-      values.formatTotal = parseFloat(cost * values.itemAmount - (parseFloat(values.discount) || 0) + (parseFloat(values.overcost) || 0)).toFixed(2)
+      values.formatTotal = this.numberWithCommas(parseFloat(cost * values.itemAmount - (parseFloat(values.discount) || 0) + (parseFloat(values.overcost) || 0)).toFixed(2))
       var currentItem = this.state.allRecordedItem
       var arrayIndex = currentItem.findIndex(obj => obj._id === this.state.currentItemId)
       values._id = this.guid()
       values.discount = parseFloat(values.discount) || 0
-      values.formatDiscount = values.discount === "" ? null :  values.discount
+      values.formatDiscount = this.numberWithCommas(values.discount === "" ? null :  parseFloat(values.discount).toFixed(2))
       values.overcost = parseFloat(values.overcost) || 0
-      values.formatOvercost = values.overcost === "" ? null :  values.overcost
+      values.formatOvercost = this.numberWithCommas(values.overcost === "" ? null :  parseFloat(values.overcost).toFixed(2))
       currentItem[arrayIndex] = values
 
       //set state with new value
@@ -163,8 +181,8 @@ export class AddNewTransactionIn extends Component {
             <td>{item.itemName}</td>
             <td>{item.formatCost}</td>
             <td>{item.itemAmount}</td>
-            <td>{item.formatDiscount != null ? parseFloat(item.formatDiscount).toFixed(2) : "-"}</td>
-            <td>{item.formatOvercost != null ? parseFloat(item.formatOvercost).toFixed(2) : "-"}</td>
+            <td>{item.formatDiscount != null ? item.formatDiscount : "-"}</td>
+            <td>{item.formatOvercost != null ? item.formatOvercost : "-"}</td>
             <td>{item.formatTotal}</td>
             <td>
               <div className="modal-trigger" onClick={() => this.handleCurrentAction("edit", item)} style={{display: "inline-block", marginRight: "10px", cursor: "pointer"}} data-target="addModal"><i className="material-icons black-text">edit</i></div>
@@ -220,7 +238,7 @@ export class AddNewTransactionIn extends Component {
       return prev + cur.total;
     }, 0);
 
-    return parseFloat(total).toFixed(2)
+    return this.numberWithCommas(parseFloat(total).toFixed(2))
   }
 
   componentDidMount(){
@@ -239,7 +257,6 @@ export class AddNewTransactionIn extends Component {
   }
 
   render() {
-    console.log(this.state.allRecordedItem)
     const {stockName, items} = this.props.location.state
     const {invalid} = this.props
     var submitButtonClassName = invalid ? "disabled" : ""
@@ -301,7 +318,7 @@ export class AddNewTransactionIn extends Component {
         <div id="addModal" className="modal modal-fixed-footer">
           <div className="modal-content">
               <div className="container-fluid">
-                <NewTransactionForm items={items} mode={"Import"}/>
+                <NewTransactionForm items={items} mode={"Import"} resetSignal={this.state.resetSignal}/>
               </div>
               <div className="divider"></div>
               <div className="container-fluid">
@@ -332,7 +349,7 @@ function validate(values, props){
       errors.itemName = "กรุณาระบุชื่อสินค้าที่มีอยู่ในคลังสินค้า"
     }
     else if(filteredItem.length === 1){
-      if(parseFloat(values.discount) >= filteredItem[0].cost){
+      if(parseFloat(values.discount) >= filteredItem[0].cost * values.itemAmount){
         errors.discount = "ส่วนลดสินค้าต้องน้อยกว่าราคาสินค้า"
       }
     }

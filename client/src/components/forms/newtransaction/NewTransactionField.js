@@ -29,6 +29,14 @@ export class NewTransactionField extends Component {
     return this.props.input.value !== "" ? "active" : ""
   }
 
+  componentWillReceiveProps(prevProps){
+    if(this.props.resetSignal !== prevProps.resetSignal){
+      if(this.props.resetSignal !== null && this.props.resetSignal === true){
+        this.setState({isCheck: false})
+      }
+    }
+  }
+
   render() {
     const {haveCheckBox} = this.props
     if(haveCheckBox){
