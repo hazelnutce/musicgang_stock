@@ -29,9 +29,15 @@ export class NewTransactionField extends Component {
     return this.props.input.value !== "" ? "active" : ""
   }
 
-  componentWillReceiveProps(prevProps){
-    if(this.props.resetSignal !== prevProps.resetSignal){
-      if(this.props.resetSignal !== null && this.props.resetSignal === true){
+  componentWillReceiveProps(){
+    if(this.props.resetSignal !== null && this.props.resetSignal === true){
+      this.setState({isCheck: false})
+    }
+    if(this.props.editSignal !== null && this.props.editSignal === true){
+      if(this.props.input.value !== "0.00"){
+        this.setState({isCheck: true})
+      }
+      else{
         this.setState({isCheck: false})
       }
     }

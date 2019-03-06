@@ -24,7 +24,8 @@ export class AddNewTransactionIn extends Component {
       allRecordedItem: [],
       lastCurrentAction: "create",
       currentItemId: null,
-      resetSignal: false
+      resetSignal: false,
+      editSignal: false
     }
   }
 
@@ -93,18 +94,40 @@ export class AddNewTransactionIn extends Component {
   handleCurrentAction(action, item = null){
     this.setState({lastCurrentAction: action, currentItemId: item != null ? item._id : null})
     if(action === "create"){
-      this.props.initialize({
-        itemName: "",
-        itemAmount: 1,
+      this.setState({resetSignal: true}, () => {
+        this.props.initialize({
+          itemName: "",
+          itemAmount: 1,
+        })
       })
+      setTimeout(() => {
+        this.setState({resetSignal: false})
+      }, 250)
+      
     }
     else if(action === "edit"){
-      this.props.initialize({
-        itemName: item.itemName,
-        itemAmount: item.itemAmount,
-        discount: item.formatDiscount,
-        overcost: item.formatOvercost
-      })
+      if(item.formatDiscount !== "0.00" || item.formatOvercost !== "0.00"){
+        this.setState({editSignal: true}, () => {
+          this.props.initialize({
+            itemName: item.itemName,
+            itemAmount: item.itemAmount,
+            discount: item.formatDiscount,
+            overcost: item.formatOvercost
+          })
+        })
+        setTimeout(() => {
+          this.setState({editSignal: false})
+        }, 250)
+      }
+      else{
+        this.props.initialize({
+          itemName: item.itemName,
+          itemAmount: item.itemAmount,
+          discount: item.formatDiscount,
+          overcost: item.formatOvercost
+        })
+      }
+      
     }
   }
 
@@ -315,10 +338,20 @@ export class AddNewTransactionIn extends Component {
             </div>
           </div>
         </div> {/*row*/}
+        <div className="divider"></div>
+        <div className="col xl12 l12 m12 s12" style={{marginTop: "10px"}}>
+          <div onClick={() => this.props.history.goBack()} className="waves-effect waves-light btn-small right red">
+              ยกเลิก  
+          </div>
+          <div className={`waves-effect waves-light btn-small right green ${this.state.allRecordedItem.length === 0 ? "disabled" : ""}`} 
+              style={{marginRight: "10px"}}>
+              บันทึก  
+          </div>
+        </div>
         <div id="addModal" className="modal modal-fixed-footer">
           <div className="modal-content">
               <div className="container-fluid">
-                <NewTransactionForm items={items} mode={"Import"} resetSignal={this.state.resetSignal}/>
+                <NewTransactionForm items={items} mode={"Import"} resetSignal={this.state.resetSignal} editSignal={this.state.editSignal}/>
               </div>
               <div className="divider"></div>
               <div className="container-fluid">

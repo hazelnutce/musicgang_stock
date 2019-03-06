@@ -15,3 +15,4 @@ export const ERROR_CREATE_ITEM = "error_create_item"
 export const ERROR_EDIT_ITEM = "error_edit_item"
 
 export const FETCH_STOCK_IN_TRANSACTION = "fetch_stock_in_transaction"
+export const HANDLE_CHANGE_ON_TRANSACTION = "handle_change_on_transaction"

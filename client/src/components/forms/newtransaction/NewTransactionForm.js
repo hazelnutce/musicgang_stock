@@ -10,7 +10,7 @@ import { NewTransactionCheckbox} from './NewTransactionCheckbox'
 export class NewTransactionForm extends Component {
   
   render() {
-    const {items, mode, resetSignal} = this.props
+    const {items, mode, resetSignal, editSignal} = this.props
     if(mode === "Import"){
       return (
         <div>
@@ -39,6 +39,7 @@ export class NewTransactionForm extends Component {
                 haveCheckBox={true}
                 checkBoxLabel={"ส่วนลดเพิ่มเติม"}
                 resetSignal={resetSignal}
+                editSignal={editSignal}
                 normalize={(val, prevVal) => {
                   if (val) {
                     return (/^\d+\.{0,1}\d{0,2}$/.test(val)) ? val : prevVal
@@ -58,6 +59,7 @@ export class NewTransactionForm extends Component {
                   haveCheckBox={true}
                   checkBoxLabel={"คิดเงินเกิน"}
                   resetSignal={resetSignal}
+                  editSignal={editSignal}
                   normalize={(val, prevVal) => {
                     if (val) {
                       return (/^\d+\.{0,1}\d{0,2}$/.test(val)) ? val : prevVal
@@ -98,6 +100,7 @@ export class NewTransactionForm extends Component {
                 haveCheckBox={true}
                 checkBoxLabel={"ส่วนลดเพิ่มเติม"}
                 resetSignal={resetSignal}
+                editSignal={editSignal}
                 normalize={(val, prevVal) => {
                   if (val) {
                     return (/^\d+\.{0,1}\d{0,2}$/.test(val)) ? val : prevVal
@@ -117,6 +120,7 @@ export class NewTransactionForm extends Component {
                   haveCheckBox={true}
                   checkBoxLabel={"คิดเงินเกิน"}
                   resetSignal={resetSignal}
+                  editSignal={editSignal}
                   normalize={(val, prevVal) => {
                     if (val) {
                       return (/^\d+\.{0,1}\d{0,2}$/.test(val)) ? val : prevVal

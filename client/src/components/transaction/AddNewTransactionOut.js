@@ -12,6 +12,7 @@ import MomentLocaleUtils, {
   parseDate,
 } from 'react-day-picker/moment';
 import {fetchItems} from '../../actions/item'
+import {handleOnChangeInCurrentItem} from '../../actions/transaction'
 
 import 'moment/locale/th';
 import 'react-day-picker/lib/style.css';
@@ -25,7 +26,8 @@ export class AddNewTransactionOut extends Component {
       allRecordedItem: [],
       lastCurrentAction: "create",
       currentItemId: null,
-      resetSignal: false
+      resetSignal: false,
+      editSignal: false
     }
   }
 
@@ -97,18 +99,40 @@ export class AddNewTransactionOut extends Component {
   handleCurrentAction(action, item = null){
     this.setState({lastCurrentAction: action, currentItemId: item != null ? item._id : null})
     if(action === "create"){
-      this.props.initialize({
-        itemName: "",
-        itemAmount: 1,
+      this.setState({resetSignal: true}, () => {
+        this.props.initialize({
+          itemName: "",
+          itemAmount: 1,
+        })
       })
+      setTimeout(() => {
+        this.setState({resetSignal: false})
+      }, 250)
+      
     }
     else if(action === "edit"){
-      this.props.initialize({
-        itemName: item.itemName,
-        itemAmount: item.itemAmount,
-        discount: item.formatDiscount,
-        overcost: item.formatOvercost
-      })
+      if(item.formatDiscount !== "0.00" || item.formatOvercost !== "0.00"){
+        this.setState({editSignal: true}, () => {
+          this.props.initialize({
+            itemName: item.itemName,
+            itemAmount: item.itemAmount,
+            discount: item.formatDiscount,
+            overcost: item.formatOvercost
+          })
+        })
+        setTimeout(() => {
+          this.setState({editSignal: false})
+        }, 250)
+      }
+      else{
+        this.props.initialize({
+          itemName: item.itemName,
+          itemAmount: item.itemAmount,
+          discount: item.formatDiscount,
+          overcost: item.formatOvercost
+        })
+      }
+      
     }
   }
 
@@ -120,7 +144,9 @@ export class AddNewTransactionOut extends Component {
     }
 
     //set state with new value
-    this.setState({allRecordedItem: currentItem})
+    this.setState({allRecordedItem: currentItem}, () => {
+      this.props.handleOnChangeInCurrentItem(this.state.allRecordedItem)
+    })
 
   }
 
@@ -146,7 +172,9 @@ export class AddNewTransactionOut extends Component {
       values._id = this.guid()
 
       //set state with new value
-      this.setState({allRecordedItem: [...this.state.allRecordedItem, values]})
+      this.setState({allRecordedItem: [...this.state.allRecordedItem, values]}, () => {
+        this.props.handleOnChangeInCurrentItem(this.state.allRecordedItem)
+      })
     }
     else if(this.state.lastCurrentAction === "edit"){
       //reset form
@@ -172,7 +200,9 @@ export class AddNewTransactionOut extends Component {
       currentItem[arrayIndex] = values
 
       //set state with new value
-      this.setState({allRecordedItem: currentItem})
+      this.setState({allRecordedItem: currentItem}, () => {
+        this.props.handleOnChangeInCurrentItem(this.state.allRecordedItem)
+      })
     }
     
   }
@@ -317,10 +347,20 @@ export class AddNewTransactionOut extends Component {
             </div>
           </div>
         </div> {/*row*/}
+        <div className="divider"></div>
+        <div className="col xl12 l12 m12 s12" style={{marginTop: "10px"}}>
+          <div onClick={() => this.props.history.goBack()} className="waves-effect waves-light btn-small right red">
+              ยกเลิก  
+          </div>
+          <div className={`waves-effect waves-light btn-small right green ${this.state.allRecordedItem.length === 0 ? "disabled" : ""}`} 
+              style={{marginRight: "10px"}}>
+              บันทึก  
+          </div>
+        </div>
         <div id="addModal" className="modal modal-fixed-footer">
           <div className="modal-content">
               <div className="container-fluid">
-                <NewTransactionForm items={items} mode={"Export"} resetSignal={this.state.resetSignal}/>
+                <NewTransactionForm items={items} mode={"Export"} resetSignal={this.state.resetSignal} editSignal={this.state.editSignal}/>
               </div>
               <div className="divider"></div>
               <div className="container-fluid">
@@ -346,6 +386,19 @@ function validate(values, props){
 
   if(values.itemName){
     var filteredItem = props.location.state.items.filter(item => item.itemName === values.itemName)
+    var filteredCurrentList = null
+    if(props.transaction.currentItemList !== null){
+      filteredCurrentList = props.transaction.currentItemList.filter(item => item.itemName === values.itemName)
+    }
+
+    var currentItemAmount = 0
+    if(filteredCurrentList != null){
+      currentItemAmount = filteredCurrentList.reduce(function(prev, cur) {
+        return prev + cur.itemAmount;
+      }, 0);
+    }
+    
+    
     if(filteredItem === null || filteredItem.length === 0){
       errors.itemName = "กรุณาระบุชื่อสินค้าที่มีอยู่ในคลังสินค้า"
     }
@@ -353,12 +406,27 @@ function validate(values, props){
       if(parseFloat(values.discount) >= filteredItem[0].revenue * values.itemAmount){
         errors.discount = "ส่วนลดสินค้าต้องน้อยกว่าราคาสินค้า"
       }
+
+      if(values.itemAmount > filteredItem[0].itemRemaining - currentItemAmount){
+        var remainingItem = filteredItem[0].itemRemaining - currentItemAmount
+        if(remainingItem === 0){
+          errors.itemAmount = `สินค้าหมด`
+        }
+        else{
+          errors.itemAmount = `มากสุด : ${remainingItem}`
+        }
+        
+      }
     }
+
   }
 
   if(parseFloat(values.overcost) >= 1000){
     errors.overcost = "ส่วนเกินสินค้าไม่ควรเกิน 1,000 บาท"
   }
+
+  
+  
 
   return errors
 }
@@ -380,9 +448,10 @@ AddNewTransactionOut = connect(
     itemProperties.discount = parseFloat(selector(state, 'discount'))
     return{
       itemProperties,
-      items: state.items
+      items: state.items,
+      transaction : state.transaction
     }
-  }, {fetchItems}
+  }, {fetchItems, handleOnChangeInCurrentItem}
 )(AddNewTransactionOut)
 
 export default AddNewTransactionOut
