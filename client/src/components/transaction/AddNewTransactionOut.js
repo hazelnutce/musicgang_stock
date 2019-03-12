@@ -12,6 +12,7 @@ import MomentLocaleUtils, {
   parseDate,
 } from 'react-day-picker/moment';
 import {fetchItems} from '../../actions/item'
+import {exportNewTransaction} from '../../actions/transaction'
 import {handleOnChangeInCurrentItem} from '../../actions/transaction'
 
 import 'moment/locale/th';
@@ -103,6 +104,7 @@ export class AddNewTransactionOut extends Component {
         this.props.initialize({
           itemName: "",
           itemAmount: 1,
+          isUsedInMusicGang: false
         })
       })
       setTimeout(() => {
@@ -117,7 +119,8 @@ export class AddNewTransactionOut extends Component {
             itemName: item.itemName,
             itemAmount: item.itemAmount,
             discount: item.formatDiscount,
-            overcost: item.formatOvercost
+            overcost: item.formatOvercost,
+            isUsedInMusicGang: item.isUsedInMusicGang
           })
         })
         setTimeout(() => {
@@ -129,7 +132,8 @@ export class AddNewTransactionOut extends Component {
           itemName: item.itemName,
           itemAmount: item.itemAmount,
           discount: item.formatDiscount,
-          overcost: item.formatOvercost
+          overcost: item.formatOvercost,
+          isUsedInMusicGang: item.isUsedInMusicGang
         })
       }
       
@@ -169,6 +173,7 @@ export class AddNewTransactionOut extends Component {
       values.formatRevenue = this.numberWithCommas(formatRevenue)
       values.total = parseFloat(revenue * values.itemAmount - (parseFloat(values.discount) || 0) + (parseFloat(values.overcost) || 0))
       values.formatTotal = this.numberWithCommas(parseFloat(revenue * values.itemAmount - (parseFloat(values.discount) || 0) + (parseFloat(values.overcost) || 0)).toFixed(2))
+      values.type = "export"
       values._id = this.guid()
 
       //set state with new value
@@ -197,6 +202,7 @@ export class AddNewTransactionOut extends Component {
       values.formatDiscount = this.numberWithCommas(values.discount === "" ? null :  parseFloat(values.discount).toFixed(2))
       values.overcost = parseFloat(values.overcost) || 0
       values.formatOvercost = this.numberWithCommas(values.overcost === "" ? null :  parseFloat(values.overcost).toFixed(2))
+      values.type = "export"
       currentItem[arrayIndex] = values
 
       //set state with new value
@@ -215,24 +221,12 @@ export class AddNewTransactionOut extends Component {
             <td>{item.itemName}</td>
             <td>{item.formatRevenue}</td>
             <td>{item.itemAmount}</td>
-            <td>{item.formatDiscount != null ? item.formatDiscount : "-"}</td>
-            <td>{item.formatOvercost != null ? item.formatOvercost : "-"}</td>
-            <td>{item.formatTotal}</td>
+            <td>{item.formatDiscount != null && item.isUsedInMusicGang === false ? item.formatDiscount : "-"}</td>
+            <td>{item.formatOvercost != null && item.isUsedInMusicGang === false ? item.formatOvercost : "-"}</td>
+            <td>{item.isUsedInMusicGang === false ? item.formatTotal : "0.00"}</td>
             <td>
               <div className="modal-trigger" onClick={() => this.handleCurrentAction("edit", item)} style={{display: "inline-block", marginRight: "10px", cursor: "pointer"}} data-target="addModal"><i className="material-icons black-text">edit</i></div>
-              <div className="modal-trigger" onClick={() => this.deleteOneTransaction(item._id)} style={{display: "inline-block", cursor: "pointer"}} data-target="deleteModal"><i className="material-icons black-text">delete</i></div>
-            </td>
-            <td>
-              <div id={item._id} className="modal">
-                <div className="modal-content">
-                    <h4>ยืนยันการลบ</h4>
-                    <p>คุณต้องการจะลบสินค้า <b>{item.itemName}</b> ใช่หรือไม่ ?</p>
-                </div>
-                <div className="modal-footer">
-                    <button className="green modal-close waves-effect waves-light btn" style={{position: "relative", right: "20px"}}><i className="material-icons right">add_circle</i>ยืนยัน</button> 
-                    <button className="red modal-close waves-effect waves-light btn"><i className="material-icons right">cancel</i>ยกเลิก</button>
-                </div>
-              </div>
+              <div onClick={() => this.deleteOneTransaction(item._id)} style={{display: "inline-block", cursor: "pointer"}}><i className="material-icons black-text">delete</i></div>
             </td>
           </tr>
         )
@@ -266,7 +260,7 @@ export class AddNewTransactionOut extends Component {
   }
 
   calculateTotalCost(){
-    var currentItem = this.state.allRecordedItem
+    var currentItem = this.state.allRecordedItem.filter(x => x.isUsedInMusicGang === false)
     var total = currentItem.reduce(function(prev, cur) {
       return prev + cur.total;
     }, 0);
@@ -277,8 +271,7 @@ export class AddNewTransactionOut extends Component {
   componentDidMount(){
     this.props.initialize({
       itemAmount: 1,
-      discountBy5 : false,
-      discountBy10 : false
+      isUsedInMusicGang: false
     })
     var elems = document.querySelectorAll('#addModal');
     M.Modal.init(elems, {
@@ -288,12 +281,29 @@ export class AddNewTransactionOut extends Component {
   }
 
   handleDayChange = (day) => {
-    this.setState({ selectedDay: day });
+    if((day instanceof Date)){
+      this.setState({ selectedDay: day });
+    }
+  }
+
+  addTransactions = (values, history) => {
+    const {stockId} = this.props.location.state
+    if(values.day === null){
+      values.day = new Date()
+    }
+    values.record.forEach((e) => {
+      return(
+        e.day = values.day,
+        e._stock = stockId
+      )
+    })
+    
+    this.props.exportNewTransaction(values.record, history)
   }
 
   render() {
     const {stockName, items} = this.props.location.state
-    const {invalid} = this.props
+    const {invalid, history, itemProperties, handleSubmit } = this.props
     var submitButtonClassName = invalid ? "disabled" : ""
     if(stockName == null || items == null){
         return(
@@ -349,10 +359,10 @@ export class AddNewTransactionOut extends Component {
         </div> {/*row*/}
         <div className="divider"></div>
         <div className="col xl12 l12 m12 s12" style={{marginTop: "10px"}}>
-          <div onClick={() => this.props.history.goBack()} className="waves-effect waves-light btn-small right red">
+          <div onClick={() => history.goBack()} className="waves-effect waves-light btn-small right red">
               ยกเลิก  
           </div>
-          <div className={`waves-effect waves-light btn-small right green ${this.state.allRecordedItem.length === 0 ? "disabled" : ""}`} 
+          <div onClick={() => this.addTransactions({day: this.state.selectedDay, record: this.state.allRecordedItem}, history)} className={`waves-effect waves-light btn-small right green ${this.state.allRecordedItem.length === 0 ? "disabled" : ""}`} 
               style={{marginRight: "10px"}}>
               บันทึก  
           </div>
@@ -364,11 +374,11 @@ export class AddNewTransactionOut extends Component {
               </div>
               <div className="divider"></div>
               <div className="container-fluid">
-                {this.calculateSummaryRow(this.props.itemProperties)}
+                {this.calculateSummaryRow(itemProperties)}
               </div>
           </div>
           <div className="modal-footer"> 
-            <button onClick={this.props.handleSubmit((values) => this.addOneTransaction(values))} className={`modal-close waves-effect waves-light btn-small green white-text ${submitButtonClassName}`} style={{marginRight: "20px"}}>บันทึก</button>
+            <button onClick={handleSubmit((values) => this.addOneTransaction(values))} className={`modal-close waves-effect waves-light btn-small green white-text ${submitButtonClassName}`} style={{marginRight: "20px"}}>บันทึก</button>
             <button className="modal-close waves-effect red btn-flat white-text" style={{marginRight: "20px"}}>ยกเลิก</button>
           </div>
         </div>
@@ -425,9 +435,6 @@ function validate(values, props){
     errors.overcost = "ส่วนเกินสินค้าไม่ควรเกิน 1,000 บาท"
   }
 
-  
-  
-
   return errors
 }
 
@@ -451,7 +458,7 @@ AddNewTransactionOut = connect(
       items: state.items,
       transaction : state.transaction
     }
-  }, {fetchItems, handleOnChangeInCurrentItem}
+  }, {fetchItems, handleOnChangeInCurrentItem, exportNewTransaction}
 )(AddNewTransactionOut)
 
 export default AddNewTransactionOut

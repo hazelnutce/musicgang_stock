@@ -16,3 +16,7 @@ export const ERROR_EDIT_ITEM = "error_edit_item"
 
 export const FETCH_STOCK_IN_TRANSACTION = "fetch_stock_in_transaction"
 export const HANDLE_CHANGE_ON_TRANSACTION = "handle_change_on_transaction"
+export const NEW_IMPORT_TRANSACTION = "new_import_transaction"
+export const NEW_EXPORT_TRANSACTION = "new_export_transaction"
+export const IMPORT_TRANSACTION_ERROR = "import_transaction_error"
+export const EXPORT_TRANSACTION_ERROR = "export_transaction_error"

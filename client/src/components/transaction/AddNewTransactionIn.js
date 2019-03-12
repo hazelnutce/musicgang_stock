@@ -11,6 +11,7 @@ import MomentLocaleUtils, {
   parseDate,
 } from 'react-day-picker/moment';
 import {fetchItems} from '../../actions/item'
+import {importNewTransaction} from '../../actions/transaction'
 import {NewTransactionForm} from '../forms/newtransaction/NewTransactionForm'
 import 'moment/locale/th';
 import 'react-day-picker/lib/style.css';
@@ -20,7 +21,7 @@ export class AddNewTransactionIn extends Component {
     super(props)
 
     this.state = {
-      selectedDay: undefined,
+      selectedDay: null,
       allRecordedItem: [],
       lastCurrentAction: "create",
       currentItemId: null,
@@ -140,7 +141,6 @@ export class AddNewTransactionIn extends Component {
 
     //set state with new value
     this.setState({allRecordedItem: currentItem})
-
   }
 
   addOneTransaction(values){
@@ -162,6 +162,7 @@ export class AddNewTransactionIn extends Component {
       values.formatCost = this.numberWithCommas(formatCost)
       values.total = parseFloat(cost * values.itemAmount - (parseFloat(values.discount) || 0) + (parseFloat(values.overcost) || 0))
       values.formatTotal = this.numberWithCommas(parseFloat(cost * values.itemAmount - (parseFloat(values.discount) || 0) + (parseFloat(values.overcost) || 0)).toFixed(2))
+      values.type = "import"
       values._id = this.guid()
 
       //set state with new value
@@ -188,6 +189,7 @@ export class AddNewTransactionIn extends Component {
       values.formatDiscount = this.numberWithCommas(values.discount === "" ? null :  parseFloat(values.discount).toFixed(2))
       values.overcost = parseFloat(values.overcost) || 0
       values.formatOvercost = this.numberWithCommas(values.overcost === "" ? null :  parseFloat(values.overcost).toFixed(2))
+      values.type = "import"
       currentItem[arrayIndex] = values
 
       //set state with new value
@@ -209,19 +211,7 @@ export class AddNewTransactionIn extends Component {
             <td>{item.formatTotal}</td>
             <td>
               <div className="modal-trigger" onClick={() => this.handleCurrentAction("edit", item)} style={{display: "inline-block", marginRight: "10px", cursor: "pointer"}} data-target="addModal"><i className="material-icons black-text">edit</i></div>
-              <div className="modal-trigger" onClick={() => this.deleteOneTransaction(item._id)} style={{display: "inline-block", cursor: "pointer"}} data-target="deleteModal"><i className="material-icons black-text">delete</i></div>
-            </td>
-            <td>
-              <div id={item._id} className="modal">
-                <div className="modal-content">
-                    <h4>ยืนยันการลบ</h4>
-                    <p>คุณต้องการจะลบสินค้า <b>{item.itemName}</b> ใช่หรือไม่ ?</p>
-                </div>
-                <div className="modal-footer">
-                    <button className="green modal-close waves-effect waves-light btn" style={{position: "relative", right: "20px"}}><i className="material-icons right">add_circle</i>ยืนยัน</button> 
-                    <button className="red modal-close waves-effect waves-light btn"><i className="material-icons right">cancel</i>ยกเลิก</button>
-                </div>
-              </div>
+              <div onClick={() => this.deleteOneTransaction(item._id)} style={{display: "inline-block", cursor: "pointer"}}><i className="material-icons black-text">delete</i></div>
             </td>
           </tr>
         )
@@ -269,19 +259,36 @@ export class AddNewTransactionIn extends Component {
       itemAmount: 1,
     })
     var elems = document.querySelectorAll('#addModal');
-    M.Modal.init(elems, {
-      opacity: 0.6,
-      endingTop: '20%',
-    });
+      M.Modal.init(elems, {
+        opacity: 0.6,
+        endingTop: '20%',
+      });
   }
 
   handleDayChange = (day) => {
-    this.setState({ selectedDay: day });
+    if((day instanceof Date)){
+      this.setState({ selectedDay: day });
+    }
+  }
+
+  addTransactions = (values, history) => {
+    const {stockId} = this.props.location.state
+    if(values.day === null){
+      values.day = new Date()
+    }
+    values.record.forEach((e) => {
+      return(
+        e.day = values.day,
+        e._stock = stockId
+      )
+    })
+    
+    this.props.importNewTransaction(values.record, history)
   }
 
   render() {
     const {stockName, items} = this.props.location.state
-    const {invalid} = this.props
+    const {invalid, history, itemProperties, handleSubmit } = this.props
     var submitButtonClassName = invalid ? "disabled" : ""
     if(stockName == null || items == null){
         return(
@@ -340,10 +347,10 @@ export class AddNewTransactionIn extends Component {
         </div> {/*row*/}
         <div className="divider"></div>
         <div className="col xl12 l12 m12 s12" style={{marginTop: "10px"}}>
-          <div onClick={() => this.props.history.goBack()} className="waves-effect waves-light btn-small right red">
+          <div onClick={() => history.goBack()} className="waves-effect waves-light btn-small right red">
               ยกเลิก  
           </div>
-          <div className={`waves-effect waves-light btn-small right green ${this.state.allRecordedItem.length === 0 ? "disabled" : ""}`} 
+          <div onClick={() => this.addTransactions({day: this.state.selectedDay, record: this.state.allRecordedItem}, history)} className={`waves-effect waves-light btn-small right green ${this.state.allRecordedItem.length === 0 ? "disabled" : ""}`} 
               style={{marginRight: "10px"}}>
               บันทึก  
           </div>
@@ -355,11 +362,11 @@ export class AddNewTransactionIn extends Component {
               </div>
               <div className="divider"></div>
               <div className="container-fluid">
-                {this.calculateSummaryRow(this.props.itemProperties)}
+                {this.calculateSummaryRow(itemProperties)}
               </div>
           </div>
           <div className="modal-footer"> 
-            <div onClick={this.props.handleSubmit((values) => this.addOneTransaction(values))} className={`modal-close waves-effect waves-light btn-small green white-text ${submitButtonClassName}`} style={{marginRight: "20px"}}>บันทึก</div>
+            <div onClick={handleSubmit((values) => this.addOneTransaction(values))} className={`modal-close waves-effect waves-light btn-small green white-text ${submitButtonClassName}`} style={{marginRight: "20px"}}>บันทึก</div>
             <div className="modal-close waves-effect waves-light btn-small red white-text" style={{marginRight: "20px"}}>ยกเลิก</div>
           </div>
         </div>
@@ -413,7 +420,7 @@ AddNewTransactionIn = connect(
       itemProperties,
       items: state.items
     }
-  }, {fetchItems}
+  }, {fetchItems, importNewTransaction}
 )(AddNewTransactionIn)
 
 export default AddNewTransactionIn

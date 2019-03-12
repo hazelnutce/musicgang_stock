@@ -40,7 +40,7 @@ module.exports = (app, Db, Item, Category) => {
             formatCost: parseFloat(cost).toFixed(2),
             formatRevenue: parseFloat(income).toFixed(2),
             category: category,
-            _user:  req.user.id.toString(),
+            _user: req.user.id.toString(),
             _category: existCategory,
             _stock: stockId,
             _id: guid()
