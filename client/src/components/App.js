@@ -29,6 +29,7 @@ import TransactionPage from './transaction/TransctionPage'
 import TransactionSummaryPage from './transaction/TransactionSummaryPage'
 import TransactionImport from './transaction/AddNewTransactionIn'
 import TransactionExport from './transaction/AddNewTransactionOut'
+import EditTransaction from './transaction/EditTransaction'
 import ErrorNoticePage from './commons/ErrorProcessNotice'
 
 library.add([faTag, faGhost, faDollarSign, faHandHoldingUsd, faExclamation, faTags, faBoxes, faBoxes,
@@ -58,6 +59,7 @@ class App extends Component {
                 <Route exact path="/transactions/new/import" component={TransactionImport}></Route>
                 <Route exact path="/transactions/new/export" component={TransactionExport}></Route>
                 <Route exact path="/transactions/detail" component={TransactionSummaryPage}></Route>
+                <Route exact path="/transactions/edit" component={EditTransaction}></Route>
                 <Route component={ErrorNoticePage} />
               </Switch>
             {/* <Route path="/setting" component={SettingPage}></Route> */}

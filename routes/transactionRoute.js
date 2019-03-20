@@ -7,6 +7,11 @@ module.exports = (app, Db, Transaction, Stock) => {
         res.send(result)
     })
 
+    app.get('/api/transaction',requireLogin,(req,res) => {
+        var result = Transaction.find({_user: req.user.id.toString()})
+        res.send(result)
+    })
+
     app.post('/api/transaction/add', requireLogin, async (req,res) => {
         console.log(req.body)
         var allItem = req.body
@@ -15,7 +20,7 @@ module.exports = (app, Db, Transaction, Stock) => {
             return(
               e._user = req.user.id.toString()
             )
-          })
+        })
 
         //handle it all on front-end side
         //save it

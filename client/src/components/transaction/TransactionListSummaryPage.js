@@ -1,5 +1,13 @@
 import React, { Component } from 'react'
 import {MonthPicker} from '../commons/MonthPicker'
+import {connect} from 'react-redux'
+import _ from 'lodash'
+import moment from 'moment'
+import M from 'materialize-css'
+import {Link} from 'react-router-dom'
+
+import {fetchTransaction} from '../../actions/transaction'
+import {LoaderSpinner} from '../commons/LoaderSpinner'
 
 export class TransactionListSummaryPage extends Component {
     constructor(props){
@@ -10,23 +18,167 @@ export class TransactionListSummaryPage extends Component {
         var y = d.getFullYear()
 
         this.state = {
-            currentMonth :  y * 12 + n
+            currentMonth :  y * 12 + n,
+            loadingTransaction : false
         }
     }
 
     handleAddMonth = () => {
-        this.setState({currentMonth: this.state.currentMonth + 1})
+        this.setState({currentMonth: this.state.currentMonth + 1}, () => {
+            this.initToolTip()
+        })
     }
 
     handleMinusMonth = () => {
-        this.setState({currentMonth: this.state.currentMonth - 1})
+        this.setState({currentMonth: this.state.currentMonth - 1}, () => {
+            this.initToolTip()
+        })
     }
 
     handleSetMonth = (integerMonth) => {
-        this.setState({currentMonth: integerMonth})
+        this.setState({currentMonth: integerMonth}, () => {
+            this.initToolTip()
+        })
+    }
+
+    componentWillReceiveProps = () => {
+        setTimeout(() => {
+            this.initToolTip()
+        }, 200);
+        
+    }
+
+    componentDidMount = () => {
+        this.props.fetchTransaction()
+    }
+
+    componentDidUpdate = (prevProps) => {
+        if(prevProps.transaction !== this.props.transaction){
+            this.setState({
+                loadingTransaction: true,
+            }, () => {
+                this.initToolTip()
+            }) 
+        }
+    }
+
+    isSameDay = (d1, d2) => {
+        return d1.getFullYear() === d2.getFullYear() &&
+          d1.getMonth() === d2.getMonth() &&
+          d1.getDate() === d2.getDate();
+    }
+
+    isSameMonth = (d1, d2) => {
+        return d1.getMonth() === d2.getMonth() &&
+        d1.getFullYear() === d2.getFullYear();
+    }
+
+    sortDayForTransaction = (a,b) => {
+        var newADay = new Date(a.day)
+        var newBDay = new Date(b.day)
+        if(newADay < newBDay)
+            return -1
+        if(a.newADay > b.newBDay)
+            return 1
+        return 0
+    }
+
+    handleTooltipMessage = (discount, overcost, formatDiscount, formatOvercost) => {
+        if(discount === 0 && overcost !== 0){
+            return `คิดเงินเกิน : ${formatOvercost}`
+        }
+        else if(discount !== 0 && overcost === 0){
+            return `ส่วนลด : ${formatDiscount}`
+        }
+        else if(discount !== 0 && overcost !== 0){
+            return `ส่วนลด : ${formatDiscount} <br/> คิดเงินเกิน : ${formatOvercost}`
+        }
+        return null
+    }
+
+    handleMonthFilter = (monthConst) => {
+        var monthFilter = monthConst % 12
+        var yearFilter = monthConst / 12
+        return new Date(yearFilter, monthFilter, 1)
+    }
+
+    initToolTip = () => {
+        var elems = document.querySelectorAll('.tooltipped');
+        var options = {
+            position: "right"
+        }
+        M.Tooltip.init(elems, options);
+    }
+    
+    renderSmallImportTransaction = () => {
+        var {transactions} = this.props.transaction
+        var filteredTransaction = transactions.filter(x => x.type === "import" && this.isSameMonth(new Date(x.day), this.handleMonthFilter(this.state.currentMonth)))
+        filteredTransaction = filteredTransaction.sort(this.sortDayForTransaction)
+        return _.map(filteredTransaction, (item, index) => {
+            const {_id, itemName, itemAmount, formatTotal, discount, overcost, formatDiscount, formatOvercost, day} = item
+            var itemDay = new Date(day)
+            if(index > 0){
+                var previousItemDay = new Date(filteredTransaction[index-1].day)
+                if(this.isSameDay(itemDay, previousItemDay)){
+                    itemDay = null
+                }
+            }
+            var tooltipMessage = this.handleTooltipMessage(discount, overcost, formatDiscount, formatOvercost)
+            moment.locale('th')
+            
+            return(
+                <tr key={_id}>
+                    <td>{itemDay !== null ? moment(itemDay).format('ll') : null}</td>
+                    <td>{itemName}</td>
+                    <td>{itemAmount}</td>
+                    {tooltipMessage !== null && <td className="tooltipped" data-tooltip={tooltipMessage}>{formatTotal}</td>}
+                    {tooltipMessage === null && <td>{formatTotal}</td>}
+                    <td>
+                        <Link to={{ pathname: `/transactions/edit`, 
+                                state: { itemName }}}
+                                className="material-icons black-text">edit
+                        </Link>
+                    </td>
+                </tr>
+            )
+        })
+    }
+
+    renderSmallExportTransaction = () => {
+        var {transactions} = this.props.transaction
+        var filteredTransaction = transactions.filter(x => x.type === "export" && this.isSameMonth(new Date(x.day), this.handleMonthFilter(this.state.currentMonth)))
+        filteredTransaction = filteredTransaction.sort(this.sortDayForTransaction)
+        return _.map(filteredTransaction, (item, index) => {
+            const {_id, itemName, itemAmount, formatTotal, discount, overcost, formatDiscount, formatOvercost, day} = item
+            var itemDay = new Date(day)
+            if(index > 0){
+                var previousItemDay = new Date(filteredTransaction[index-1].day)
+                if(this.isSameDay(itemDay, previousItemDay)){
+                    itemDay = null
+                }
+            }
+            var tooltipMessage = this.handleTooltipMessage(discount, overcost, formatDiscount, formatOvercost)
+            moment.locale('th')
+            return(
+                <tr key={_id}>
+                    <td>{itemDay !== null ? moment(itemDay).format('ll') : null}</td>
+                    <td>{itemName}</td>
+                    <td>{itemAmount}</td>
+                    {tooltipMessage !== null && <td className="tooltipped" data-tooltip={tooltipMessage}>{formatTotal}</td>}
+                    {tooltipMessage === null && <td>{formatTotal}</td>}
+                    <td>
+                        <Link to={{ pathname: `/transactions/edit`, 
+                                state: { itemName }}}
+                                className="material-icons black-text">edit
+                        </Link>
+                    </td>
+                </tr>
+            )
+        })
     }
 
     render() {
+      if(this.state.loadingTransaction){
       const {isSelectAllTransaction, isSelectTransactionIn, isSelectTransactionOut} = this.props
       if(isSelectAllTransaction === true){
         return (
@@ -44,32 +196,20 @@ export class TransactionListSummaryPage extends Component {
                             <div className="col xl12 l12 m12 s12" style={{right: "5px", position: "relative"}}>
                                 <h6>สินค้านำเข้า</h6>
                             </div>
-                            <div className="col card small xl12 l12 m12 s12" style={{right: "5px", position: "relative"}}>
+                            <div className="col card small xl12 l12 m12 s12" style={{right: "5px", position: "relative", height: "auto"}}>
                             <table className="highlight">
                                 <thead>
                                 <tr>
-                                    <th>Name</th>
-                                    <th>Item Name</th>
-                                    <th>Item Price</th>
+                                    <th>วันที่</th>
+                                    <th>ชื่อสินค้า</th>
+                                    <th>จำนวน</th>
+                                    <th>ราคา</th>
+                                    <th></th>
                                 </tr>
                                 </thead>
                 
                                 <tbody>
-                                <tr>
-                                    <td>Alvin</td>
-                                    <td>Eclair</td>
-                                    <td>$0.87</td>
-                                </tr>
-                                <tr>
-                                    <td>Alan</td>
-                                    <td>Jellybean</td>
-                                    <td>$3.76</td>
-                                </tr>
-                                <tr>
-                                    <td>Jonathan</td>
-                                    <td>Lollipop</td>
-                                    <td>$7.00</td>
-                                </tr>
+                                    {this.renderSmallImportTransaction()}
                                 </tbody>
                             </table>
                         </div>
@@ -78,33 +218,21 @@ export class TransactionListSummaryPage extends Component {
                             <div className="col xl12 l12 m12 s12" style={{left: "5px", position: "relative"}}>
                                 <h6>สินค้านำออก</h6>
                             </div>
-                            <div className="col card small xl12 l12 m12 s12" style={{right: "5px", position: "relative"}}>
+                            <div className="col card small xl12 l12 m12 s12" style={{right: "5px", position: "relative", height: "auto"}}>
                                 <table className="highlight">
-                                    <thead>
-                                    <tr>
-                                        <th>Name</th>
-                                        <th>Item Name</th>
-                                        <th>Item Price</th>
-                                    </tr>
-                                    </thead>
+                                <thead>
+                                <tr>
+                                    <th>วันที่</th>
+                                    <th>ชื่อสินค้า</th>
+                                    <th>จำนวน</th>
+                                    <th>ราคา</th>
+                                    <th></th>
+                                </tr>
+                                </thead>
                     
-                                    <tbody>
-                                    <tr>
-                                        <td>Alvin</td>
-                                        <td>Eclair</td>
-                                        <td>$0.87</td>
-                                    </tr>
-                                    <tr>
-                                        <td>Alan</td>
-                                        <td>Jellybean</td>
-                                        <td>$3.76</td>
-                                    </tr>
-                                    <tr>
-                                        <td>Jonathan</td>
-                                        <td>Lollipop</td>
-                                        <td>$7.00</td>
-                                    </tr>
-                                    </tbody>
+                                <tbody>
+                                    {this.renderSmallExportTransaction()}
+                                </tbody>
                                 </table>
                             </div>
                         </div>
@@ -127,32 +255,20 @@ export class TransactionListSummaryPage extends Component {
                 <div className="col xl12 l12 m12 s12" style={{right: "5px", position: "relative"}}>
                     <h6>สินค้านำเข้า</h6>
                 </div>
-                <div className="col card small xl12 l12 m12 s12" style={{right: "5px", position: "relative"}}>
+                <div className="col card small xl12 l12 m12 s12" style={{right: "5px", position: "relative", height: "auto"}}>
                     <table className="highlight">
                         <thead>
-                        <tr>
-                            <th>Name</th>
-                            <th>Item Name</th>
-                            <th>Item Price</th>
-                        </tr>
+                            <tr>
+                                <th>วันที่</th>
+                                <th>ชื่อสินค้า</th>
+                                <th>จำนวน</th>
+                                <th>ราคา</th>
+                                <th></th>
+                            </tr>
                         </thead>
         
                         <tbody>
-                        <tr>
-                            <td>Alvin</td>
-                            <td>Eclair</td>
-                            <td>$0.87</td>
-                        </tr>
-                        <tr>
-                            <td>Alan</td>
-                            <td>Jellybean</td>
-                            <td>$3.76</td>
-                        </tr>
-                        <tr>
-                            <td>Jonathan</td>
-                            <td>Lollipop</td>
-                            <td>$7.00</td>
-                        </tr>
+                            {this.renderSmallImportTransaction()}
                         </tbody>
                     </table>
                 </div>
@@ -173,50 +289,38 @@ export class TransactionListSummaryPage extends Component {
                 <div className="col xl12 l12 m12 s12" style={{left: "5px", position: "relative"}}>
                     <h6>สินค้านำออก</h6>
                 </div>
-                <div className="col card small xl12 l12 m12 s12" style={{left: "5px", position: "relative", height: "500px"}}>
+                <div className="col card small xl12 l12 m12 s12" style={{left: "5px", position: "relative", height: "auto"}}>
                     <table className="highlight">
-                        <thead>
-                        <tr>
-                            <th>Name</th>
-                            <th>Item Name</th>
-                            <th>Item Price</th>
-                        </tr>
+                    <thead>
+                            <tr>
+                                <th>วันที่</th>
+                                <th>ชื่อสินค้า</th>
+                                <th>จำนวน</th>
+                                <th>ราคา</th>
+                                <th></th>
+                            </tr>
                         </thead>
         
                         <tbody>
-                        <tr>
-                            <td>Alvin</td>
-                            <td>Eclair</td>
-                            <td>$0.87</td>
-                        </tr>
-                        <tr>
-                            <td>Alan</td>
-                            <td>Jellybean</td>
-                            <td>$3.76</td>
-                        </tr>
-                        <tr>
-                            <td>Jonathan</td>
-                            <td>Lollipop</td>
-                            <td>$7.00</td>
-                        </tr>
-                        <tr>
-                            <td>Jonathan</td>
-                            <td>Lollipop</td>
-                            <td>$7.00</td>
-                        </tr>
-                        <tr>
-                            <td>Jonathan</td>
-                            <td>Lollipop</td>
-                            <td>$7.00</td>
-                        </tr>
+                            {this.renderSmallExportTransaction()}
                         </tbody>
                     </table>
                 </div>
             </div>
         )
       }
-    
-  }
+      }
+
+      else{
+          return(
+            <LoaderSpinner loading={this.state.loadingTransaction} color={'#123abc'}/>
+          )
+      }
+    }
 }
 
-export default TransactionListSummaryPage
+function mapStateToProps(state){
+    return {transaction : state.transaction}
+}
+
+export default connect(mapStateToProps, {fetchTransaction})(TransactionListSummaryPage)

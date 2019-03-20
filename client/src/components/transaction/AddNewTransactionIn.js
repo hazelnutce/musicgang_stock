@@ -271,7 +271,7 @@ export class AddNewTransactionIn extends Component {
     }
   }
 
-  addTransactions = (values, history) => {
+  addTransactions = (values, history) => { 
     const {stockId} = this.props.location.state
     if(values.day === null){
       values.day = new Date()
@@ -282,7 +282,6 @@ export class AddNewTransactionIn extends Component {
         e._stock = stockId
       )
     })
-    
     this.props.importNewTransaction(values.record, history)
   }
 
