@@ -273,7 +273,7 @@ export class AddNewTransactionIn extends Component {
 
   addTransactions = (values, history) => { 
     const {stockId} = this.props.location.state
-    if(values.day === null){
+    if(values.day === null || values.day === undefined){
       values.day = new Date()
     }
     values.record.forEach((e) => {

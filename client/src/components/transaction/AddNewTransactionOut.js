@@ -175,6 +175,10 @@ export class AddNewTransactionOut extends Component {
       values.formatTotal = this.numberWithCommas(parseFloat(revenue * values.itemAmount - (parseFloat(values.discount) || 0) + (parseFloat(values.overcost) || 0)).toFixed(2))
       values.type = "export"
       values._id = this.guid()
+      if(values.isUsedInMusicGang === true){
+        values.total = 0
+        values.formatTotal = "0.00"
+      }
 
       //set state with new value
       this.setState({allRecordedItem: [...this.state.allRecordedItem, values]}, () => {
@@ -203,6 +207,10 @@ export class AddNewTransactionOut extends Component {
       values.overcost = parseFloat(values.overcost) || 0
       values.formatOvercost = this.numberWithCommas(values.overcost === "" ? null :  parseFloat(values.overcost).toFixed(2))
       values.type = "export"
+      if(values.isUsedInMusicGang === true){
+        values.total = 0
+        values.formatTotal = "0.00"
+      }
       currentItem[arrayIndex] = values
 
       //set state with new value
@@ -288,7 +296,7 @@ export class AddNewTransactionOut extends Component {
 
   addTransactions = (values, history) => {
     const {stockId} = this.props.location.state
-    if(values.day === null){
+    if(values.day === null || values.day === undefined){
       values.day = new Date()
     }
     values.record.forEach((e) => {
@@ -297,7 +305,6 @@ export class AddNewTransactionOut extends Component {
         e._stock = stockId
       )
     })
-    
     this.props.exportNewTransaction(values.record, history)
   }
 

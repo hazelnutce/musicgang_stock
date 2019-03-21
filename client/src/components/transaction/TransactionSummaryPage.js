@@ -115,6 +115,7 @@ export class TransactionSummaryPage extends Component {
                 isSelectAllTransaction={this.state.isSelectAllTransaction} 
                 isSelectTransactionIn={this.state.isSelectTransactionIn} 
                 isSelectTransactionOut={this.state.isSelectTransactionOut}
+                items={this.props.allItemProperties.items}
             />
         </div>
         )

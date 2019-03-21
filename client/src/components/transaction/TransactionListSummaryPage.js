@@ -111,12 +111,14 @@ export class TransactionListSummaryPage extends Component {
     }
     
     renderSmallImportTransaction = () => {
+        var {items} = this.props
         var {transactions} = this.props.transaction
         var filteredTransaction = transactions.filter(x => x.type === "import" && this.isSameMonth(new Date(x.day), this.handleMonthFilter(this.state.currentMonth)))
         filteredTransaction = filteredTransaction.sort(this.sortDayForTransaction)
         return _.map(filteredTransaction, (item, index) => {
             const {_id, itemName, itemAmount, formatTotal, discount, overcost, formatDiscount, formatOvercost, day} = item
             var itemDay = new Date(day)
+            var copiedItemDay = itemDay
             if(index > 0){
                 var previousItemDay = new Date(filteredTransaction[index-1].day)
                 if(this.isSameDay(itemDay, previousItemDay)){
@@ -135,7 +137,7 @@ export class TransactionListSummaryPage extends Component {
                     {tooltipMessage === null && <td>{formatTotal}</td>}
                     <td>
                         <Link to={{ pathname: `/transactions/edit`, 
-                                state: { itemName }}}
+                                state: { _id, itemDay: copiedItemDay, itemName, itemAmount, formatDiscount, formatOvercost, formatTotal, items }}}
                                 className="material-icons black-text">edit
                         </Link>
                     </td>
@@ -145,19 +147,26 @@ export class TransactionListSummaryPage extends Component {
     }
 
     renderSmallExportTransaction = () => {
+        var {items} = this.props
         var {transactions} = this.props.transaction
         var filteredTransaction = transactions.filter(x => x.type === "export" && this.isSameMonth(new Date(x.day), this.handleMonthFilter(this.state.currentMonth)))
         filteredTransaction = filteredTransaction.sort(this.sortDayForTransaction)
         return _.map(filteredTransaction, (item, index) => {
             const {_id, itemName, itemAmount, formatTotal, discount, overcost, formatDiscount, formatOvercost, day} = item
             var itemDay = new Date(day)
+            var copiedItemDay = itemDay
             if(index > 0){
                 var previousItemDay = new Date(filteredTransaction[index-1].day)
                 if(this.isSameDay(itemDay, previousItemDay)){
                     itemDay = null
                 }
             }
+
             var tooltipMessage = this.handleTooltipMessage(discount, overcost, formatDiscount, formatOvercost)
+            if(item.isUsedInMusicGang === true){
+                tooltipMessage = "ใช้ในห้องซ้อม"
+            }
+            
             moment.locale('th')
             return(
                 <tr key={_id}>
@@ -168,7 +177,7 @@ export class TransactionListSummaryPage extends Component {
                     {tooltipMessage === null && <td>{formatTotal}</td>}
                     <td>
                         <Link to={{ pathname: `/transactions/edit`, 
-                                state: { itemName }}}
+                                state: { _id, itemDay: copiedItemDay, itemName, itemAmount, formatDiscount, formatOvercost, formatTotal, items }}}
                                 className="material-icons black-text">edit
                         </Link>
                     </td>
@@ -197,7 +206,7 @@ export class TransactionListSummaryPage extends Component {
                                 <h6>สินค้านำเข้า</h6>
                             </div>
                             <div className="col card small xl12 l12 m12 s12" style={{right: "5px", position: "relative", height: "auto"}}>
-                            <table className="highlight">
+                            <table className="highlight centered">
                                 <thead>
                                 <tr>
                                     <th>วันที่</th>
@@ -219,7 +228,7 @@ export class TransactionListSummaryPage extends Component {
                                 <h6>สินค้านำออก</h6>
                             </div>
                             <div className="col card small xl12 l12 m12 s12" style={{right: "5px", position: "relative", height: "auto"}}>
-                                <table className="highlight">
+                                <table className="highlight centered">
                                 <thead>
                                 <tr>
                                     <th>วันที่</th>
@@ -256,7 +265,7 @@ export class TransactionListSummaryPage extends Component {
                     <h6>สินค้านำเข้า</h6>
                 </div>
                 <div className="col card small xl12 l12 m12 s12" style={{right: "5px", position: "relative", height: "auto"}}>
-                    <table className="highlight">
+                    <table className="highlight centered">
                         <thead>
                             <tr>
                                 <th>วันที่</th>
@@ -290,7 +299,7 @@ export class TransactionListSummaryPage extends Component {
                     <h6>สินค้านำออก</h6>
                 </div>
                 <div className="col card small xl12 l12 m12 s12" style={{left: "5px", position: "relative", height: "auto"}}>
-                    <table className="highlight">
+                    <table className="highlight centered">
                     <thead>
                             <tr>
                                 <th>วันที่</th>
