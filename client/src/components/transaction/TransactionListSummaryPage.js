@@ -116,6 +116,7 @@ export class TransactionListSummaryPage extends Component {
         var filteredTransaction = transactions.filter(x => x.type === "import" && this.isSameMonth(new Date(x.day), this.handleMonthFilter(this.state.currentMonth)))
         filteredTransaction = filteredTransaction.sort(this.sortDayForTransaction)
         return _.map(filteredTransaction, (item, index) => {
+            const isExportMode = item.type === "export"
             const {_id, itemName, itemAmount, formatTotal, discount, overcost, formatDiscount, formatOvercost, day} = item
             var itemDay = new Date(day)
             var copiedItemDay = itemDay
@@ -137,7 +138,7 @@ export class TransactionListSummaryPage extends Component {
                     {tooltipMessage === null && <td>{formatTotal}</td>}
                     <td>
                         <Link to={{ pathname: `/transactions/edit`, 
-                                state: { _id, itemDay: copiedItemDay, itemName, itemAmount, formatDiscount, formatOvercost, formatTotal, items }}}
+                                state: { _id, itemDay: copiedItemDay, itemName, itemAmount, formatDiscount, formatOvercost, formatTotal, items, isExportMode }}}
                                 className="material-icons black-text">edit
                         </Link>
                     </td>
@@ -152,7 +153,8 @@ export class TransactionListSummaryPage extends Component {
         var filteredTransaction = transactions.filter(x => x.type === "export" && this.isSameMonth(new Date(x.day), this.handleMonthFilter(this.state.currentMonth)))
         filteredTransaction = filteredTransaction.sort(this.sortDayForTransaction)
         return _.map(filteredTransaction, (item, index) => {
-            const {_id, itemName, itemAmount, formatTotal, discount, overcost, formatDiscount, formatOvercost, day} = item
+            const isExportMode = item.type === "export"
+            const {_id, itemName, itemAmount, formatTotal, discount, overcost, formatDiscount, formatOvercost, day, isUsedInMusicGang} = item
             var itemDay = new Date(day)
             var copiedItemDay = itemDay
             if(index > 0){
@@ -177,7 +179,7 @@ export class TransactionListSummaryPage extends Component {
                     {tooltipMessage === null && <td>{formatTotal}</td>}
                     <td>
                         <Link to={{ pathname: `/transactions/edit`, 
-                                state: { _id, itemDay: copiedItemDay, itemName, itemAmount, formatDiscount, formatOvercost, formatTotal, items }}}
+                                state: { _id, itemDay: copiedItemDay, itemName, itemAmount, formatDiscount, formatOvercost, isUsedInMusicGang, formatTotal, items, isExportMode }}}
                                 className="material-icons black-text">edit
                         </Link>
                     </td>

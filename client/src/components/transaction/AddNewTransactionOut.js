@@ -178,6 +178,10 @@ export class AddNewTransactionOut extends Component {
       if(values.isUsedInMusicGang === true){
         values.total = 0
         values.formatTotal = "0.00"
+        values.discount = 0
+        values.formatDiscount = "0.00"
+        values.overcost = 0
+        values.formatOvercost = "0.00"
       }
 
       //set state with new value
@@ -210,6 +214,10 @@ export class AddNewTransactionOut extends Component {
       if(values.isUsedInMusicGang === true){
         values.total = 0
         values.formatTotal = "0.00"
+        values.discount = 0
+        values.formatDiscount = "0.00"
+        values.overcost = 0
+        values.formatOvercost = "0.00"
       }
       currentItem[arrayIndex] = values
 
