@@ -9,6 +9,7 @@ import MomentLocaleUtils, {
 
 import {EditTransactionForm} from '../forms/newtransaction/EditTransactionForm'
 import {ErrorProcessNotice} from '../commons/ErrorProcessNotice'
+import {modifyImportTransaction, modifyExportTransaction, refundTransaction} from '../../actions/transaction'
 
 export class EditTransaction extends Component {
     constructor(props){
@@ -65,55 +66,96 @@ export class EditTransaction extends Component {
     }
 
     calculateSummaryRow = (itemProperties) => {
-      if(itemProperties.itemName != null){
-        const filteredItem = this.props.location.state.items.filter(item => item.itemName === itemProperties.itemName)
-        if(filteredItem.length !== 1){
-          return(
-            <h6>ชื่อสินค้าไม่ถูกต้อง</h6>
-          )
+      const {isExportMode} = this.props.location.state
+      if(isExportMode){
+        if(itemProperties.itemName != null){
+          const filteredItem = this.props.location.state.items.filter(item => item.itemName === itemProperties.itemName)
+          if(filteredItem.length !== 1){
+            return(
+              <h6>ชื่อสินค้าไม่ถูกต้อง</h6>
+            )
+          }
+          else{
+            const item = filteredItem[0]
+            let total = item.revenue * itemProperties.itemAmount
+            if(itemProperties.overcost > 0){
+              total += itemProperties.overcost
+            }
+            if(itemProperties.discount > 0){
+              total -= itemProperties.discount
+            }
+            if(itemProperties.isUsedInMusicGang){
+              total = 0
+            }
+     
+            return(
+              <div className="section"> 
+                <h6>สรุปรายการสินค้า</h6>
+                <p>
+                  ชื่อสินค้า : {item.itemName} <br/> 
+                  ราคาสินค้า  : {this.numberWithCommas(parseFloat(item.revenue).toFixed(2))} บาท <br />
+                  จำนวนสินค้า : {itemProperties.itemAmount} ชิ้น <br />
+                  ราคารวม : {this.numberWithCommas(parseFloat(total).toFixed(2))} บาท
+                </p>
+              </div>
+              
+            )
+          }
         }
         else{
-          const item = filteredItem[0]
-          let total = item.revenue * itemProperties.itemAmount
-          if(itemProperties.overcost > 0){
-            total += itemProperties.overcost
-          }
-          if(itemProperties.discount > 0){
-            total -= itemProperties.discount
-          }
-          if(itemProperties.isUsedInMusicGang){
-            total = 0
-          }
-   
           return(
-            <div className="section"> 
-              <h6>สรุปรายการสินค้า</h6>
-              <p>
-                ชื่อสินค้า : {item.itemName} <br/> 
-                ราคาสินค้า  : {this.numberWithCommas(parseFloat(item.revenue).toFixed(2))} บาท <br />
-                จำนวนสินค้า : {itemProperties.itemAmount} ชิ้น <br />
-                ราคารวม : {this.numberWithCommas(parseFloat(total).toFixed(2))} บาท
-              </p>
-            </div>
-            
+            <h6>ไม่มีการระบุสินค้า</h6>
           )
         }
       }
       else{
-        return(
-          <h6>ไม่มีการระบุสินค้า</h6>
-        )
+        if(itemProperties.itemName != null){
+          const filteredItem = this.props.location.state.items.filter(item => item.itemName === itemProperties.itemName)
+          if(filteredItem.length !== 1){
+            return(
+              <h6>ชื่อสินค้าไม่ถูกต้อง</h6>
+            )
+          }
+          else{
+            const item = filteredItem[0]
+            let total = item.cost * itemProperties.itemAmount
+            if(itemProperties.overcost > 0){
+              total += itemProperties.overcost
+            }
+            if(itemProperties.discount > 0){
+              total -= itemProperties.discount
+            }
+
+            return(
+              <div className="section"> 
+                <h6>สรุปรายการสินค้า</h6>
+                <p>
+                  ชื่อสินค้า : {item.itemName} <br/> 
+                  ราคาสินค้า  : {this.numberWithCommas(parseFloat(item.cost).toFixed(2))} บาท <br />
+                  จำนวนสินค้า : {itemProperties.itemAmount} ชิ้น <br />
+                  ราคารวม : {this.numberWithCommas(parseFloat(total).toFixed(2))} บาท
+                </p>
+              </div>
+              
+            )
+          }
+        }
+        else{
+          return(
+            <h6>ไม่มีการระบุสินค้า</h6>
+          )
+        }
       }
+      
     }
 
     filterItem(itemName){
       return this.props.location.state.items.filter(item => item.itemName === itemName)
     }
 
-    modifyTransaction = (values) => {
+    modifyTransaction = (values, history) => {
       const {isExportMode, _id} = this.props.location.state
       if(isExportMode){
-        console.log(values)
         const {revenue, formatRevenue} = this.filterItem(values.itemName)[0]
         values.revenue = revenue
         values.formatRevenue = this.numberWithCommas(formatRevenue)
@@ -133,9 +175,10 @@ export class EditTransaction extends Component {
           values.overcost = 0
           values.formatOvercost = "0.00"
         }
+        values.day = this.state.selectedDay
+        this.props.modifyExportTransaction(values, history)
       }
       else{
-        console.log(values)
         const {revenue, formatRevenue} = this.filterItem(values.itemName)[0]
         values.revenue = revenue
         values.formatRevenue = this.numberWithCommas(formatRevenue)
@@ -147,6 +190,8 @@ export class EditTransaction extends Component {
         values.overcost = parseFloat(values.overcost) || 0
         values.formatOvercost = this.numberWithCommas(values.overcost === "" ? null :  parseFloat(values.overcost).toFixed(2))
         values.type = "import"
+        values.day = this.state.selectedDay
+        this.props.modifyImportTransaction(values, history)
       }
       
     }
@@ -187,7 +232,7 @@ export class EditTransaction extends Component {
                         value={this.state.selectedDay}
                         />
                       <div className="col xl6 l4 m4 s12">
-                        <button className={`waves-effect waves-light btn-small amber darken-4 white-text right`} style={{marginRight: "20px"}}>{isExportMode ? "คืนสินค้าสู่คลัง" : "คืนสินค้าสู่ผู้จำหน่าย"}</button>
+                        <button onClick={() => this.props.refundTransaction(_id, history)} className={`waves-effect waves-light btn-small amber darken-4 white-text right`} style={{marginRight: "20px"}}>{isExportMode ? "คืนสินค้าสู่คลัง" : "คืนสินค้าสู่ผู้จำหน่าย"}</button>
                       </div>
                       <div className="col xl12 l12 m12 s12">
                             รายละเอียดสินค้า
@@ -201,7 +246,7 @@ export class EditTransaction extends Component {
                             <div className="divider"></div>
                             <div className="container-fluid">
                               <div className="row" style={{position: "relative", top: "5px"}}>
-                                  <button onClick={handleSubmit((values) => this.modifyTransaction(values))} className={`waves-effect waves-light btn-small green white-text ${submitButtonClassName}`} style={{marginRight: "20px"}}>บันทึก</button>
+                                  <button onClick={handleSubmit((values) => this.modifyTransaction(values, history))} className={`waves-effect waves-light btn-small green white-text ${submitButtonClassName}`} style={{marginRight: "20px"}}>บันทึก</button>
                                   <button onClick={() => history.goBack()} className="waves-effect red btn-small white-text" style={{marginRight: "20px"}}>ยกเลิก</button>
                               </div>
                             </div>
@@ -265,7 +310,7 @@ EditTransaction = connect(
       items: state.items,
       transaction : state.transaction
     }
-  }, null
+  }, {modifyImportTransaction, modifyExportTransaction, refundTransaction}
 )(EditTransaction)
 
 export default EditTransaction

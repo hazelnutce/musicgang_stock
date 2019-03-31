@@ -36,5 +36,99 @@ module.exports = (app, Db, Transaction, Stock) => {
         }
 
         res.status(200).send("Created transaction successfully")
+    }), 
+
+    app.post('/api/transaction/edit', requireLogin, async (req,res) => {
+        console.log(req.body)
+        var allItem = req.body
+
+        allItem._user = req.user.id.toString()
+
+        if(allItem.type === 'export'){
+            var result = Transaction.findOne({_id: allItem._id})
+
+            if(result){
+                try{
+                    result.itemName = allItem.itemName
+                    result.itemAmount = allItem.itemAmount
+                    result.discount = allItem.discount
+                    result.overcost = allItem.overcost
+                    result.isUsedInMusicGang = allItem.isUsedInMusicGang
+                    result.revenue = allItem.revenue
+                    result.total = allItem.total
+                    result.formatRevenue = allItem.formatRevenue
+                    result.formatTotal = allItem.formatTotal
+                    result.formatOvercost = allItem.formatOvercost
+                    result.formatDiscount = allItem.formatDiscount
+                    result.day = allItem.day
+                    Transaction.update(result)
+                }
+                catch(e){
+                    console.log(e)
+                    res.status(500).send("พบบางอย่างผิดพลาดที่ระบบข้อมูล", e)
+                }
+                finally{
+                    await Db.saveDatabase();
+                }
+                res.status(200).send(result)
+            }
+            else{
+                res.status(500).send("สินค้าไม่ถูกต้อง กรุณาลองใหม่อีกครั้ง")
+                return
+            }
+        }
+        else if(allItem.type === 'import'){
+            var result = Transaction.findOne({_id: allItem._id})
+
+            if(result){
+                try{
+                    result.itemName = allItem.itemName
+                    result.itemAmount = allItem.itemAmount
+                    result.discount = allItem.discount
+                    result.overcost = allItem.overcost
+                    result.revenue = allItem.revenue
+                    result.total = allItem.total
+                    result.formatRevenue = allItem.formatRevenue
+                    result.formatTotal = allItem.formatTotal
+                    result.formatOvercost = allItem.formatOvercost
+                    result.formatDiscount = allItem.formatDiscount
+                    result.day = allItem.day
+                    Transaction.update(result)
+                }
+                catch(e){
+                    console.log(e)
+                    res.status(500).send("พบบางอย่างผิดพลาดที่ระบบข้อมูล", e)
+                }
+                finally{
+                    await Db.saveDatabase();
+                }
+                res.status(200).send(result)
+            }
+            else{
+                res.status(500).send("สินค้าไม่ถูกต้อง กรุณาลองใหม่อีกครั้ง")
+                return
+            }
+        }
+        else{
+            res.status(500).send("พบบางอย่างผิดพลาดที่ระบบข้อมูล")
+            return
+        }
+
+    })
+
+    app.post('/api/transaction/refund', requireLogin, async (req,res) => {
+        const {id} = req.body
+
+        try{
+            await Transaction.removeWhere({_id: id.toString()})
+        }
+        catch(e){
+            res.status(500).send(e)
+        }
+        finally{
+            await Db.saveDatabase();
+        }
+
+        res.status(200).send("Deleted transaction successfully")
     })
 }

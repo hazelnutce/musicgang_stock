@@ -2,7 +2,10 @@ import {FETCH_STOCK_IN_TRANSACTION,
     HANDLE_CHANGE_ON_TRANSACTION, 
     IMPORT_TRANSACTION_ERROR, 
     EXPORT_TRANSACTION_ERROR,
-    FETCH_TRANSACTIONS} from './types'
+    FETCH_TRANSACTIONS,
+    EDIT_EXPORT_TRANSACTION_ERROR,
+    EDIT_IMPORT_TRANSACTION_ERROR,
+    DELETE_TRANSACTION_ERROR} from './types'
 import { app } from './axiosConfig';
 
 export const fetchStockInTransaction = () => async dispatch => {
@@ -35,6 +38,37 @@ export const exportNewTransaction = (values, history) => async dispatch => {
     }).catch(error => {
         if (error.response) {
             dispatch({type: EXPORT_TRANSACTION_ERROR, payload: error.response.data})
+        }
+    })
+}
+
+export const modifyImportTransaction = (values, history) => async dispatch => {
+    console.log(values)
+    app.post('/api/transaction/edit', values).then(async res => {
+        history.goBack()
+    }).catch(error => {
+        if (error.response) {
+            dispatch({type: EDIT_IMPORT_TRANSACTION_ERROR, payload: error.response.data})
+        }
+    })
+}
+
+export const modifyExportTransaction = (values, history) => async dispatch => {
+    app.post('/api/transaction/edit', values).then(async res => {
+        history.goBack()
+    }).catch(error => {
+        if (error.response) {
+            dispatch({type: EDIT_EXPORT_TRANSACTION_ERROR, payload: error.response.data})
+        }
+    })
+}
+
+export const refundTransaction = (id, history) => async dispatch => {
+    app.post('/api/transaction/refund', {id}).then(async res => {
+        history.goBack()
+    }).catch(error => {
+        if(error.response) {
+            dispatch({type: DELETE_TRANSACTION_ERROR, payload: error.response.data})
         }
     })
 }
