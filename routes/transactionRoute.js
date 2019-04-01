@@ -13,7 +13,6 @@ module.exports = (app, Db, Transaction, Stock) => {
     })
 
     app.post('/api/transaction/add', requireLogin, async (req,res) => {
-        console.log(req.body)
         var allItem = req.body
 
         allItem.forEach((e) => {
@@ -28,7 +27,6 @@ module.exports = (app, Db, Transaction, Stock) => {
             await Transaction.insert(allItem)
         }
         catch(e){
-            console.log(e)
             res.status(500).send("พบบางอย่างผิดพลาดที่ระบบข้อมูล", e)
         }
         finally{
@@ -39,7 +37,6 @@ module.exports = (app, Db, Transaction, Stock) => {
     }), 
 
     app.post('/api/transaction/edit', requireLogin, async (req,res) => {
-        console.log(req.body)
         var allItem = req.body
 
         allItem._user = req.user.id.toString()
@@ -64,8 +61,7 @@ module.exports = (app, Db, Transaction, Stock) => {
                     Transaction.update(result)
                 }
                 catch(e){
-                    console.log(e)
-                    res.status(500).send("พบบางอย่างผิดพลาดที่ระบบข้อมูล", e)
+                    res.status(500).send("มีข้อผิดพลาดในการนำออก กรุณาลองใหม่อีกครั้ง", e)
                 }
                 finally{
                     await Db.saveDatabase();
@@ -96,8 +92,7 @@ module.exports = (app, Db, Transaction, Stock) => {
                     Transaction.update(result)
                 }
                 catch(e){
-                    console.log(e)
-                    res.status(500).send("พบบางอย่างผิดพลาดที่ระบบข้อมูล", e)
+                    res.status(500).send("มีข้อผิดพลาดในการนำออก กรุณาลองใหม่อีกครั้ง", e)
                 }
                 finally{
                     await Db.saveDatabase();
@@ -123,7 +118,7 @@ module.exports = (app, Db, Transaction, Stock) => {
             await Transaction.removeWhere({_id: id.toString()})
         }
         catch(e){
-            res.status(500).send(e)
+            res.status(500).send("มีข้อผิดพลาดในการนำคืนสินค้า", e)
         }
         finally{
             await Db.saveDatabase();

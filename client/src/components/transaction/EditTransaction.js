@@ -6,26 +6,54 @@ import MomentLocaleUtils, {
     formatDate,
     parseDate,
   } from 'react-day-picker/moment';
+import ReactNotification from "react-notifications-component";
 
 import {EditTransactionForm} from '../forms/newtransaction/EditTransactionForm'
 import {ErrorProcessNotice} from '../commons/ErrorProcessNotice'
-import {modifyImportTransaction, modifyExportTransaction, refundTransaction} from '../../actions/transaction'
+import {modifyImportTransaction, 
+  modifyExportTransaction, 
+  refundTransaction, 
+  resetEditTransactionError} from '../../actions/transaction'
 
 export class EditTransaction extends Component {
     constructor(props){
         super(props)
         
         var {itemDay} = this.props.location.state
+        this.notificationDOMRef = React.createRef();
         this.state = {
           selectedDay: itemDay,
           editSignal: false
         }
       }
 
+    addNotification = (message) => {
+      this.notificationDOMRef.current.addNotification({
+        title: "ข้อผิดพลาด",
+        message: message,
+        type: "danger",
+        insert: "buttom",
+        container: "top-right",
+        animationIn: ["animated", "fadeIn"],
+        animationOut: ["animated", "fadeOut"],
+        dismiss: { duration: 2000 },
+        dismissable: { click: true }
+      });
+    }
+
     handleDayChange = (day) => {
         if((day instanceof Date)){
             this.setState({ selectedDay: day });
         }
+    }
+
+    componentDidUpdate = (prevProps) => {
+      if(this.props.transaction.transactionEditError !== prevProps.transaction.transactionEditError)
+      {
+        if(this.props.transaction.transactionEditError != null){
+          this.addNotification(this.props.transaction.transactionEditError)
+        }
+      }
     }
 
     componentDidMount = () => {
@@ -179,11 +207,11 @@ export class EditTransaction extends Component {
         this.props.modifyExportTransaction(values, history)
       }
       else{
-        const {revenue, formatRevenue} = this.filterItem(values.itemName)[0]
-        values.revenue = revenue
-        values.formatRevenue = this.numberWithCommas(formatRevenue)
-        values.total = parseFloat(revenue * values.itemAmount - (parseFloat(values.discount) || 0) + (parseFloat(values.overcost) || 0))
-        values.formatTotal = this.numberWithCommas(parseFloat(revenue * values.itemAmount - (parseFloat(values.discount) || 0) + (parseFloat(values.overcost) || 0)).toFixed(2))
+        const {cost, formatCost} = this.filterItem(values.itemName)[0]
+        values.cost = cost
+        values.formatCost = this.numberWithCommas(formatCost)
+        values.total = parseFloat(cost * values.itemAmount - (parseFloat(values.discount) || 0) + (parseFloat(values.overcost) || 0))
+        values.formatTotal = this.numberWithCommas(parseFloat(cost * values.itemAmount - (parseFloat(values.discount) || 0) + (parseFloat(values.overcost) || 0)).toFixed(2))
         values._id = _id
         values.discount = parseFloat(values.discount) || 0
         values.formatDiscount = this.numberWithCommas(values.discount === "" ? null :  parseFloat(values.discount).toFixed(2))
@@ -252,7 +280,10 @@ export class EditTransaction extends Component {
                             </div>
                         </div>
                     </div>
-                <div className="row">
+                <div>
+                  <ReactNotification ref={this.notificationDOMRef} onNotificationRemoval={() => {
+                    this.props.resetEditTransactionError();
+                  }} />
                 </div>
             </div>
         )
@@ -310,7 +341,7 @@ EditTransaction = connect(
       items: state.items,
       transaction : state.transaction
     }
-  }, {modifyImportTransaction, modifyExportTransaction, refundTransaction}
+  }, {modifyImportTransaction, modifyExportTransaction, refundTransaction, resetEditTransactionError}
 )(EditTransaction)
 
 export default EditTransaction
