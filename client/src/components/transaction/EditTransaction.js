@@ -282,7 +282,7 @@ export class EditTransaction extends Component {
                     </div>
                 <div>
                   <ReactNotification ref={this.notificationDOMRef} onNotificationRemoval={() => {
-                    this.props.resetEditTransactionError();
+                    this.props.resetEditTransactionError()
                   }} />
                 </div>
             </div>

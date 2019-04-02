@@ -5,13 +5,14 @@ import {reduxForm, formValueSelector} from 'redux-form'
 import {connect} from 'react-redux'
 import _ from 'lodash'
 import M from 'materialize-css'
+import ReactNotification from "react-notifications-component";
 
 import MomentLocaleUtils, {
   formatDate,
   parseDate,
 } from 'react-day-picker/moment';
 import {fetchItems} from '../../actions/item'
-import {importNewTransaction} from '../../actions/transaction'
+import {importNewTransaction, resetImportTransactionError} from '../../actions/transaction'
 import {NewTransactionForm} from '../forms/newtransaction/NewTransactionForm'
 import 'moment/locale/th';
 import 'react-day-picker/lib/style.css';
@@ -20,6 +21,7 @@ export class AddNewTransactionIn extends Component {
   constructor(props){
     super(props)
 
+    this.notificationDOMRef = React.createRef();
     this.state = {
       selectedDay: null,
       allRecordedItem: [],
@@ -28,6 +30,20 @@ export class AddNewTransactionIn extends Component {
       resetSignal: false,
       editSignal: false
     }
+  }
+
+  addNotification = (message) => {
+    this.notificationDOMRef.current.addNotification({
+      title: "ข้อผิดพลาด",
+      message: message,
+      type: "danger",
+      insert: "buttom",
+      container: "top-right",
+      animationIn: ["animated", "fadeIn"],
+      animationOut: ["animated", "fadeOut"],
+      dismiss: { duration: 2000 },
+      dismissable: { click: true }
+    });
   }
 
   filterItem(itemName){
@@ -265,6 +281,15 @@ export class AddNewTransactionIn extends Component {
       });
   }
 
+  componentDidUpdate = (prevProps) => {
+    if(this.props.transaction.transactionImportError !== prevProps.transaction.transactionImportError)
+    {
+      if(this.props.transaction.transactionImportError != null){
+        this.addNotification(this.props.transaction.transactionImportError)
+      }
+    }
+  }
+
   handleDayChange = (day) => {
     if((day instanceof Date)){
       this.setState({ selectedDay: day });
@@ -369,7 +394,9 @@ export class AddNewTransactionIn extends Component {
             <div className="modal-close waves-effect waves-light btn-small red white-text" style={{marginRight: "20px"}}>ยกเลิก</div>
           </div>
         </div>
-         
+        <ReactNotification ref={this.notificationDOMRef} onNotificationRemoval={() => {
+            this.props.resetImportTransactionError()
+         }} />
     </div> //container
     )
   }
@@ -417,9 +444,10 @@ AddNewTransactionIn = connect(
     itemProperties.overcost = parseFloat(selector(state, 'overcost'))
     return{
       itemProperties,
-      items: state.items
+      items: state.items,
+      transaction: state.transaction
     }
-  }, {fetchItems, importNewTransaction}
+  }, {fetchItems, importNewTransaction, resetImportTransactionError}
 )(AddNewTransactionIn)
 
 export default AddNewTransactionIn

@@ -74,3 +74,11 @@ export const resetEditTransactionError = () => async dispatch => {
     dispatch({type: EDIT_TRANSACTION_ERROR, payload : null})
 }
 
+export const resetImportTransactionError = () => async dispatch => {
+    dispatch({type: IMPORT_TRANSACTION_ERROR, payload : null})
+}
+
+export const resetExportTransactionError = () => async dispatch => {
+    dispatch({type: EXPORT_TRANSACTION_ERROR, payload : null})
+}
+

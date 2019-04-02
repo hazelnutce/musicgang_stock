@@ -5,6 +5,7 @@ import {reduxForm, formValueSelector} from 'redux-form'
 import {connect} from 'react-redux'
 import _ from 'lodash'
 import M from 'materialize-css'
+import ReactNotification from "react-notifications-component";
 
 import {NewTransactionForm} from '../forms/newtransaction/NewTransactionForm'
 import MomentLocaleUtils, {
@@ -13,7 +14,7 @@ import MomentLocaleUtils, {
 } from 'react-day-picker/moment';
 import {fetchItems} from '../../actions/item'
 import {exportNewTransaction} from '../../actions/transaction'
-import {handleOnChangeInCurrentItem} from '../../actions/transaction'
+import {handleOnChangeInCurrentItem, resetExportTransactionError} from '../../actions/transaction'
 
 import 'moment/locale/th';
 import 'react-day-picker/lib/style.css';
@@ -22,6 +23,7 @@ export class AddNewTransactionOut extends Component {
   constructor(props){
     super(props)
 
+    this.notificationDOMRef = React.createRef();
     this.state = {
       selectedDay: undefined,
       allRecordedItem: [],
@@ -30,6 +32,20 @@ export class AddNewTransactionOut extends Component {
       resetSignal: false,
       editSignal: false
     }
+  }
+
+  addNotification = (message) => {
+    this.notificationDOMRef.current.addNotification({
+      title: "ข้อผิดพลาด",
+      message: message,
+      type: "danger",
+      insert: "buttom",
+      container: "top-right",
+      animationIn: ["animated", "fadeIn"],
+      animationOut: ["animated", "fadeOut"],
+      dismiss: { duration: 2000 },
+      dismissable: { click: true }
+    });
   }
 
   filterItem(itemName){
@@ -296,6 +312,15 @@ export class AddNewTransactionOut extends Component {
     });
   }
 
+  componentDidUpdate = (prevProps) => {
+    if(this.props.transaction.transactionExportError !== prevProps.transaction.transactionExportError)
+    {
+      if(this.props.transaction.transactionExportError != null){
+        this.addNotification(this.props.transaction.transactionExportError)
+      }
+    }
+  }
+
   handleDayChange = (day) => {
     if((day instanceof Date)){
       this.setState({ selectedDay: day });
@@ -397,6 +422,9 @@ export class AddNewTransactionOut extends Component {
             <button className="modal-close waves-effect red btn-flat white-text" style={{marginRight: "20px"}}>ยกเลิก</button>
           </div>
         </div>
+        <ReactNotification ref={this.notificationDOMRef} onNotificationRemoval={() => {
+            this.props.resetExportTransactionError()
+         }} />
     </div> //container
     )
   }
@@ -473,7 +501,7 @@ AddNewTransactionOut = connect(
       items: state.items,
       transaction : state.transaction
     }
-  }, {fetchItems, handleOnChangeInCurrentItem, exportNewTransaction}
+  }, {fetchItems, handleOnChangeInCurrentItem, exportNewTransaction, resetExportTransactionError}
 )(AddNewTransactionOut)
 
 export default AddNewTransactionOut
