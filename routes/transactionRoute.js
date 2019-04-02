@@ -14,8 +14,6 @@ module.exports = (app, Db, Transaction, Stock) => {
 
     app.post('/api/transaction/add', requireLogin, async (req,res) => {
         var allItem = req.body
-        res.status(500).send("พบบางอย่างผิดพลาดที่ระบบข้อมูล")
-            return
 
         allItem.forEach((e) => {
             return(
