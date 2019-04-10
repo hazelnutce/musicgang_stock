@@ -30,7 +30,6 @@ module.exports = (app, Db, Item, Category) => {
             return
         }
         var a = parseFloat(parseFloat(cost).toFixed(2)).toFixed(2)
-        console.log(a)
         var newItem = {
             itemName: itemName,
             itemRemaining: parseInt(initialItem),

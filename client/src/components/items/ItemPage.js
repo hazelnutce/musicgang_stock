@@ -107,10 +107,6 @@ export class ItemPage extends Component {
                                 state: { stockId, stockName, itemName, category: `${categoryNameTh}(${categoryNameEn})`, cost, revenue, itemWarning} }} 
                                 className="material-icons black-text">edit
                             </Link>
-                            <Link to={{ pathname: `/items/add/new/${stockId}`, 
-                                state: { stockId, stockName, itemName, category: `${categoryNameTh}(${categoryNameEn})`, cost, revenue, itemWarning, itemRemaining, itemIndex, items} }} 
-                                className="material-icons black-text">content_copy
-                            </Link>
                             <a className="modal-trigger" href={"#"+item._id}><i className="material-icons black-text">delete</i></a>
                         </td>
                         <td>
