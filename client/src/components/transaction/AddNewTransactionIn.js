@@ -319,6 +319,7 @@ export class AddNewTransactionIn extends Component {
             <ErrorProcessNotice />
         )
     }
+    
     return (
       <div className="container" style={{position: "relative", top: "5px"}}>
         <div className="row">

@@ -66,7 +66,7 @@ db.loadDatabase({}, function(err) {
         require('./routes/stockRoute')(app, db, Stock, Item)
         require('./routes/categoryRoute')(app, db, Category, Item)
         require('./routes/itemRoute')(app, db, Item, Category)
-        require('./routes/transactionRoute')(app, db, Transaction, Stock)
+        require('./routes/transactionRoute')(app, db, Transaction, Stock, Item)
 
         if(!(process.env.NODE_ENV && process.env.NODE_ENV.trim() === 'development')){
             //express will serve up production asset

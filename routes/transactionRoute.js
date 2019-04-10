@@ -1,7 +1,7 @@
 const requireLogin = require('../middleware/requireLogin')
 const guid = require('../services/guid')
 
-module.exports = (app, Db, Transaction, Stock) => {
+module.exports = (app, Db, Transaction, Stock, Item) => {
     app.get('/api/transaction/findstock', requireLogin, (req,res) => {
         var result = Stock.find({_user: req.user.id.toString()})
         res.send(result)
@@ -15,13 +15,25 @@ module.exports = (app, Db, Transaction, Stock) => {
     app.post('/api/transaction/add', requireLogin, async (req,res) => {
         var allItem = req.body
 
+        var isValidItemName = true
         allItem.forEach((e) => {
-            return(
-              e._user = req.user.id.toString()
-            )
+            var result = Item.findOne({itemName: e.itemName})
+            if(result !== null){
+                e._item = result._id
+                e._stock = result._stock
+                e._user = req.user.id.toString()
+            }
+            else{
+                isValidItemName = false
+            }
         })
 
-        //handle it all on front-end side
+        if(isValidItemName === false){
+            res.status(500).send("สินค้าไม่ถูกต้องหรือถูกลบไปจากคลังสินค้าไปแล้ว")
+            return
+        }
+
+        //already handle it all on front-end side
         //save it
         try{
             await Transaction.insert(allItem)
@@ -41,11 +53,12 @@ module.exports = (app, Db, Transaction, Stock) => {
         var allItem = req.body
 
         allItem._user = req.user.id.toString()
+        var itemResult = Item.findOne({itemName: allItem.itemName})
 
         if(allItem.type === 'export'){
             var result = Transaction.findOne({_id: allItem._id})
 
-            if(result){
+            if(result && itemResult !== null){
                 try{
                     result.itemName = allItem.itemName
                     result.itemAmount = allItem.itemAmount
@@ -59,6 +72,8 @@ module.exports = (app, Db, Transaction, Stock) => {
                     result.formatOvercost = allItem.formatOvercost
                     result.formatDiscount = allItem.formatDiscount
                     result.day = allItem.day
+                    result._item = itemResult._id
+                    result._stock = itemResult._stock
                     Transaction.update(result)
                 }
                 catch(e){
@@ -77,7 +92,7 @@ module.exports = (app, Db, Transaction, Stock) => {
         else if(allItem.type === 'import'){
             var result = Transaction.findOne({_id: allItem._id})
 
-            if(result){
+            if(result && itemResult !== null){
                 try{
                     result.itemName = allItem.itemName
                     result.itemAmount = allItem.itemAmount
@@ -90,6 +105,8 @@ module.exports = (app, Db, Transaction, Stock) => {
                     result.formatOvercost = allItem.formatOvercost
                     result.formatDiscount = allItem.formatDiscount
                     result.day = allItem.day
+                    result._item = itemResult._id
+                    result._stock = itemResult._stock
                     Transaction.update(result)
                 }
                 catch(e){

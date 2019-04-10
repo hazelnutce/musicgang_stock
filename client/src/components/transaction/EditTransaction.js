@@ -225,13 +225,30 @@ export class EditTransaction extends Component {
     }
 
     render() {
-        const {_id, itemName, items, isExportMode} = this.props.location.state
+        const {_id, itemName, items, isExportMode, isItemValid} = this.props.location.state
         const {itemProperties, invalid, handleSubmit, history} = this.props
         var submitButtonClassName = invalid ? "disabled" : ""
         if(itemName == null || _id == null || items == null){
             return(
                 <ErrorProcessNotice />
             )
+        }
+        else if(!isItemValid){
+          return(
+            <div className="container" style={{position: "relative", top: "5px"}}>
+              <div className="row">
+                <h6 className="col s12 m12 l12 xl12">
+                  สินค้านี้ถูกลบออกไปจากคลังสินค้าแล้ว ไม่สามารถแก้ไขรายละเอียดเกี่ยวกับสินค้าชิ้นนี้ได้ 
+                </h6>
+                <div onClick={() => history.goBack()} className={`waves-effect waves-light btn-small green white-text`} style={{cursor: 'pointer', position: "relative", top: "10px", left: "10px"}}>
+                  ย้อนกลับ
+                </div>
+                <div onClick={() => this.props.refundTransaction(_id, history)} className={`waves-effect waves-light btn-small red white-text`} style={{cursor: 'pointer', position: "relative", top: "10px", left: "20px"}}>
+                  ลบรายการ
+                </div>
+              </div>
+            </div>
+          )
         }
         return (
             <div className="container" style={{position: "relative", top: "5px"}}>

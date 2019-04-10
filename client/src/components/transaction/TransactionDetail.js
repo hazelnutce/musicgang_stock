@@ -15,9 +15,10 @@ export class TransactionDetail extends Component {
     }
 
   render() {  
-
+    var filterStockInTransaction = this.props.stocksInTransaction.filter(x => x.itemCount !== 0)
     return (
-        _.map(this.props.stocksInTransaction,(stock) => {
+      
+        _.map(filterStockInTransaction,(stock) => {
             return(
               <ul className="collapsible" style={{backgroundColor: "#eeeeee"}} key={stock._id}>
                 <li>
