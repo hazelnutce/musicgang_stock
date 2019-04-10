@@ -10,7 +10,11 @@ import { faGhost,
   faExclamation,
   faTags,
   faBoxes,
-  faSignOutAlt } from '@fortawesome/free-solid-svg-icons'
+  faSignOutAlt,
+  faArrowUp,
+  faArrowDown,
+  faPlus,
+  faMinus } from '@fortawesome/free-solid-svg-icons'
 
 import Landing from './Landing'
 import StockPage from './stocks/StockPage';
@@ -21,10 +25,15 @@ import AddNewItemPage from './items/AddNewItemPage'
 import EditItemPage from './items/EditItemPage'
 import MainMenu from './MainMenu';
 import AddNewCategoryPage from './categories/AddNewCategoryPage'
+import TransactionPage from './transaction/TransctionPage'
+import TransactionSummaryPage from './transaction/TransactionSummaryPage'
+import TransactionImport from './transaction/AddNewTransactionIn'
+import TransactionExport from './transaction/AddNewTransactionOut'
+import EditTransaction from './transaction/EditTransaction'
 import ErrorNoticePage from './commons/ErrorProcessNotice'
 
 library.add([faTag, faGhost, faDollarSign, faHandHoldingUsd, faExclamation, faTags, faBoxes, faBoxes,
-  faSignOutAlt])
+  faSignOutAlt, faArrowUp, faArrowDown, faPlus, faMinus])
 
 class App extends Component {
   componentDidMount = () => {
@@ -46,6 +55,11 @@ class App extends Component {
                 <Route exact path="/items/:stockId" component={ItemPage}></Route>
                 <Route path="/items/add/new/:stockId" component={AddNewItemPage}></Route>
                 <Route path="/items/edit/:itemId" component={EditItemPage}></Route>
+                <Route exact path="/transactions" component={TransactionPage}></Route>
+                <Route exact path="/transactions/new/import" component={TransactionImport}></Route>
+                <Route exact path="/transactions/new/export" component={TransactionExport}></Route>
+                <Route exact path="/transactions/detail" component={TransactionSummaryPage}></Route>
+                <Route exact path="/transactions/edit" component={EditTransaction}></Route>
                 <Route component={ErrorNoticePage} />
               </Switch>
             {/* <Route path="/setting" component={SettingPage}></Route> */}

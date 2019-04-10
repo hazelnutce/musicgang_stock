@@ -39,6 +39,11 @@ db.loadDatabase({}, function(err) {
           Item = db.addCollection('item')
       }
 
+      var Transaction = db.getCollection('transaction')
+      if(!Transaction){
+        Transaction = db.addCollection('transaction')
+      }
+
       //----------------------- end of initalize part ------------------------------
 
       mongoose.connect(keys.mongoUrl,{ useNewUrlParser: true });
@@ -61,6 +66,7 @@ db.loadDatabase({}, function(err) {
         require('./routes/stockRoute')(app, db, Stock, Item)
         require('./routes/categoryRoute')(app, db, Category, Item)
         require('./routes/itemRoute')(app, db, Item, Category)
+        require('./routes/transactionRoute')(app, db, Transaction, Stock, Item)
 
         if(!(process.env.NODE_ENV && process.env.NODE_ENV.trim() === 'development')){
             //express will serve up production asset
@@ -81,7 +87,3 @@ db.loadDatabase({}, function(err) {
         })
     }
 });
-
-
-
-

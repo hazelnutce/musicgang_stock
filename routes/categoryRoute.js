@@ -13,9 +13,11 @@ module.exports = (app, Db, Category, Item) => {
         const {categoryNameTh, categoryNameEn, labelColor, textColor, stockName} = req.body
         const stock = await Category.findOne({
             '$or' : [{
-                categoryNameTh : categoryNameTh
+                categoryNameTh : categoryNameTh,
+                _user: req.user.id.toString()
             },{
-                categoryNameEn : categoryNameEn
+                categoryNameEn : categoryNameEn,
+                _user: req.user.id.toString()
             }]
         });
         if(stock){
@@ -59,7 +61,8 @@ module.exports = (app, Db, Category, Item) => {
                         categoryNameEn : categoryNameEn
                     }],
             _id : {'$ne' : _id.toString()},
-            stockName : {'$eq' : stockName.toString()}
+            stockName : {'$eq' : stockName.toString()},
+            _user: req.user.id.toString()
         });
 
         if(category != null && category.length !== 0){
