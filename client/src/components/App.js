@@ -14,7 +14,8 @@ import { faGhost,
   faArrowUp,
   faArrowDown,
   faPlus,
-  faMinus } from '@fortawesome/free-solid-svg-icons'
+  faMinus, 
+  faMusic} from '@fortawesome/free-solid-svg-icons'
 
 import Landing from './Landing'
 import StockPage from './stocks/StockPage';
@@ -30,10 +31,12 @@ import TransactionSummaryPage from './transaction/TransactionSummaryPage'
 import TransactionImport from './transaction/AddNewTransactionIn'
 import TransactionExport from './transaction/AddNewTransactionOut'
 import EditTransaction from './transaction/EditTransaction'
+import MusicroomTransactionPage from './musicrooms/MusicroomTransactionPage'
+import AddMusicroomTransaction from './musicrooms/AddMusicroomTransaction'
 import ErrorNoticePage from './commons/ErrorProcessNotice'
 
 library.add([faTag, faGhost, faDollarSign, faHandHoldingUsd, faExclamation, faTags, faBoxes, faBoxes,
-  faSignOutAlt, faArrowUp, faArrowDown, faPlus, faMinus])
+  faSignOutAlt, faArrowUp, faArrowDown, faPlus, faMinus, faMusic])
 
 class App extends Component {
   componentDidMount = () => {
@@ -60,6 +63,8 @@ class App extends Component {
                 <Route exact path="/transactions/new/export" component={TransactionExport}></Route>
                 <Route exact path="/transactions/detail" component={TransactionSummaryPage}></Route>
                 <Route exact path="/transactions/edit" component={EditTransaction}></Route>
+                <Route exact path="/musicrooms" component={MusicroomTransactionPage}></Route>
+                <Route exact path="/musicrooms/new" component={AddMusicroomTransaction}></Route>
                 <Route component={ErrorNoticePage} />
               </Switch>
             {/* <Route path="/setting" component={SettingPage}></Route> */}
