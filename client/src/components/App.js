@@ -15,7 +15,8 @@ import { faGhost,
   faArrowDown,
   faPlus,
   faMinus, 
-  faMusic} from '@fortawesome/free-solid-svg-icons'
+  faMusic,
+  faClock} from '@fortawesome/free-solid-svg-icons'
 
 import Landing from './Landing'
 import StockPage from './stocks/StockPage';
@@ -36,7 +37,7 @@ import AddMusicroomTransaction from './musicrooms/AddMusicroomTransaction'
 import ErrorNoticePage from './commons/ErrorProcessNotice'
 
 library.add([faTag, faGhost, faDollarSign, faHandHoldingUsd, faExclamation, faTags, faBoxes, faBoxes,
-  faSignOutAlt, faArrowUp, faArrowDown, faPlus, faMinus, faMusic])
+  faSignOutAlt, faArrowUp, faArrowDown, faPlus, faMinus, faMusic, faClock])
 
 class App extends Component {
   componentDidMount = () => {

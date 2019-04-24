@@ -1,11 +1,16 @@
 import React, { Component } from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import DayPickerInput from 'react-day-picker/DayPickerInput'
+import M from 'materialize-css'
+import {reduxForm, formValueSelector} from 'redux-form'
+import {connect} from 'react-redux'
 
 import MomentLocaleUtils, {
     formatDate,
     parseDate,
   } from 'react-day-picker/moment';
+
+import {NewMusicroomTransactionForm} from '../forms/newmusicroomtransaction/NewMusicroomTransactionForm'
 
 const shiftLeft10 = {
     left: "10px",
@@ -17,8 +22,8 @@ export class AddMusicroomTransaction extends Component {
         super(props)
 
         this.state = {
-            selectedDay: null,
-            allRecordedItem: []
+            selectedDay: new Date(),
+            allRecordedItem: [],
         }
     }
 
@@ -26,6 +31,22 @@ export class AddMusicroomTransaction extends Component {
         if((day instanceof Date)){
             this.setState({ selectedDay: day })
         }
+    }
+
+    renderRecordedItem(){
+        return(
+          <div>
+              Hae
+          </div> 
+        )
+      }
+
+    componentDidMount = () => {
+        var elems = document.querySelectorAll('#addModal');
+        M.Modal.init(elems, {
+            opacity: 0.6,
+            endingTop: '20%',
+        }); 
     }
 
   render() {
@@ -76,11 +97,41 @@ export class AddMusicroomTransaction extends Component {
                         this.renderRecordedItem()
                     }
                  </div>
+                 <div className="col xl12 l12 m12 s12" style={{marginTop: "10px"}}>
+                    <div data-target="addModal" className="waves-effect waves-light btn-small modal-trigger" style={{position: "absolute", left: 0, zIndex: 0}}>
+                        เพิ่มรายการห้องซ้อม 
+                    </div>
+                </div>
             </div>
-
-        </div>
+            <div id="addModal" className="modal modal-fixed-footer">
+            <div className="modal-content">
+                <div className="container-fluid">
+                    <NewMusicroomTransactionForm />
+                </div>
+                <div className="divider"></div>
+                <div className="container-fluid">
+                    test
+                </div>
+            </div>
+            <div className="modal-footer"> 
+                <div className={`modal-close waves-effect waves-light btn-small green white-text`} style={{marginRight: "20px"}}>บันทึก</div>
+                <div className="modal-close waves-effect waves-light btn-small red white-text" style={{marginRight: "20px"}}>ยกเลิก</div>
+            </div>
+            </div>        
+        </div>//container      
     )
   }
+
 }
+
+AddMusicroomTransaction = reduxForm({
+    form: 'newMusicroomTransaction'
+})(AddMusicroomTransaction)
+
+const selector = formValueSelector('newMusicroomTransaction')
+
+AddMusicroomTransaction = connect(
+  null, null
+)(AddMusicroomTransaction)
 
 export default AddMusicroomTransaction
