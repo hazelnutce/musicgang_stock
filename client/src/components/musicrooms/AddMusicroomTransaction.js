@@ -4,6 +4,7 @@ import DayPickerInput from 'react-day-picker/DayPickerInput'
 import M from 'materialize-css'
 import {reduxForm, formValueSelector} from 'redux-form'
 import {connect} from 'react-redux'
+import _ from 'lodash'
 
 import MomentLocaleUtils, {
     formatDate,
@@ -33,15 +34,104 @@ export class AddMusicroomTransaction extends Component {
         }
     }
 
+    pad(n, width, z) {
+        z = z || '0';
+        n = n + '';
+        return n.length >= width ? n : new Array(width - n.length + 1).join(z) + n;
+      }
+
+    deleteOneTransaction(transactionId){
+        var currentItem = this.state.allRecordedItem
+        var arrayIndex = currentItem.findIndex(obj => obj._id === transactionId)
+        if(arrayIndex > -1){
+          currentItem.splice(arrayIndex, 1)
+        }
+    
+        //set state with new value
+        this.setState({allRecordedItem: currentItem})
+    }
+
+    renderRecordedItemBody(){
+        if(this.state.allRecordedItem.length !== 0){
+            return _.map(this.state.allRecordedItem, item => {
+                const {startTime, endTime, isOverNight, roomSize, isStudentDiscount} = item
+                var diff = 0;
+                if(startTime != null && endTime != null){
+                    if(isOverNight === true){
+                        if(startTime <= 360 && startTime <= endTime){
+                            diff = (endTime + 1440) - (startTime + 1440)
+                            this.calculatePriceRoom(diff, roomSize, isStudentDiscount)
+                        }
+                        else if(endTime <= 360 && startTime > endTime){
+                            diff = (endTime + 1440) - startTime
+                        }
+                    }
+                    else{
+                        if(startTime <= endTime){
+                            diff = endTime - startTime
+                        }
+                    }
+                }
+
+                var price = 0
+                if(roomSize === "Small"){
+                    price = diff * 3;
+                    if(isStudentDiscount === true){
+                        price = price * 0.95
+                    }
+                }
+                else if(roomSize === "Large"){
+                    price = diff * 220 / 60;
+                    if(isStudentDiscount === true){
+                        price = price * 0.95
+                    }
+                }
+
+                return (
+                <tr key={item._id}>
+                    <td>{item.roomSize === "Small" ? "ห้องเล็ก" : "ห้องใหญ่"}</td>
+                    <td>{`${parseInt(item.startTime / 60)}:${this.pad(item.startTime % 60, 2)}`}</td>
+                    <td>{`${parseInt(item.endTime / 60)}:${this.pad(item.endTime % 60, 2)}`}</td>
+                    <td>{`${parseInt(diff/60)} ชม. ${parseInt(diff%60)} นาที`}</td>
+                    <td>{`${this.numberWithCommas(parseFloat(price).toFixed(2))}`}</td>
+                    <td>
+                        <div onClick={() => this.deleteOneTransaction(item._id)} style={{display: "inline-block", cursor: "pointer"}}><i className="material-icons black-text">delete</i></div>
+                    </td>
+                </tr>
+                )
+            })
+        }
+    }
+
     renderRecordedItem(){
         return(
-          <div>
-              Hae
-          </div> 
-        )
+            <table className="highlight reponsive-table centered">
+              <thead>
+                <tr>
+                    <td style={{textAlign: "center"}}>ขนาดห้อง</td>
+                    <td style={{textAlign: "center"}}>เวลาเริ่ม</td>
+                    <td style={{textAlign: "center"}}>เวลาสิ้นสุด</td>
+                    <td style={{textAlign: "center"}}>จำนวน ชม.</td>
+                    <td style={{textAlign: "center"}}>ราคา</td>
+                    <td style={{textAlign: "center"}}></td>
+                </tr>
+              </thead>
+      
+              <tbody>
+                  {this.renderRecordedItemBody()}
+              </tbody>
+            </table>  
+          )
       }
 
     componentDidMount = () => {
+        this.props.initialize({
+            startTime: -1,
+            endTime: -1,
+            roomSize: "Small",
+            isOverNight: false,
+            isStudentDiscount: false
+        })
         var elems = document.querySelectorAll('#addModal');
         M.Modal.init(elems, {
             opacity: 0.6,
@@ -49,7 +139,109 @@ export class AddMusicroomTransaction extends Component {
         }); 
     }
 
+    numberWithCommas(x) {
+        if(x != null){
+          var parts = x.toString().split(".");
+          parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+          return parts.join(".");
+        }
+        return null
+      }
+
+    calculatePriceRoom = (diff, roomSize, isStudentDiscount) => {
+        var price = 0
+        if(roomSize === "Small"){
+            price = diff * 3;
+            if(isStudentDiscount === true){
+                price = price * 0.95
+            }
+            return <h6>รวมราคา : {this.numberWithCommas(parseFloat(price).toFixed(2))} บาท</h6>
+        }
+        else if(roomSize === "Large"){
+            price = diff * 220 / 60;
+            if(isStudentDiscount === true){
+                price = price * 0.95
+            }
+            return <h6>รวมราคา : {this.numberWithCommas(parseFloat(price).toFixed(2))} บาท</h6>
+        }
+        else{
+            return(
+                <h6>การระบุเวลาผิดพลาด</h6>
+            )
+            
+        }
+    }
+
+    summaryTransaction = (itemProperties) => {
+        const {startTime, endTime, isOverNight, roomSize, isStudentDiscount} = itemProperties
+        var diff = 0;
+        if(startTime != null && endTime != null){
+            if(isOverNight === true){
+                if(startTime <= 360 && startTime <= endTime){
+                    diff = (endTime + 1440) - (startTime + 1440)
+                    return this.calculatePriceRoom(diff, roomSize, isStudentDiscount)
+                }
+                else if(endTime <= 360 && startTime > endTime){
+                    diff = (endTime + 1440) - startTime
+                    return this.calculatePriceRoom(diff, roomSize, isStudentDiscount)
+                }
+                else{
+                    return(
+                        <h6>การระบุเวลาผิดพลาด</h6>
+                    )
+                }
+                
+            }
+            else{
+                if(startTime <= endTime){
+                    diff = endTime - startTime
+                    return this.calculatePriceRoom(diff, roomSize, isStudentDiscount)
+                }
+                else{
+                    return(
+                        <h6>การระบุเวลาผิดพลาด</h6>
+                    )
+                }
+                
+            }
+        }
+        else{
+            return(
+                <h6>ไม่มีการระบุเวลาห้องซ้อม</h6>
+            )
+        }
+    }
+
+    guid() {
+        function s4() {
+          return Math.floor((1 + Math.random()) * 0x10000)
+            .toString(16)
+            .substring(1);
+        }
+        return s4() + s4() + '-' + s4() + '-' + s4() + '-' + s4() + '-' + s4() + s4() + s4();
+      }
+
+    addOneMusicroomTransaction = (values) => {
+        console.log(values)
+        this.props.reset()
+
+        this.props.initialize({
+            startTime: -1,
+            endTime: -1,
+            roomSize: "Small",
+            isOverNight: false,
+            isStudentDiscount: false
+        })
+
+        values._id = this.guid()
+
+        //set state with new value
+        this.setState({allRecordedItem: [...this.state.allRecordedItem, values]})
+    }
+
   render() {
+    const {handleSubmit, itemProperties, invalid} = this.props
+    var submitButtonClassName = invalid ? "disabled" : ""
     return (
         <div className="container" style={{position: "relative", top: "5px"}}>
             <div className="row">
@@ -103,18 +295,18 @@ export class AddMusicroomTransaction extends Component {
                     </div>
                 </div>
             </div>
-            <div id="addModal" className="modal modal-fixed-footer">
+            <div id="addModal" className="modal">
             <div className="modal-content">
                 <div className="container-fluid">
                     <NewMusicroomTransactionForm />
                 </div>
                 <div className="divider"></div>
                 <div className="container-fluid">
-                    test
+                    {this.summaryTransaction(itemProperties)}
                 </div>
             </div>
             <div className="modal-footer"> 
-                <div className={`modal-close waves-effect waves-light btn-small green white-text`} style={{marginRight: "20px"}}>บันทึก</div>
+                <div onClick={handleSubmit((values) => this.addOneMusicroomTransaction(values))} className={`modal-close waves-effect waves-light btn-small green white-text ${submitButtonClassName}`} style={{marginRight: "20px"}}>บันทึก</div>
                 <div className="modal-close waves-effect waves-light btn-small red white-text" style={{marginRight: "20px"}}>ยกเลิก</div>
             </div>
             </div>        
@@ -124,14 +316,61 @@ export class AddMusicroomTransaction extends Component {
 
 }
 
+function validate(values, props){
+    const errors = {}
+
+    if(values.startTime === null || values.startTime <= -1){
+        errors.startTime = "กรุณาระบุเวลา"
+    }
+
+    if(values.endTime === null || values.endTime <= -1){
+        errors.endTime = "กรุณาระบุเวลา"
+    }
+
+    if(values.endTime > -1 && values.startTime > -1 && ((values.endTime - values.startTime) % 15 !== 0)){
+        errors.startTime = "ระยะห่างเวลาควรหารด้วย 15 ลงตัว"
+    }
+
+    if(values.isOverNight === true && values.endTime > -1 && values.startTime > -1){
+        if(values.startTime > values.endTime){
+            if(values.endTime > 360){
+                errors.startTime = "เป็นเวลาข้ามคืน"
+            }
+        }
+        else{
+            if(!(values.startTime <= 360 && values.endTime <= 360)){
+                errors.startTime = "ควรเป็นเวลาช่วงเช้า"
+            }
+        }
+    }
+    else if(values.isOverNight === false && values.endTime > -1 && values.startTime > -1){
+        if(values.startTime > values.endTime){
+            errors.startTime = "เวลาไม่ถูกต้อง"
+        }
+    }
+
+    return errors
+}
+
 AddMusicroomTransaction = reduxForm({
-    form: 'newMusicroomTransaction'
+    form: 'newMusicroomTransaction',
+    validate
 })(AddMusicroomTransaction)
 
 const selector = formValueSelector('newMusicroomTransaction')
 
 AddMusicroomTransaction = connect(
-  null, null
+  state => {
+    const itemProperties = {}
+    itemProperties.startTime = selector(state, 'startTime')
+    itemProperties.endTime = selector(state, 'endTime')
+    itemProperties.isOverNight = selector(state, 'isOverNight')
+    itemProperties.roomSize = selector(state, 'roomSize')
+    itemProperties.isStudentDiscount = selector(state, 'isStudentDiscount')
+    return{
+      itemProperties,
+    }
+  }, null
 )(AddMusicroomTransaction)
 
 export default AddMusicroomTransaction
