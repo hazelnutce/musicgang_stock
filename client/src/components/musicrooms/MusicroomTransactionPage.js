@@ -1,6 +1,9 @@
 import React, { Component } from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {Link} from 'react-router-dom'
+import {connect} from 'react-redux'
+
+import {fetchTransaction} from '../../actions/musicroomTransaction'
 
 const shiftLeft10 = {
     left: "10px",
@@ -45,7 +48,12 @@ export class MusicroomTransactionPage extends Component {
         }
     }
 
+    componentDidMount(){
+        this.props.fetchTransaction()
+    }
+
     render() {
+        console.log(this.props.musicroom.musicroomTransactions)
         return (
             <div className="container" style={{position: "relative", top: "5px"}}>
                 <div className="row">
@@ -83,4 +91,8 @@ export class MusicroomTransactionPage extends Component {
   }
 }
 
-export default MusicroomTransactionPage
+function mapStateToProps(state){
+    return {musicroom : state.musicroom}
+}
+
+export default connect(mapStateToProps, {fetchTransaction})(MusicroomTransactionPage)

@@ -5,6 +5,7 @@ import M from 'materialize-css'
 import {reduxForm, formValueSelector} from 'redux-form'
 import {connect} from 'react-redux'
 import _ from 'lodash'
+import ReactNotification from "react-notifications-component";
 
 import MomentLocaleUtils, {
     formatDate,
@@ -12,6 +13,7 @@ import MomentLocaleUtils, {
   } from 'react-day-picker/moment';
 
 import {NewMusicroomTransactionForm} from '../forms/newmusicroomtransaction/NewMusicroomTransactionForm'
+import {AddNewMusicroomTransaction, resetMusicroomTransactionError} from '../../actions/musicroomTransaction'
 
 const shiftLeft10 = {
     left: "10px",
@@ -22,11 +24,31 @@ export class AddMusicroomTransaction extends Component {
     constructor(props){
         super(props)
 
+        this.notificationDOMRef = React.createRef();
+
         this.state = {
             selectedDay: new Date(),
             allRecordedItem: [],
+            lastCurrentAction: "create",
+            currentItemId: null,
+            resetSignal: false,
+            editSignal: false
         }
     }
+
+    addNotification = (message) => {
+        this.notificationDOMRef.current.addNotification({
+          title: "ข้อผิดพลาด",
+          message: message,
+          type: "danger",
+          insert: "buttom",
+          container: "top-right",
+          animationIn: ["animated", "fadeIn"],
+          animationOut: ["animated", "fadeOut"],
+          dismiss: { duration: 2000 },
+          dismissable: { click: true }
+        });
+      }
 
     handleDayChange = (day) => {
         if((day instanceof Date)){
@@ -51,50 +73,56 @@ export class AddMusicroomTransaction extends Component {
         this.setState({allRecordedItem: currentItem})
     }
 
+    calculatePrice(item){
+        const {startTime, endTime, isOverNight, roomSize, isStudentDiscount} = item
+        var diff = 0;
+        if(startTime != null && endTime != null){
+            if(isOverNight === true){
+                if(startTime <= 360 && startTime <= endTime){
+                    diff = (endTime + 1440) - (startTime + 1440)
+                    this.calculatePriceRoom(diff, roomSize, isStudentDiscount)
+                }
+                else if(endTime <= 360 && startTime > endTime){
+                    diff = (endTime + 1440) - startTime
+                }
+            }
+            else{
+                if(startTime <= endTime){
+                    diff = endTime - startTime
+                }
+            }
+        }
+
+        var price = 0
+        if(roomSize === "Small"){
+            price = diff * 3;
+            if(isStudentDiscount === true){
+                price = price * 0.95
+            }
+        }
+        else if(roomSize === "Large"){
+            price = diff * 220 / 60;
+            if(isStudentDiscount === true){
+                price = price * 0.95
+            }
+        }
+
+        return {price, diff}
+    }
+
     renderRecordedItemBody(){
         if(this.state.allRecordedItem.length !== 0){
             return _.map(this.state.allRecordedItem, item => {
-                const {startTime, endTime, isOverNight, roomSize, isStudentDiscount} = item
-                var diff = 0;
-                if(startTime != null && endTime != null){
-                    if(isOverNight === true){
-                        if(startTime <= 360 && startTime <= endTime){
-                            diff = (endTime + 1440) - (startTime + 1440)
-                            this.calculatePriceRoom(diff, roomSize, isStudentDiscount)
-                        }
-                        else if(endTime <= 360 && startTime > endTime){
-                            diff = (endTime + 1440) - startTime
-                        }
-                    }
-                    else{
-                        if(startTime <= endTime){
-                            diff = endTime - startTime
-                        }
-                    }
-                }
-
-                var price = 0
-                if(roomSize === "Small"){
-                    price = diff * 3;
-                    if(isStudentDiscount === true){
-                        price = price * 0.95
-                    }
-                }
-                else if(roomSize === "Large"){
-                    price = diff * 220 / 60;
-                    if(isStudentDiscount === true){
-                        price = price * 0.95
-                    }
-                }
 
                 return (
                 <tr key={item._id}>
-                    <td>{item.roomSize === "Small" ? "ห้องเล็ก" : "ห้องใหญ่"}</td>
-                    <td>{`${parseInt(item.startTime / 60)}:${this.pad(item.startTime % 60, 2)}`}</td>
-                    <td>{`${parseInt(item.endTime / 60)}:${this.pad(item.endTime % 60, 2)}`}</td>
-                    <td>{`${parseInt(diff/60)} ชม. ${parseInt(diff%60)} นาที`}</td>
-                    <td>{`${this.numberWithCommas(parseFloat(price).toFixed(2))}`}</td>
+                    <td>{item.formatRoomsize}</td>
+                    <td>{item.formatStartTime}</td>
+                    <td>{item.formatEndTime}</td>
+                    <td>{item.formatDiff}</td>
+                    <td>{item.formatPrice}</td>
                     <td>
+                        <div className="modal-trigger" onClick={() => this.handleCurrentAction("edit", item)} style={{display: "inline-block", marginRight: "10px", cursor: "pointer"}} data-target="addModal"><i className="material-icons black-text">edit</i></div>
                         <div onClick={() => this.deleteOneTransaction(item._id)} style={{display: "inline-block", cursor: "pointer"}}><i className="material-icons black-text">delete</i></div>
                     </td>
                 </tr>
@@ -102,6 +130,41 @@ export class AddMusicroomTransaction extends Component {
             })
         }
     }
+
+    handleCurrentAction(action, item = null){
+        this.setState({lastCurrentAction: action, currentItemId: item != null ? item._id : null})
+        
+        if(action === "create"){
+            this.setState({resetSignal: true}, () => {
+                this.props.initialize({
+                    startTime: -1,
+                    endTime: -1,
+                    roomSize: "Small",
+                    isOverNight: false,
+                    isStudentDiscount: false
+                })
+            })
+
+            setTimeout(() => {
+                this.setState({resetSignal: false})
+            }, 250)
+        }
+        else if(action === "edit"){
+            this.setState({editSignal: true}, () => {
+                this.props.initialize({
+                    startTime: item.startTime,
+                    endTime: item.endTime,
+                    roomSize: item.roomSize,
+                    isOverNight: item.isOverNight,
+                    isStudentDiscount: item.isStudentDiscount
+                })
+            })
+
+            setTimeout(() => {
+                this.setState({editSignal: false})
+            }, 250)
+        }
+      }
 
     renderRecordedItem(){
         return(
@@ -222,25 +285,76 @@ export class AddMusicroomTransaction extends Component {
       }
 
     addOneMusicroomTransaction = (values) => {
-        console.log(values)
-        this.props.reset()
+        if(this.state.lastCurrentAction === "create"){
+            this.props.reset()
 
-        this.props.initialize({
-            startTime: -1,
-            endTime: -1,
-            roomSize: "Small",
-            isOverNight: false,
-            isStudentDiscount: false
+            this.setState({resetSignal: true})
+            setTimeout(() => {
+                this.setState({resetSignal: false})
+            }, 250)
+
+            let result = this.calculatePrice(values)
+
+            values._id = this.guid()
+            values.formatStartTime = `${parseInt(values.startTime / 60)}:${this.pad(values.startTime % 60, 2)}`
+            values.formatEndTime = `${parseInt(values.endTime / 60)}:${this.pad(values.endTime % 60, 2)}`
+            values.formatRoomsize = values.roomSize === "Small" ? "ห้องเล็ก" : "ห้องใหญ่"
+            values.formatDiff = `${parseInt(result.diff/60)} ชม. ${parseInt(result.diff%60)} นาที`
+            values.formatPrice = `${this.numberWithCommas(parseFloat(result.price).toFixed(2))}`
+
+            //set state with new value
+            this.setState({allRecordedItem: [...this.state.allRecordedItem, values]})
+        }
+        else if(this.state.lastCurrentAction === "edit"){
+            this.props.reset()
+            this.setState({resetSignal: true})
+            setTimeout(() => {
+                this.setState({resetSignal: false})
+            }, 250)
+
+            //prepare value
+            var currentItem = this.state.allRecordedItem
+            var arrayIndex = currentItem.findIndex(obj => obj._id === this.state.currentItemId)
+
+            let result = this.calculatePrice(values)
+
+            values._id = this.guid()
+            values.formatStartTime = `${parseInt(values.startTime / 60)}:${this.pad(values.startTime % 60, 2)}`
+            values.formatEndTime = `${parseInt(values.endTime / 60)}:${this.pad(values.endTime % 60, 2)}`
+            values.formatRoomsize = values.roomSize === "Small" ? "ห้องเล็ก" : "ห้องใหญ่"
+            values.formatDiff = `${parseInt(result.diff/60)} ชม. ${parseInt(result.diff%60)} นาที`
+            values.formatPrice = `${this.numberWithCommas(parseFloat(result.price).toFixed(2))}`
+            
+            currentItem[arrayIndex] = values
+
+            //set state with new value
+            this.setState({allRecordedItem: currentItem})
+        }
+    }
+
+    addTransactions(values, history){
+        if(values.day === null || values.day === undefined){
+          values.day = new Date()
+        }
+        values.record.forEach((e) => {
+          return(
+            e.day = values.day
+          )
         })
+        this.props.AddNewMusicroomTransaction(values.record, history)
+    }
 
-        values._id = this.guid()
-
-        //set state with new value
-        this.setState({allRecordedItem: [...this.state.allRecordedItem, values]})
+    componentDidUpdate = (prevProps) => {
+        if(this.props.musicroom.musicroomTransactionError !== prevProps.musicroom.musicroomTransactionError)
+        {
+          if(this.props.musicroom.musicroomTransactionError != null){
+            this.addNotification(this.props.musicroom.musicroomTransactionError)
+          }
+        }
     }
 
   render() {
-    const {handleSubmit, itemProperties, invalid} = this.props
+    const {handleSubmit, itemProperties, invalid, history} = this.props
     var submitButtonClassName = invalid ? "disabled" : ""
     return (
         <div className="container" style={{position: "relative", top: "5px"}}>
@@ -290,15 +404,25 @@ export class AddMusicroomTransaction extends Component {
                     }
                  </div>
                  <div className="col xl12 l12 m12 s12" style={{marginTop: "10px"}}>
-                    <div data-target="addModal" className="waves-effect waves-light btn-small modal-trigger" style={{position: "absolute", left: 0, zIndex: 0}}>
+                    <div onClick={() => this.handleCurrentAction("create")} data-target="addModal" className="waves-effect waves-light btn-small modal-trigger" style={{position: "absolute", left: 0, zIndex: 0}}>
                         เพิ่มรายการห้องซ้อม 
                     </div>
                 </div>
             </div>
+            <div className="divider"></div>
+                <div className="col xl12 l12 m12 s12" style={{marginTop: "10px"}}>
+                <div onClick={() => history.goBack()} className="waves-effect waves-light btn-small right red">
+                    ยกเลิก  
+                </div>
+                <div onClick={() => this.addTransactions({day: this.state.selectedDay, record: this.state.allRecordedItem}, history)} className={`waves-effect waves-light btn-small right green ${this.state.allRecordedItem.length === 0 ? "disabled" : ""}`} 
+                    style={{marginRight: "10px"}}>
+                    บันทึก  
+                </div>
+                </div>
             <div id="addModal" className="modal">
             <div className="modal-content">
                 <div className="container-fluid">
-                    <NewMusicroomTransactionForm />
+                    <NewMusicroomTransactionForm resetSignal={this.state.resetSignal} editSignal={this.state.editSignal}/>
                 </div>
                 <div className="divider"></div>
                 <div className="container-fluid">
@@ -309,7 +433,10 @@ export class AddMusicroomTransaction extends Component {
                 <div onClick={handleSubmit((values) => this.addOneMusicroomTransaction(values))} className={`modal-close waves-effect waves-light btn-small green white-text ${submitButtonClassName}`} style={{marginRight: "20px"}}>บันทึก</div>
                 <div className="modal-close waves-effect waves-light btn-small red white-text" style={{marginRight: "20px"}}>ยกเลิก</div>
             </div>
-            </div>        
+            </div> 
+            <ReactNotification ref={this.notificationDOMRef} onNotificationRemoval={() => {
+                this.props.resetMusicroomTransactionError()
+            }} />       
         </div>//container      
     )
   }
@@ -368,9 +495,10 @@ AddMusicroomTransaction = connect(
     itemProperties.roomSize = selector(state, 'roomSize')
     itemProperties.isStudentDiscount = selector(state, 'isStudentDiscount')
     return{
+      musicroom: state.musicroom,
       itemProperties,
     }
-  }, null
+  }, {AddNewMusicroomTransaction, resetMusicroomTransactionError}
 )(AddMusicroomTransaction)
 
 export default AddMusicroomTransaction

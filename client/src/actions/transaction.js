@@ -21,7 +21,7 @@ export const handleOnChangeInCurrentItem = (values) => async dispatch => {
 }
 
 export const importNewTransaction = (values, history) => async dispatch => {
-    app.post('/api/transaction/add', values).then(async res => {
+    app.post('/api/transaction/add', values).then(async () => {
         history.goBack()
     }).catch(error => {
         if (error.response) {
@@ -31,7 +31,7 @@ export const importNewTransaction = (values, history) => async dispatch => {
 }
 
 export const exportNewTransaction = (values, history) => async dispatch => {
-    app.post('/api/transaction/add',values).then(async res => {
+    app.post('/api/transaction/add',values).then(async () => {
         history.goBack()
     }).catch(error => {
         if (error.response) {
@@ -41,7 +41,7 @@ export const exportNewTransaction = (values, history) => async dispatch => {
 }
 
 export const modifyImportTransaction = (values, history) => async dispatch => {
-    app.post('/api/transaction/edit', values).then(async res => {
+    app.post('/api/transaction/edit', values).then(async () => {
         history.goBack()
     }).catch(error => {
         if (error.response) {
@@ -51,7 +51,7 @@ export const modifyImportTransaction = (values, history) => async dispatch => {
 }
 
 export const modifyExportTransaction = (values, history) => async dispatch => {
-    app.post('/api/transaction/edit', values).then(async res => {
+    app.post('/api/transaction/edit', values).then(async () => {
         history.goBack()
     }).catch(error => {
         if (error.response) {
@@ -61,7 +61,7 @@ export const modifyExportTransaction = (values, history) => async dispatch => {
 }
 
 export const refundTransaction = (id, history) => async dispatch => {
-    app.post('/api/transaction/refund', {id}).then(async res => {
+    app.post('/api/transaction/refund', {id}).then(async () => {
         history.goBack()
     }).catch(error => {
         if(error.response) {

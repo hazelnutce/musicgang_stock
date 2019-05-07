@@ -35,20 +35,40 @@ export class NewMusicroomTransactionTime extends Component {
     });
   }
 
-  componentDidUpdate(prevProps){
-    if(prevProps !== this.props){
+  convertTimeUnitToString(time){
+    var hour = this.pad(parseInt(time/60),2).toString()
+    var minute = this.pad(parseInt(time%60),2).toString()
+
+    return hour + ":" + minute
+  }
+
+  pad(n, width, z) {
+    z = z || '0';
+    n = n + '';
+    return n.length >= width ? n : new Array(width - n.length + 1).join(z) + n;
+  }
+
+  doEvent( obj, event ) {
+    /* Created by David@Refoua.me */
+    event = new Event( event, {target: obj, bubbles: true} );
+    return obj ? obj.dispatchEvent(event) : false;
+  }
+
+  componentWillReceiveProps(){
+    const {classNameForInit} = this.props
+    if(this.props.resetSignal !== null && this.props.resetSignal === true){
       if(this.props.input.value === -1){
-        const {classNameForInit} = this.props
-        this.mainInput.value = ""
-        var elems = document.querySelectorAll(`.${classNameForInit}`);
-        this.setState({timePickerInstance : elems})
-        M.Timepicker.init(elems, {
-            twelveHour : false,
-            onSelect : (hour, minute) => {
-                return this.props.input.onChange(hour * 60 + minute)
-            },
-            container: "div"
-        });
+        let el = document.getElementsByClassName(classNameForInit)
+        el[0].value = "";
+        this.doEvent( el[0], 'input' );
+      }
+    }
+    if(this.props.editSignal !== null && this.props.editSignal === true){
+      if(this.props.input.value !== -1){
+
+        let el = document.getElementsByClassName(classNameForInit)
+        el[0].value = this.convertTimeUnitToString(this.props.input.value);
+        this.doEvent( el[0], 'input' );
       }
     }
   }
@@ -58,7 +78,7 @@ export class NewMusicroomTransactionTime extends Component {
     return (
         <div className="input-field col s12 m4 l3 xl3">
             <i className="material-icons prefix"><FontAwesomeIcon icon={icon}/></i>
-            <input ref={(ref) => this.mainInput= ref} type="text" id="time-input-field" placeholder={placeholder} className={classNameForInit} />
+            <input type="text" id="time-input-field" placeholder={placeholder} className={classNameForInit} />
             {
                 error && 
                 <span className="red-text" style={{marginLeft: '45px', fontSize: "11px"}}>

@@ -7,6 +7,7 @@ import {NewMusicroomTransactionCheckBox} from './NewMusicroomTransactionCheckBox
 export class NewMusicroomTransactionForm extends Component {
 
   render() {
+    const {resetSignal, editSignal} = this.props
     return (
       <div>
         <div className="row">
@@ -16,6 +17,8 @@ export class NewMusicroomTransactionForm extends Component {
             placeholder="เวลาเริ่ม"
             icon="clock"
             classNameForInit="startTimePicker"
+            resetSignal={resetSignal}
+            editSignal={editSignal}
           />
           <Field
             component={NewMusicroomTransactionTime}
@@ -23,6 +26,8 @@ export class NewMusicroomTransactionForm extends Component {
             placeholder="เวลาสิ้นสุด"
             icon="clock"
             classNameForInit="endTimePicker"
+            resetSignal={resetSignal}
+            editSignal={editSignal}
           />
           <div style={{position: "relative", top: "15px"}}>
             <Field 

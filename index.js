@@ -44,6 +44,11 @@ db.loadDatabase({}, function(err) {
         Transaction = db.addCollection('transaction')
       }
 
+      var MusicRoomTransaction = db.getCollection('musicroomTransaction')
+      if(!MusicRoomTransaction){
+        MusicRoomTransaction = db.addCollection('musicroomTransaction')
+      }
+
       //----------------------- end of initalize part ------------------------------
 
       mongoose.connect(keys.mongoUrl,{ useNewUrlParser: true });
@@ -67,6 +72,7 @@ db.loadDatabase({}, function(err) {
         require('./routes/categoryRoute')(app, db, Category, Item)
         require('./routes/itemRoute')(app, db, Item, Category)
         require('./routes/transactionRoute')(app, db, Transaction, Stock, Item)
+        require('./routes/musicroomRoute')(app, db, MusicRoomTransaction)
 
         if(!(process.env.NODE_ENV && process.env.NODE_ENV.trim() === 'development')){
             //express will serve up production asset
