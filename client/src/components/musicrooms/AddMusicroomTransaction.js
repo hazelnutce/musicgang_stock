@@ -27,7 +27,7 @@ export class AddMusicroomTransaction extends Component {
         this.notificationDOMRef = React.createRef();
 
         this.state = {
-            selectedDay: new Date(),
+            selectedDay: new Date(new Date().setHours(0,0,0,0)),
             allRecordedItem: [],
             lastCurrentAction: "create",
             currentItemId: null,

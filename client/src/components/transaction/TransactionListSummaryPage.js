@@ -78,7 +78,7 @@ export class TransactionListSummaryPage extends Component {
         var newBDay = new Date(b.day)
         if(newADay < newBDay)
             return -1
-        if(a.newADay > b.newBDay)
+        if(newADay > newBDay)
             return 1
         return 0
     }
