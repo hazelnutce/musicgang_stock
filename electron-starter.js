@@ -24,7 +24,7 @@ function createWindow() {
     mainWindow.loadURL(startUrl);
     
     // Open the DevTools.
-    //mainWindow.webContents.openDevTools();
+    mainWindow.webContents.openDevTools();
     
     mainWindow.on("close", function(){
         mainWindow.webContents.send("stop-server")

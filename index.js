@@ -4,6 +4,7 @@ const passport = require('passport')
 const cookieSession = require('cookie-session')
 const bodyParser = require('body-parser')
 const lokijs = require('lokijs')
+const morgan = require('morgan')
 var cors = require('cors')
 
 const keys = require('./config/key')
@@ -15,10 +16,12 @@ require('./models/Category')
 require('./services/passport')
 
 var db = new lokijs('./database.json');
+morgan('tiny')
 
-db.loadDatabase({}, function(err) {
+var coreApp = db.loadDatabase({}, function(err) {
     if (err) {
       console.log("error : " + err);
+      return;
     }
     else {
       console.log("database loaded.");
@@ -75,15 +78,24 @@ db.loadDatabase({}, function(err) {
         require('./routes/musicroomRoute')(app, db, MusicRoomTransaction)
 
         if(!(process.env.NODE_ENV && process.env.NODE_ENV.trim() === 'development')){
+            console.log("calling react component from react")
             //express will serve up production asset
             app.use(express.static('client/build'));
             //express will serve up index.html file if it can't recognize route
             const path = require('path');
-            app.get('/production/testing',(req,res) => {
+            app.use('/',(req,res) => {
+              console.log("call react from build")
+              res.sendFile(path.resolve(__dirname,'client','build','index.html'));
+            })
+
+            app.get('/production',(req,res) => {
+                console.log("/production testing")
                 res.send("Hello client path")
             })
+            
             app.get('*',(req,res) => {
-            res.sendFile(path.resolve(__dirname,'client','build','index.html'));
+              console.log("call react from build")
+              res.sendFile(path.resolve(__dirname,'client','build','index.html'));
             })
         }
 
@@ -91,5 +103,11 @@ db.loadDatabase({}, function(err) {
         app.listen(PORT, () => {
             console.log("server're running at PORT 5000 without error :)")
         })
+
+        return app
     }
 });
+
+console.log(coreApp)
+
+module.exports = coreApp

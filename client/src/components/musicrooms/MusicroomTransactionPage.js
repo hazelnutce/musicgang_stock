@@ -5,9 +5,11 @@ import {connect} from 'react-redux'
 import {MonthPicker} from '../commons/MonthPicker'
 import moment from 'moment'
 import _ from 'lodash'
+import M from 'materialize-css'
 
 import {fetchTransaction} from '../../actions/musicroomTransaction'
 import {LoaderSpinner} from '../commons/LoaderSpinner'
+import './main.css'
 
 const shiftLeft10 = {
     left: "10px",
@@ -28,7 +30,8 @@ export class MusicroomTransactionPage extends Component {
             isSelectLargeRoomRecord : true,
             isLoadingItem: false,
             currentMonth :  y * 12 + n,
-            loadingMusicroomRecord : false
+            loadingMusicroomRecord : false,
+            isDisplayEditingMenu : false
         }
     }
 
@@ -68,10 +71,17 @@ export class MusicroomTransactionPage extends Component {
                 isSelectLargeRoomRecord : true,
             })
         }
+        else if(buttonString === "4"){
+            this.setState({isDisplayEditingMenu: !this.state.isDisplayEditingMenu})
+        }
     }
 
     componentDidMount(){
         this.props.fetchTransaction()
+        var elems = document.querySelectorAll('#deleteModal');
+        M.Modal.init(elems, {
+            opacity: 0.6
+        }); 
     }
 
     componentDidUpdate = (prevProps) => {
@@ -116,6 +126,13 @@ export class MusicroomTransactionPage extends Component {
         return 0
     }
 
+    initModal = () => {
+        var elems = document.querySelectorAll('.modal');
+        M.Modal.init(elems, {
+            opacity: 0.6
+        });
+    }
+
     renderSmallroomRecord(){
         const {musicroomTransactions} = this.props.musicroom
         
@@ -123,8 +140,12 @@ export class MusicroomTransactionPage extends Component {
                                                         this.isSameMonth(new Date(x.day), this.handleMonthFilter(this.state.currentMonth)))
         filteredTransaction = filteredTransaction.sort(this.sortDayForTransaction)
 
-        return _.map(filteredTransaction, (item, index) => {
-            var {endTime, formatDiff, formatEndTime, formatPrice, formatRoomsize, formatStartTime, isOverNight, isStudentDiscount, roomSize, startTime, _id, day} = item
+        setTimeout(() => {
+            this.initModal()
+        }, 500);
+
+        return _.map(filteredTransaction, (item) => {
+            var {formatDiff, formatEndTime, formatPrice, formatStartTime, _id, day} = item
             var itemDay = new Date(day)
 
             moment.locale('th')
@@ -135,8 +156,25 @@ export class MusicroomTransactionPage extends Component {
                     <td>{formatStartTime + "-" + formatEndTime}</td>
                     <td>{formatDiff}</td>
                     <td>{formatPrice}</td>
+                    {
+                        this.state.isDisplayEditingMenu && (
+                        <td>
+                            <div style={{display: "inline-block", marginRight: "10px", cursor: "pointer"}}><i className="material-icons black-text">edit</i></div>
+                            <div style={{display: "inline-block", cursor: "pointer"}} data-target={item._id} className="modal-trigger"><i className="material-icons black-text">delete</i></div>
+                        </td>
+                        )
+                    }
                     <td>
-                        
+                        <div id={item._id} className="modal">
+                            <div className="modal-content">
+                                <h4>ยืนยันการลบ</h4>
+                                <p>คุณต้องการจะลบรายการห้องซ้อมนี้ใช่หรือไม่ ?</p>
+                            </div>
+                            <div className="modal-footer">
+                                <button className="green modal-close waves-effect waves-light btn" style={{position: "relative", right: "20px"}}><i className="material-icons right">add_circle</i>ยืนยัน</button> 
+                                <button className="red modal-close waves-effect waves-light btn"><i className="material-icons right">cancel</i>ยกเลิก</button>
+                            </div>
+                        </div> 
                     </td>
                 </tr>
             )
@@ -150,21 +188,43 @@ export class MusicroomTransactionPage extends Component {
                                                         this.isSameMonth(new Date(x.day), this.handleMonthFilter(this.state.currentMonth)))
         filteredTransaction = filteredTransaction.sort(this.sortDayForTransaction)
 
-        return _.map(filteredTransaction, (item, index) => {
-            var {endTime, formatDiff, formatEndTime, formatPrice, formatRoomsize, formatStartTime, isOverNight, isStudentDiscount, roomSize, startTime, _id, day} = item
+        setTimeout(() => {
+            this.initModal()
+        }, 500);
+
+        return _.map(filteredTransaction, (item) => {
+            var {formatDiff, formatEndTime, formatPrice, formatStartTime, _id, day} = item
             var itemDay = new Date(day)
 
             moment.locale('th')
-            
+
             return(
                 <tr key={_id}>
                     <td>{itemDay !== null ? moment(itemDay).format('ll') : null}</td>
                     <td>{formatStartTime + "-" + formatEndTime}</td>
                     <td>{formatDiff}</td>
                     <td>{formatPrice}</td>
+                    {
+                        this.state.isDisplayEditingMenu && (
+                        <td>
+                            <div style={{display: "inline-block", marginRight: "10px", cursor: "pointer"}}><i className="material-icons black-text">edit</i></div>
+                            <div style={{display: "inline-block", cursor: "pointer"}} data-target={item._id} className="modal-trigger"><i className="material-icons black-text">delete</i></div>
+                        </td>
+                        )
+                    }
                     <td>
-                        
+                        <div id={item._id} className="modal">
+                            <div className="modal-content">
+                                <h4>ยืนยันการลบ</h4>
+                                <p>คุณต้องการจะลบรายการห้องซ้อมนี้ใช่หรือไม่ ?</p>
+                            </div>
+                            <div className="modal-footer">
+                                <button  className="green modal-close waves-effect waves-light btn" style={{position: "relative", right: "20px"}}><i className="material-icons right">add_circle</i>ยืนยัน</button> 
+                                <button className="red modal-close waves-effect waves-light btn"><i className="material-icons right">cancel</i>ยกเลิก</button>
+                            </div>
+                        </div> 
                     </td>
+                    
                 </tr>
             )
         })
@@ -182,28 +242,38 @@ export class MusicroomTransactionPage extends Component {
                             <span style={shiftLeft10}>บันทึกห้องซ้อม</span>
                         </h5>
                         <div className="col s12 m12 l12 xl12">
-                            <label className="col xl4 l4 m5 s6">
-                                <input type="checkbox" className="filled-in" onChange={() => this.handleCheckboxes("1")} checked={this.state.isSelectAllRecord} />
-                                <span>แสดงรายการทั้งหมด</span>
-                            </label>
-                            <label className="col xl4 l4 m5 s6">
-                                <input type="checkbox" className="filled-in" onChange={() => this.handleCheckboxes("2")} checked={this.state.isSelectSmallRoomRecord} />
-                                <span>รายการห้องซ้อมเล็ก</span>
-                            </label>
-                            <label className="col xl4 l4 m5 s6">
-                                <input type="checkbox" className="filled-in" onChange={() => this.handleCheckboxes("3")} checked={this.state.isSelectLargeRoomRecord} />
-                                <span>รายการห้องซ้อมใหญ่</span>
-                            </label>
+                            <div className="row">
+                                <label className="col xl4 l4 m5 s6">
+                                    <input type="checkbox" className="filled-in" onChange={() => this.handleCheckboxes("1")} checked={this.state.isSelectAllRecord} />
+                                    <span>แสดงรายการทั้งหมด</span>
+                                </label>
+                                <label className="col xl4 l4 m5 s6">
+                                    <input type="checkbox" className="filled-in" onChange={() => this.handleCheckboxes("2")} checked={this.state.isSelectSmallRoomRecord} />
+                                    <span>รายการห้องซ้อมเล็ก</span>
+                                </label>
+                                <label className="col xl4 l4 m5 s6">
+                                    <input type="checkbox" className="filled-in" onChange={() => this.handleCheckboxes("3")} checked={this.state.isSelectLargeRoomRecord} />
+                                    <span>รายการห้องซ้อมใหญ่</span>
+                                </label>
+                            </div>
+                            <div className="row" style={{marginTop:"-10px"}}>
+                                <label className="col xl4 l4 m5 s6">
+                                    <input type="checkbox" className="filled-in" onChange={() => this.handleCheckboxes("4")} checked={this.state.isDisplayEditingMenu} />
+                                    <span>แสดงเมนูแก้ไขรายการ</span>
+                                </label>
+                            </div>
+                            
+                            
                         </div>
                     </div>
                     <div className="col xl3 l3 m4 s12" >
-                        <div className="col xl12 l12 m12 s12" style={{top: "40px", position: "relative"}}>
+                        <div className="col xl12 l12 m12 s12" id="addNewRecordButton">
                             <Link to={{ pathname: `/musicrooms/new`}} className="waves-effect waves-light btn-small green accent-3"><i className="material-icons right">arrow_upward</i>เพิ่มรายการห้องซ้อม</Link>
                         </div>
                     </div>
                 </div>
                 {this.state.isSelectAllRecord === true && this.state.loadingMusicroomRecord === true && (
-                    <div className="row">
+                    <div className="row" style={{marginTop: "-20px"}}>
                         <div className="col x12 l12 m12 s12 center">
                             <MonthPicker 
                                 handleAddMonth={this.handleAddMonth} 

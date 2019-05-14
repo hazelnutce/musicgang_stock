@@ -84,13 +84,15 @@ export class ItemPage extends Component {
             var direction = this.state.currentSorting.direction
             this.handleSorting(allItems, sortingColumn, direction)
         }
+
+        setTimeout(() => {
+            this.initModal()
+        }, 500);
         
         return _.map(allItems, (item, itemIndex, items) => {
             if(this.props.allCategory.categories != null){
                 item._category = this.props.allCategory.categories.filter(x => (x._id === item._category._id))[0]
             }
-
-            window.addEventListener('load', this.initModal());
 
             const {itemName, _category : {categoryNameTh, categoryNameEn, labelColor, textColor}, cost, revenue, formatCost, formatRevenue, itemWarning, itemRemaining} = item
             return(
