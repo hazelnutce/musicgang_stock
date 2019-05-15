@@ -6,8 +6,9 @@ import {MonthPicker} from '../commons/MonthPicker'
 import moment from 'moment'
 import _ from 'lodash'
 import M from 'materialize-css'
+import ReactNotification from "react-notifications-component";
 
-import {fetchTransaction} from '../../actions/musicroomTransaction'
+import {fetchTransaction, deleteMusicroomTransaction, resetMusicroomTransactionError} from '../../actions/musicroomTransaction'
 import {LoaderSpinner} from '../commons/LoaderSpinner'
 import './main.css'
 
@@ -24,6 +25,8 @@ export class MusicroomTransactionPage extends Component {
         var n = d.getMonth()
         var y = d.getFullYear()
 
+        this.notificationDOMRef = React.createRef();
+
         this.state = {
             isSelectAllRecord : true,
             isSelectSmallRoomRecord : true,
@@ -34,6 +37,20 @@ export class MusicroomTransactionPage extends Component {
             isDisplayEditingMenu : false
         }
     }
+
+    addNotification = (message) => {
+        this.notificationDOMRef.current.addNotification({
+          title: "ข้อผิดพลาด",
+          message: message,
+          type: "danger",
+          insert: "buttom",
+          container: "top-right",
+          animationIn: ["animated", "fadeIn"],
+          animationOut: ["animated", "fadeOut"],
+          dismiss: { duration: 2000 },
+          dismissable: { click: true }
+        });
+      }
 
     handleAddMonth = () => {
         this.setState({currentMonth: this.state.currentMonth + 1})
@@ -89,6 +106,12 @@ export class MusicroomTransactionPage extends Component {
             this.setState({
                 loadingMusicroomRecord: true,
             }) 
+        }
+        if(this.props.musicroom.musicroomTransactionError !== prevProps.musicroom.musicroomTransactionError)
+        {
+            if(this.props.musicroom.musicroomTransactionError != null){
+            this.addNotification(this.props.musicroom.musicroomTransactionError)
+            }
         }
     }
 
@@ -171,7 +194,7 @@ export class MusicroomTransactionPage extends Component {
                                 <p>คุณต้องการจะลบรายการห้องซ้อมนี้ใช่หรือไม่ ?</p>
                             </div>
                             <div className="modal-footer">
-                                <button className="green modal-close waves-effect waves-light btn" style={{position: "relative", right: "20px"}}><i className="material-icons right">add_circle</i>ยืนยัน</button> 
+                                <button className="green modal-close waves-effect waves-light btn" onClick={() => this.props.deleteMusicroomTransaction(item._id)} style={{position: "relative", right: "20px"}}><i className="material-icons right">add_circle</i>ยืนยัน</button> 
                                 <button className="red modal-close waves-effect waves-light btn"><i className="material-icons right">cancel</i>ยกเลิก</button>
                             </div>
                         </div> 
@@ -219,7 +242,7 @@ export class MusicroomTransactionPage extends Component {
                                 <p>คุณต้องการจะลบรายการห้องซ้อมนี้ใช่หรือไม่ ?</p>
                             </div>
                             <div className="modal-footer">
-                                <button  className="green modal-close waves-effect waves-light btn" style={{position: "relative", right: "20px"}}><i className="material-icons right">add_circle</i>ยืนยัน</button> 
+                                <button className="green modal-close waves-effect waves-light btn" style={{position: "relative", right: "20px"}}  onClick={() => this.props.deleteMusicroomTransaction(item._id)}><i className="material-icons right">add_circle</i>ยืนยัน</button> 
                                 <button className="red modal-close waves-effect waves-light btn"><i className="material-icons right">cancel</i>ยกเลิก</button>
                             </div>
                         </div> 
@@ -395,6 +418,9 @@ export class MusicroomTransactionPage extends Component {
                 {this.state.loadingMusicroomRecord === false && (
                     <LoaderSpinner loading={this.state.loadingMusicroomRecord} color={'#123abc'}/>
                 )}
+                <ReactNotification ref={this.notificationDOMRef} onNotificationRemoval={() => {
+                    this.props.resetMusicroomTransactionError()
+                }} /> 
 
             </div>
         )
@@ -406,4 +432,4 @@ function mapStateToProps(state){
     return {musicroom : state.musicroom}
 }
 
-export default connect(mapStateToProps, {fetchTransaction})(MusicroomTransactionPage)
+export default connect(mapStateToProps, {fetchTransaction, deleteMusicroomTransaction, resetMusicroomTransactionError})(MusicroomTransactionPage)

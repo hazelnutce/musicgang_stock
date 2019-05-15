@@ -13,7 +13,7 @@ import MomentLocaleUtils, {
   } from 'react-day-picker/moment';
 
 import {NewMusicroomTransactionForm} from '../forms/newmusicroomtransaction/NewMusicroomTransactionForm'
-import {AddNewMusicroomTransaction, resetMusicroomTransactionError} from '../../actions/musicroomTransaction'
+import {addNewMusicroomTransaction, resetMusicroomTransactionError} from '../../actions/musicroomTransaction'
 
 const shiftLeft10 = {
     left: "10px",
@@ -498,7 +498,7 @@ AddMusicroomTransaction = connect(
       musicroom: state.musicroom,
       itemProperties,
     }
-  }, {AddNewMusicroomTransaction, resetMusicroomTransactionError}
+  }, {addNewMusicroomTransaction, resetMusicroomTransactionError}
 )(AddMusicroomTransaction)
 
 export default AddMusicroomTransaction

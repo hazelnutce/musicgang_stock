@@ -29,4 +29,27 @@ module.exports = (app, Db, Musicroom) => {
 
         res.status(200).send("Created musicroom transaction successfully")
     })
+
+    app.delete('/api/musicroom/delete/:itemId',requireLogin,async (req,res) => {
+        const musicroomId = req.params.itemId
+
+        try{
+            await Musicroom.removeWhere({_id: musicroomId.toString()})
+        }
+        catch(e){
+            res.status(500).send(e)
+        }
+        finally{
+            await Db.saveDatabase();
+        }
+
+        try{
+            var result = Musicroom.find({_user: req.user.id.toString()})
+        }
+        catch(e){
+            res.status(500).send(e)
+        }
+
+        res.status(200).send(result)
+    })
 }

@@ -7,7 +7,7 @@ export const fetchTransaction = () => async dispatch => {
     dispatch({type: FETCH_MUSICROOM_TRANSACTION, payload: res.data})
 }
 
-export const AddNewMusicroomTransaction = (values, history) => async dispatch => {
+export const addNewMusicroomTransaction = (values, history) => async dispatch => {
     app.post('/api/musicroom/add', values).then(async () => {
         history.goBack()
     }).catch(error => {
@@ -15,6 +15,17 @@ export const AddNewMusicroomTransaction = (values, history) => async dispatch =>
             dispatch({type: MUSICROOM_TRANSACTION_ERROR, payload: error.response.data})
         }
     })
+}
+
+export const deleteMusicroomTransaction = (id) => async dispatch => {
+    app.delete('/api/musicroom/delete/' + id).then(async (res) => {
+        dispatch({type: FETCH_MUSICROOM_TRANSACTION, payload: res.data})
+    }).catch(error => {
+        if (error.response) {
+            dispatch({type: MUSICROOM_TRANSACTION_ERROR, payload: error.response.data})
+        }
+    })
+
 }
 
 export const resetMusicroomTransactionError = () => async dispatch => {
