@@ -34,6 +34,7 @@ import TransactionExport from './transaction/AddNewTransactionOut'
 import EditTransaction from './transaction/EditTransaction'
 import MusicroomTransactionPage from './musicrooms/MusicroomTransactionPage'
 import AddMusicroomTransaction from './musicrooms/AddMusicroomTransaction'
+import EditMusicroomTransaction from "./musicrooms/EditMusicroomTransaction";
 import ErrorNoticePage from './commons/ErrorProcessNotice'
 
 library.add([faTag, faGhost, faDollarSign, faHandHoldingUsd, faExclamation, faTags, faBoxes, faBoxes,
@@ -66,6 +67,7 @@ class App extends Component {
                 <Route exact path="/transactions/edit" component={EditTransaction}></Route>
                 <Route exact path="/musicrooms" component={MusicroomTransactionPage}></Route>
                 <Route exact path="/musicrooms/new" component={AddMusicroomTransaction}></Route>
+                <Route exact path="/musicrooms/edit" component={EditMusicroomTransaction}></Route>
                 <Route component={ErrorNoticePage} />
               </Switch>
             {/* <Route path="/setting" component={SettingPage}></Route> */}

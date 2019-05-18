@@ -52,4 +52,40 @@ module.exports = (app, Db, Musicroom) => {
 
         res.status(200).send(result)
     })
+
+    app.post('/api/musicroom/edit', requireLogin, async (req,res) => {
+        const {_id, day, endTime, 
+            formatDiff, formatEndTime, formatPrice, formatRoomsize, 
+            formatStartTime, isOverNight, isStudentDiscount, roomSize,
+            startTime} = req.body
+        var result = Musicroom.findOne({_id})
+        if(result){
+            try{
+                result._id = _id
+                result.day = day
+                result.endTime = endTime
+                result.formatDiff = formatDiff
+                result.formatEndTime = formatEndTime
+                result.formatPrice = formatPrice
+                result.formatRoomsize = formatRoomsize
+                result.formatStartTime = formatStartTime
+                result.isOverNight = isOverNight
+                result.isStudentDiscount = isStudentDiscount
+                result.roomSize = roomSize
+                result.startTime = startTime
+                Musicroom.update(result)
+            }
+            catch(e){
+                res.status(500).send("พบบางอย่างผิดพลาดที่ระบบข้อมูล", e)
+            }
+            finally{
+                await Db.saveDatabase();
+            }
+            res.status(200).send(result)
+        }
+        else{
+            res.status(500).send("รายการไม่ถูกต้อง กรุณาลองใหม่อีกครั้ง")
+            return
+        }
+    })
 }

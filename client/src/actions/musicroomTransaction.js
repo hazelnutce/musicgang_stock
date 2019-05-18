@@ -25,7 +25,16 @@ export const deleteMusicroomTransaction = (id) => async dispatch => {
             dispatch({type: MUSICROOM_TRANSACTION_ERROR, payload: error.response.data})
         }
     })
+}
 
+export const editMusicroomTransaction = (values, history) => async dispatch => {
+    app.post(`/api/musicroom/edit`,values).then(async res => {
+        history.goBack()
+    }).catch(error => {
+        if (error.response) {
+            dispatch({type: MUSICROOM_TRANSACTION_ERROR, payload: error.response.data})
+        }
+    })
 }
 
 export const resetMusicroomTransactionError = () => async dispatch => {

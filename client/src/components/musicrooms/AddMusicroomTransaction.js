@@ -334,14 +334,14 @@ export class AddMusicroomTransaction extends Component {
 
     addTransactions(values, history){
         if(values.day === null || values.day === undefined){
-          values.day = new Date()
+          values.day = new Date(new Date().setHours(0,0,0,0))
         }
         values.record.forEach((e) => {
           return(
             e.day = values.day
           )
         })
-        this.props.AddNewMusicroomTransaction(values.record, history)
+        this.props.addNewMusicroomTransaction(values.record, history)
     }
 
     componentDidUpdate = (prevProps) => {

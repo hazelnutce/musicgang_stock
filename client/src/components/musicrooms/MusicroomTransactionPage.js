@@ -168,7 +168,7 @@ export class MusicroomTransactionPage extends Component {
         }, 500);
 
         return _.map(filteredTransaction, (item) => {
-            var {formatDiff, formatEndTime, formatPrice, formatStartTime, _id, day} = item
+            var {formatDiff, formatEndTime, formatPrice, formatStartTime, _id, day, roomSize, isStudentDiscount, isOverNight, startTime, endTime} = item
             var itemDay = new Date(day)
 
             moment.locale('th')
@@ -182,7 +182,12 @@ export class MusicroomTransactionPage extends Component {
                     {
                         this.state.isDisplayEditingMenu && (
                         <td>
-                            <div style={{display: "inline-block", marginRight: "10px", cursor: "pointer"}}><i className="material-icons black-text">edit</i></div>
+                            <div style={{display: "inline-block", marginRight: "10px", cursor: "pointer"}}>
+                                <Link to={{ pathname: `/musicrooms/edit`,
+                                    state: {itemDay, roomSize, isStudentDiscount, isOverNight, startTime, endTime, _id} }} 
+                                    className="material-icons black-text">edit
+                                </Link>
+                            </div>
                             <div style={{display: "inline-block", cursor: "pointer"}} data-target={item._id} className="modal-trigger"><i className="material-icons black-text">delete</i></div>
                         </td>
                         )
@@ -216,7 +221,7 @@ export class MusicroomTransactionPage extends Component {
         }, 500);
 
         return _.map(filteredTransaction, (item) => {
-            var {formatDiff, formatEndTime, formatPrice, formatStartTime, _id, day} = item
+            var {formatDiff, formatEndTime, formatPrice, formatStartTime, _id, day, roomSize, isStudentDiscount, isOverNight, startTime, endTime} = item
             var itemDay = new Date(day)
 
             moment.locale('th')
@@ -230,7 +235,12 @@ export class MusicroomTransactionPage extends Component {
                     {
                         this.state.isDisplayEditingMenu && (
                         <td>
-                            <div style={{display: "inline-block", marginRight: "10px", cursor: "pointer"}}><i className="material-icons black-text">edit</i></div>
+                            <div style={{display: "inline-block", marginRight: "10px", cursor: "pointer"}}>
+                                <Link to={{ pathname: `/musicrooms/edit`,
+                                    state: {itemDay, roomSize, isStudentDiscount, isOverNight, startTime, endTime, _id} }} 
+                                    className="material-icons black-text">edit
+                                </Link>
+                            </div>
                             <div style={{display: "inline-block", cursor: "pointer"}} data-target={item._id} className="modal-trigger"><i className="material-icons black-text">delete</i></div>
                         </td>
                         )
