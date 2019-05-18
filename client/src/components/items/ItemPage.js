@@ -84,13 +84,15 @@ export class ItemPage extends Component {
             var direction = this.state.currentSorting.direction
             this.handleSorting(allItems, sortingColumn, direction)
         }
+
+        setTimeout(() => {
+            this.initModal()
+        }, 500);
         
         return _.map(allItems, (item, itemIndex, items) => {
             if(this.props.allCategory.categories != null){
                 item._category = this.props.allCategory.categories.filter(x => (x._id === item._category._id))[0]
             }
-
-            window.addEventListener('load', this.initModal());
 
             const {itemName, _category : {categoryNameTh, categoryNameEn, labelColor, textColor}, cost, revenue, formatCost, formatRevenue, itemWarning, itemRemaining} = item
             return(
@@ -106,10 +108,6 @@ export class ItemPage extends Component {
                             <Link to={{ pathname: `/items/edit/${item._id}`, 
                                 state: { stockId, stockName, itemName, category: `${categoryNameTh}(${categoryNameEn})`, cost, revenue, itemWarning} }} 
                                 className="material-icons black-text">edit
-                            </Link>
-                            <Link to={{ pathname: `/items/add/new/${stockId}`, 
-                                state: { stockId, stockName, itemName, category: `${categoryNameTh}(${categoryNameEn})`, cost, revenue, itemWarning, itemRemaining, itemIndex, items} }} 
-                                className="material-icons black-text">content_copy
                             </Link>
                             <a className="modal-trigger" href={"#"+item._id}><i className="material-icons black-text">delete</i></a>
                         </td>

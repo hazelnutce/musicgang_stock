@@ -352,13 +352,13 @@ export class AddNewTransactionIn extends Component {
           </div>
           <div className="col xl12 l12 m12 s12">
             {this.state.allRecordedItem.length === 0 ? 
-            <div className="card-panel yellow darken-1">
-              <span className="white-text">
-                <span><i className="material-icons" style={{marginLeft: "10px",top:"5px",position:"relative"}}>warning</i></span>
-                <span style={{marginLeft: "10px"}}>ไม่มีรายการที่ต้องการบันทึก กรุณาเพิ่มรายการสินค้า</span>
-              </span>
-            </div> : 
-              this.renderRecordedItem()
+              <div className="card-panel yellow darken-1">
+                <span className="white-text">
+                  <span><i className="material-icons" style={{marginLeft: "10px",top:"5px",position:"relative"}}>warning</i></span>
+                  <span style={{marginLeft: "10px"}}>ไม่มีรายการที่ต้องการบันทึก กรุณาเพิ่มรายการสินค้า</span>
+                </span>
+              </div> : 
+                this.renderRecordedItem()
             }
           </div>
           <div className="col xl12 l12 m12 s12">

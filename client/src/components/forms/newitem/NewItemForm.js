@@ -71,20 +71,34 @@ export class NewItemForm extends Component {
           <Field 
               component={NewItemField}
               name="cost"
-              type={"number"}
+              type={"text"}
               icon={"dollar-sign"}
               keyLabel={"ราคาต้นทุน"}
               faRequire={true}
+              normalize={(val, prevVal) => {
+                if (val) {
+                  return (/^\d+\.{0,1}\d{0,2}$/.test(val)) ? val : prevVal
+                }
+                return val;
+              }}
+              inputmode="numeric"
           />
         </div>
         <div className="row">
         <Field 
             component={NewItemField}
             name="income"
-            type={"number"}
+            type={"text"}
             icon={"hand-holding-usd"}
             keyLabel={"ราคาขาย"}
             faRequire={true}
+            normalize={(val, prevVal) => {
+              if (val) {
+                return (/^\d+\.{0,1}\d{0,2}$/.test(val)) ? val : prevVal
+              }
+              return val;
+            }}
+            inputmode="numeric"
         />
 
         <Field 
