@@ -11,7 +11,9 @@ export class TransactionDetail extends Component {
     }
 
     componentDidMount(){
-        window.addEventListener('load', this.initCollapsible());
+        setTimeout(() => {
+          this.initCollapsible()
+        }, 250);
     }
 
   render() {  
