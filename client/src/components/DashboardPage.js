@@ -4,7 +4,7 @@ export class DashboardPage extends Component {
   render() {
     return (
       <div className="container" style={{position: "relative", top: "5px"}}>
-        กำลังอยู่ในช่วงพัฒนาแอพพลิเคชั่น ขออภัยในความไม่สะดวก
+        Welcome to Musicgang Utility Tool V 1.0
       </div>
     )
   }
