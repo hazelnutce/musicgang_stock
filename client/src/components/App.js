@@ -17,8 +17,7 @@ import { faGhost,
   faMinus, 
   faMusic,
   faClock,
-  faInfo,
-  faCalendarAlt} from '@fortawesome/free-solid-svg-icons'
+  faInfo } from '@fortawesome/free-solid-svg-icons'
 
 import Landing from './Landing'
 import StockPage from './stocks/StockPage';

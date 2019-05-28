@@ -7,7 +7,11 @@ import NewCostTransactionCheckBox from './NewCostTransactionCheckBox'
 export class NewCostTransactionForm extends Component {
   render() {
     return (
+      <div>
       <div className="row">
+        {this.props.children}
+      </div>
+      <div className="row" style={{bottom: "30px", position: "relative"}}>
         <Field 
               component={NewCostTransactionField}
               name="description"
@@ -18,7 +22,7 @@ export class NewCostTransactionForm extends Component {
           <Field 
               component={NewCostTransactionField}
               name="cost"
-              type={"number"}
+              type={"text"}
               icon={"dollar-sign"}
               keyLabel={"จำนวนเงิน"}
               normalize={(val, prevVal) => {
@@ -29,24 +33,27 @@ export class NewCostTransactionForm extends Component {
               }}
               inputmode="numeric"
           />
-          <div style={{top: "10px", position: "relative"}}>
-              <Field 
-                component={NewCostTransactionCheckBox}
-                name="costType"
-                checkBoxLabel={"รายรับ"}
-                boxValue="Small"
-              />
-          </div>
-          <div style={{top: "10px", position: "relative"}}>
+        </div>
+        <div className="row">
+          <div style={{top: "-35px", position: "relative"}}>
               <Field 
                 component={NewCostTransactionCheckBox}
                 name="costType"
                 checkBoxLabel={"รายจ่าย"}
-                boxValue="Large"
+                boxValue="Cost"
               />
           </div>
-          {this.props.children}
+          <div style={{top: "-35px", position: "relative"}}>
+              <Field 
+                component={NewCostTransactionCheckBox}
+                name="costType"
+                checkBoxLabel={"รายรับ"}
+                boxValue="Revenue"
+              />
+          </div>
+        </div>
       </div>
+     
     )
   }
 }

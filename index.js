@@ -52,6 +52,11 @@ var coreApp = db.loadDatabase({}, function(err) {
         MusicRoomTransaction = db.addCollection('musicroomTransaction')
       }
 
+      var CostTransaction = db.getCollection('costTransaction')
+      if(!CostTransaction){
+        CostTransaction = db.addCollection('costTransaction')
+      }
+
       //----------------------- end of initalize part ------------------------------
 
       mongoose.connect(keys.mongoUrl,{ useNewUrlParser: true });
@@ -76,6 +81,7 @@ var coreApp = db.loadDatabase({}, function(err) {
         require('./routes/itemRoute')(app, db, Item, Category)
         require('./routes/transactionRoute')(app, db, Transaction, Stock, Item)
         require('./routes/musicroomRoute')(app, db, MusicRoomTransaction)
+        require('./routes/costRoute')(app, db, CostTransaction)
 
         if(!(process.env.NODE_ENV && process.env.NODE_ENV.trim() === 'development')){
             console.log("calling react component from react")

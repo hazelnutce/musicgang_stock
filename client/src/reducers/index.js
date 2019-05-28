@@ -8,6 +8,7 @@ import categoryReducer from './categoryReducer'
 import itemReducer from './itemReducer';
 import transactionReducer from './transactionReducer';
 import musicroomReducer from './musicroomReducer'
+import costReducer from './costReducer'
 
 export default combineReducers({
     auth: authReducer,
@@ -17,5 +18,6 @@ export default combineReducers({
     item : itemReducer,
     form: formReducer,
     transaction: transactionReducer,
-    musicroom: musicroomReducer
+    musicroom: musicroomReducer,
+    cost: costReducer
 });
