@@ -8,6 +8,7 @@ module.exports = (app, Db, Cost) => {
     })
 
     app.post('/api/cost/add', requireLogin, async (req,res) => {
+        
         var allItem = req.body
 
         allItem._user = req.user.id.toString()
@@ -57,5 +58,34 @@ module.exports = (app, Db, Cost) => {
         }
 
         res.status(200).send(result)
+    })
+
+    app.post('/api/cost/edit', requireLogin, async (req,res) => {
+        const {_id, cost, formatCost, 
+            description, costType, _stock, day} = req.body
+        var result = Cost.findOne({_id})
+        if(result){
+            try{
+                result._id = _id
+                result.cost = cost
+                result.formatCost = formatCost
+                result.description = description
+                result.costType = costType
+                result._stock = _stock
+                result.day = day
+                Cost.update(result)
+            }
+            catch(e){
+                res.status(500).send("พบบางอย่างผิดพลาดที่ระบบข้อมูล", e)
+            }
+            finally{
+                await Db.saveDatabase();
+            }
+            res.status(200).send(result)
+        }
+        else{
+            res.status(500).send("รายการไม่ถูกต้อง กรุณาลองใหม่อีกครั้ง")
+            return
+        }
     })
 }

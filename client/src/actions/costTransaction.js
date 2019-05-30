@@ -28,11 +28,15 @@ export const deleteCostTransaction = (id) => async dispatch => {
 }
 
 export const editCostTransaction = (values, history) => async dispatch => {
-    app.post(`/api/musicroom/edit`,values).then(async res => {
-        //history.goBack()
+    app.post(`/api/cost/edit`,values).then(async res => {
+        history.goBack()
     }).catch(error => {
         if (error.response) {
             dispatch({type: COST_TRANSACTION_ERROR, payload: error.response.data})
         }
     })
+}
+
+export const resetCostTransactionError = () => async dispatch => {
+    dispatch({type: COST_TRANSACTION_ERROR, payload : null})
 }

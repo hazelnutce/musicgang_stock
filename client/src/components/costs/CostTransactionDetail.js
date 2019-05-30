@@ -9,8 +9,9 @@ import DayPickerInput from 'react-day-picker/DayPickerInput'
 import {MonthPicker} from '../commons/MonthPicker'
 import {LoaderSpinner} from '../commons/LoaderSpinner'
 import {CostTransactionTableBody} from './CostTransactionTableBody'
+import ReactNotification from "react-notifications-component";
 
-import {addNewCostTransaction, fetchTransaction, deleteCostTransaction, editCostTransaction} from '../../actions/costTransaction'
+import {addNewCostTransaction, fetchTransaction, deleteCostTransaction, editCostTransaction, resetCostTransactionError} from '../../actions/costTransaction'
 
 import MomentLocaleUtils, {
     formatDate,
@@ -56,6 +57,20 @@ export class CostTransactionDetail extends Component {
     this.props.fetchTransaction()
   }
 
+  addNotification = (message) => {
+    this.notificationDOMRef.current.addNotification({
+      title: "ข้อผิดพลาด",
+      message: message,
+      type: "danger",
+      insert: "buttom",
+      container: "top-right",
+      animationIn: ["animated", "fadeIn"],
+      animationOut: ["animated", "fadeOut"],
+      dismiss: { duration: 2000 },
+      dismissable: { click: true }
+    });
+  }
+
   componentDidUpdate(prevProps){
     if(prevProps.cost.costTransactions !== this.props.cost.costTransactions){
         this.setState({
@@ -67,6 +82,14 @@ export class CostTransactionDetail extends Component {
             isLoadingTransaction: false,
         }) 
     }
+
+    if(this.props.cost.costTransactionError !== prevProps.cost.costTransactionError)
+    {
+        if(this.props.cost.costTransactionError != null){
+            this.addNotification(this.props.cost.costTransactionError)
+        }
+    }
+
   }
 
   addOneCostTransaction(values, history){
@@ -79,7 +102,7 @@ export class CostTransactionDetail extends Component {
 
     this.props.reset()
 
-    values.formatCost = parseFloat(values.cost).toFixed(2)
+    values.formatCost = this.numberWithCommas(parseFloat(values.cost).toFixed(2))
     values.cost =+ parseFloat(values.cost).toFixed(2)
     
     values._stock = this.props.location.state.stockId
@@ -114,6 +137,15 @@ export class CostTransactionDetail extends Component {
         this.setState({isDisplayEditingMenu: !this.state.isDisplayEditingMenu})
     }
 }
+
+numberWithCommas(x) {
+    if(x != null){
+      var parts = x.toString().split(".");
+      parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+      return parts.join(".");
+    }
+    return null
+  }
 
 handleAddMonth = () => {
     this.setState({currentMonth: this.state.currentMonth + 1})
@@ -189,7 +221,7 @@ handleDayChange = (day) => {
                                 <div className="col xl12 l12 m12 s12" style={{right: "5px", position: "relative"}}>
                                     <h6>รายจ่าย</h6>
                                 </div>
-                                <div className="col card small xl12 l12 m12 s12" style={{right: "5px", position: "relative", height: "auto"}}>
+                                <div className="col card small xl12 l12 m12 s12" style={{ height: "auto"}}>
                                 <table className="highlight centered">
                                     <thead>
                                     <tr>
@@ -217,7 +249,7 @@ handleDayChange = (day) => {
                             <div className="col xl12 l12 m12 s12" style={{left: "5px", position: "relative"}}>
                                 <h6>รายรับ</h6>
                             </div>
-                            <div className="col card small xl12 l12 m12 s12" style={{right: "5px", position: "relative", height: "auto"}}>
+                            <div className="col card small xl12 l12 m12 s12" style={{ height: "auto"}}>
                                 <table className="highlight centered">
                                 <thead>
                                 <tr>
@@ -256,7 +288,7 @@ handleDayChange = (day) => {
                     <div className="col xl12 l12 m12 s12" style={{right: "5px", position: "relative"}}>
                         <h6>รายจ่าย</h6>
                     </div>
-                    <div className="col card small xl12 l12 m12 s12" style={{right: "5px", position: "relative", height: "auto"}}>
+                    <div className="col card small xl12 l12 m12 s12" style={{ height: "auto"}}>
                         <table className="highlight centered">
                             <thead>
                             <tr>
@@ -294,7 +326,7 @@ handleDayChange = (day) => {
                     <div className="col xl12 l12 m12 s12" style={{right: "5px", position: "relative"}}>
                         <h6>รายรับ</h6>
                     </div>
-                    <div className="col card small xl12 l12 m12 s12" style={{right: "5px", position: "relative", height: "auto"}}>
+                    <div className="col card small xl12 l12 m12 s12" style={{ height: "auto"}}>
                         <table className="highlight centered">
                             <thead>
                             <tr>
@@ -354,6 +386,9 @@ handleDayChange = (day) => {
                 <div className="modal-close waves-effect waves-light btn-small red white-text" style={{marginRight: "20px", zIndex: "0"}}>ยกเลิก</div>
             </div>
           </div> 
+          <ReactNotification ref={this.notificationDOMRef} onNotificationRemoval={() => {
+                this.props.resetCostTransactionError()
+            }} />  
       </div>
     )
   }
@@ -391,6 +426,6 @@ CostTransactionDetail = reduxForm({
     validate
 })(CostTransactionDetail)
 
-CostTransactionDetail = connect(mapStateToProps,{addNewCostTransaction, fetchTransaction, deleteCostTransaction, editCostTransaction})(CostTransactionDetail)
+CostTransactionDetail = connect(mapStateToProps,{addNewCostTransaction, fetchTransaction, deleteCostTransaction, editCostTransaction, resetCostTransactionError})(CostTransactionDetail)
 
 export default CostTransactionDetail
