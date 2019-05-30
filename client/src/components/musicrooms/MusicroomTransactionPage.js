@@ -156,6 +156,12 @@ export class MusicroomTransactionPage extends Component {
         });
     }
 
+    isSameDay = (d1, d2) => {
+        return d1.getFullYear() === d2.getFullYear() &&
+          d1.getMonth() === d2.getMonth() &&
+          d1.getDate() === d2.getDate();
+    }
+
     renderSmallroomRecord(){
         const {musicroomTransactions} = this.props.musicroom
         
@@ -167,9 +173,17 @@ export class MusicroomTransactionPage extends Component {
             this.initModal()
         }, 500);
 
-        return _.map(filteredTransaction, (item) => {
+        return _.map(filteredTransaction, (item ,index) => {
             var {formatDiff, formatEndTime, formatPrice, formatStartTime, _id, day, roomSize, isStudentDiscount, isOverNight, startTime, endTime} = item
             var itemDay = new Date(day)
+
+            var copiedItemDay = itemDay
+            if(index > 0){
+                var previousItemDay = new Date(filteredTransaction[index-1].day)
+                if(this.isSameDay(itemDay, previousItemDay)){
+                    itemDay = null
+                }
+            }
 
             moment.locale('th')
             
@@ -184,7 +198,7 @@ export class MusicroomTransactionPage extends Component {
                         <td>
                             <div style={{display: "inline-block", marginRight: "10px", cursor: "pointer"}}>
                                 <Link to={{ pathname: `/musicrooms/edit`,
-                                    state: {itemDay, roomSize, isStudentDiscount, isOverNight, startTime, endTime, _id} }} 
+                                    state: {itemDay: copiedItemDay, roomSize, isStudentDiscount, isOverNight, startTime, endTime, _id} }} 
                                     className="material-icons black-text">edit
                                 </Link>
                             </div>
@@ -220,9 +234,17 @@ export class MusicroomTransactionPage extends Component {
             this.initModal()
         }, 500);
 
-        return _.map(filteredTransaction, (item) => {
+        return _.map(filteredTransaction, (item, index) => {
             var {formatDiff, formatEndTime, formatPrice, formatStartTime, _id, day, roomSize, isStudentDiscount, isOverNight, startTime, endTime} = item
             var itemDay = new Date(day)
+
+            var copiedItemDay = itemDay
+            if(index > 0){
+                var previousItemDay = new Date(filteredTransaction[index-1].day)
+                if(this.isSameDay(itemDay, previousItemDay)){
+                    itemDay = null
+                }
+            }
 
             moment.locale('th')
 
@@ -237,7 +259,7 @@ export class MusicroomTransactionPage extends Component {
                         <td>
                             <div style={{display: "inline-block", marginRight: "10px", cursor: "pointer"}}>
                                 <Link to={{ pathname: `/musicrooms/edit`,
-                                    state: {itemDay, roomSize, isStudentDiscount, isOverNight, startTime, endTime, _id} }} 
+                                    state: {itemDay: copiedItemDay, roomSize, isStudentDiscount, isOverNight, startTime, endTime, _id} }} 
                                     className="material-icons black-text">edit
                                 </Link>
                             </div>

@@ -31,6 +31,12 @@ export class CostTransactionTableBody extends Component {
         }
     }
 
+    isSameDay = (d1, d2) => {
+        return d1.getFullYear() === d2.getFullYear() &&
+          d1.getMonth() === d2.getMonth() &&
+          d1.getDate() === d2.getDate();
+    }
+
     initmodal(){
         var elems = document.querySelectorAll('.forDeleteAction');
         M.Modal.init(elems, {
@@ -50,9 +56,17 @@ export class CostTransactionTableBody extends Component {
             this.initmodal()
         }, 200);
 
-        return _.map(filteredTransaction, (item) => {
+        return _.map(filteredTransaction, (item, index) => {
             let {description, day, formatCost, _id, cost, costType} = item
             var itemDay = new Date(day)
+
+            var copiedItemDay = itemDay
+            if(index > 0){
+                var previousItemDay = new Date(filteredTransaction[index-1].day)
+                if(this.isSameDay(itemDay, previousItemDay)){
+                    itemDay = null
+                }
+            }
 
             moment.locale('th')
             
@@ -67,7 +81,7 @@ export class CostTransactionTableBody extends Component {
                         <td>
                             <div style={{display: "inline-block", marginRight: "10px", cursor: "pointer"}}>
                                 <Link to={{ pathname: `/costs/edit`,
-                                    state: {itemDay, description, cost, _id, costType, stockId} }} 
+                                    state: {itemDay: copiedItemDay, description, cost, _id, costType, stockId} }} 
                                     className="material-icons black-text">edit
                                 </Link>
                             </div>
