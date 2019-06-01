@@ -148,7 +148,7 @@ export class TransactionListSummaryPage extends Component {
                     {tooltipMessage === null && <td>{formatTotal}</td>}
                     <td>
                         <Link to={{ pathname: `/transactions/edit`, 
-                                state: { _id, itemDay: copiedItemDay, itemName, itemAmount, formatDiscount, formatOvercost, formatTotal, items, isExportMode, isItemValid: isItemValid }}}
+                                state: { _id, itemDay: copiedItemDay, itemName, itemAmount, formatDiscount, formatOvercost, formatTotal, items, isExportMode, isValid: isItemValid }}}
                                 className="material-icons black-text">edit
                         </Link>
                     </td>
@@ -169,7 +169,9 @@ export class TransactionListSummaryPage extends Component {
             var isItemValid = true
             var {_id, itemName, itemAmount, formatTotal, discount, overcost, formatDiscount, formatOvercost, day, isUsedInMusicGang, _item} = item
             var itemDay = new Date(day)
+
             var filterItem = items.filter(x => x._id === _item)
+            console.log(filterItem.length)
             if(filterItem.length === 1){
                 itemName = filterItem[0].itemName
             }
@@ -209,6 +211,7 @@ export class TransactionListSummaryPage extends Component {
     }
 
     render() {
+    console.log(this.props.transaction)
       if(this.state.loadingTransaction){
       const {isSelectAllTransaction, isSelectTransactionIn, isSelectTransactionOut} = this.props
       if(isSelectAllTransaction === true){

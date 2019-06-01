@@ -225,7 +225,7 @@ export class EditTransaction extends Component {
     }
 
     render() {
-        const {_id, itemName, items, isExportMode, isItemValid} = this.props.location.state
+        const {_id, itemName, items, isExportMode, isValid} = this.props.location.state
         const {itemProperties, invalid, handleSubmit, history} = this.props
         var submitButtonClassName = invalid ? "disabled" : ""
         if(itemName == null || _id == null || items == null){
@@ -233,7 +233,7 @@ export class EditTransaction extends Component {
                 <ErrorProcessNotice />
             )
         }
-        else if(!isItemValid){
+        else if(!isValid){
           return(
             <div className="container" style={{position: "relative", top: "5px"}}>
               <div className="row">
