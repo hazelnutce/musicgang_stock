@@ -308,6 +308,7 @@ export class EditTransaction extends Component {
 }
 
 function validate(values, props){
+    const {isExportMode} = props.location.state
     const errors = {}
   
     if(!values.itemName){
@@ -325,7 +326,7 @@ function validate(values, props){
           errors.discount = "ส่วนลดสินค้าต้องน้อยกว่าราคาสินค้า"
         }
         
-        if(values.itemAmount > filteredItem[0].itemRemaining){
+        if(values.itemAmount > filteredItem[0].itemRemaining && isExportMode === true){
           errors.itemAmount = `มากสุด : ${filteredItem[0].itemRemaining}`
         }
       }

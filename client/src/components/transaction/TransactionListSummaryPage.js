@@ -19,7 +19,9 @@ export class TransactionListSummaryPage extends Component {
 
         this.state = {
             currentMonth :  y * 12 + n,
-            loadingTransaction : false
+            loadingTransaction : false,
+            currentImportPage: 1,
+            currentExportPage: 1
         }
     }
 
@@ -110,13 +112,8 @@ export class TransactionListSummaryPage extends Component {
         M.Tooltip.init(elems, options);
     }
     
-    renderSmallImportTransaction = () => {
-        var {items, stockId} = this.props
-        var {transactions} = this.props.transaction
-        var filteredTransaction = transactions.filter(x => x.type === "import" && 
-                                                        x._stock === stockId &&
-                                                        this.isSameMonth(new Date(x.day), this.handleMonthFilter(this.state.currentMonth)))
-        filteredTransaction = filteredTransaction.sort(this.sortDayForTransaction)
+    renderSmallImportTransaction = (filteredTransaction) => {
+        const {items} = this.props
         return _.map(filteredTransaction, (item, index) => {
             const isExportMode = item.type === "export"
             var isItemValid = true
@@ -157,13 +154,8 @@ export class TransactionListSummaryPage extends Component {
         })
     }
 
-    renderSmallExportTransaction = () => {
-        var {items, stockId} = this.props
-        var {transactions} = this.props.transaction
-        var filteredTransaction = transactions.filter(x => x.type === "export" &&
-                                                            x._stock === stockId && 
-                                                            this.isSameMonth(new Date(x.day), this.handleMonthFilter(this.state.currentMonth)))
-        filteredTransaction = filteredTransaction.sort(this.sortDayForTransaction)
+    renderSmallExportTransaction = (filteredTransaction) => {
+        const {items} = this.props
         return _.map(filteredTransaction, (item, index) => {
             const isExportMode = item.type === "export"
             var isItemValid = true
@@ -210,10 +202,50 @@ export class TransactionListSummaryPage extends Component {
         })
     }
 
+    renderRemainingItem(filteredTransaction, type){
+        var additionalRow = 0
+        if(type === "import"){
+            if(filteredTransaction.length <= this.state.currentImportPage * 20){
+                additionalRow = this.state.currentImportPage * 20 - filteredTransaction.length 
+            }
+        }
+        if(type === "export"){
+            if(filteredTransaction.length <= this.state.currentImportPage * 20){
+                additionalRow = this.state.currentImportPage * 20 - filteredTransaction.length 
+            }
+        }
+                                                      
+        var loop = 0
+        var returnElement = []
+        for(loop = 0; loop < additionalRow; loop++){
+            returnElement.push(
+                <tr key={loop}>
+                    <td style={{lineHeight: "29.5px"}}>&nbsp;</td>
+                    <td style={{lineHeight: "29.5px"}}>&nbsp;</td>
+                    <td style={{lineHeight: "29.5px"}}>&nbsp;</td>
+                    <td style={{lineHeight: "29.5px"}}>&nbsp;</td>
+                    <td style={{lineHeight: "29.5px"}}>&nbsp;</td>
+                </tr>
+            )
+
+        }
+        return returnElement
+    }
+
     render() {
-    console.log(this.props.transaction)
       if(this.state.loadingTransaction){
-      const {isSelectAllTransaction, isSelectTransactionIn, isSelectTransactionOut} = this.props
+      const {isSelectAllTransaction, isSelectTransactionIn, isSelectTransactionOut, stockId, transaction: {transactions}} = this.props
+
+      var importFilteredTransaction = transactions.filter(x => x.type === "import" && 
+                                                      x._stock === stockId &&
+                                                      this.isSameMonth(new Date(x.day), this.handleMonthFilter(this.state.currentMonth)))
+      importFilteredTransaction = importFilteredTransaction.sort(this.sortDayForTransaction)
+
+      var exportFilteredTransaction = transactions.filter(x => x.type === "export" &&
+                                                          x._stock === stockId && 
+                                                          this.isSameMonth(new Date(x.day), this.handleMonthFilter(this.state.currentMonth)))
+      exportFilteredTransaction = exportFilteredTransaction.sort(this.sortDayForTransaction)
+
       if(isSelectAllTransaction === true){
         return (
                 <div className="container-fluid">
@@ -243,10 +275,20 @@ export class TransactionListSummaryPage extends Component {
                                 </thead>
                 
                                 <tbody>
-                                    {this.renderSmallImportTransaction()}
+                                    {this.renderSmallImportTransaction(importFilteredTransaction)}
+                                    {this.renderRemainingItem(importFilteredTransaction, "import")}
                                 </tbody>
                             </table>
-                        </div>
+                            </div>
+                            <ul className="col xl12 l12 m12 s12 pagination center">
+                                <li className="disabled"><a href="#!"><i class="material-icons">chevron_left</i></a></li>
+                                <li className="active" style={{width: "25px"}}>1</li>
+                                <li className="waves-effect" style={{width: "25px"}}>2</li>
+                                <li className="waves-effect" style={{width: "25px"}}><div>3</div></li>
+                                <li className="waves-effect" style={{width: "25px"}}><div>4</div></li>
+                                <li className="waves-effect" style={{width: "25px"}}><div>5</div></li>
+                                <li className="waves-effect"><a href="#!"><i class="material-icons">chevron_right</i></a></li>
+                            </ul>
                         </div>        
                         <div className="col xl6 l6 m12 s12">
                             <div className="col xl12 l12 m12 s12" style={{left: "5px", position: "relative"}}>
@@ -265,10 +307,20 @@ export class TransactionListSummaryPage extends Component {
                                 </thead>
                     
                                 <tbody>
-                                    {this.renderSmallExportTransaction()}
+                                    {this.renderSmallExportTransaction(exportFilteredTransaction)}
+                                    {this.renderRemainingItem(exportFilteredTransaction, "export")}
                                 </tbody>
                                 </table>
                             </div>
+                            <ul className="col xl12 l12 m12 s12 pagination center">
+                                <li className="disabled"><a href="#!"><i class="material-icons">chevron_left</i></a></li>
+                                <li className="active" style={{width: "25px"}}>1</li>
+                                <li className="waves-effect" style={{width: "25px"}}>2</li>
+                                <li className="waves-effect" style={{width: "25px"}}><div>3</div></li>
+                                <li className="waves-effect" style={{width: "25px"}}><div>4</div></li>
+                                <li className="waves-effect" style={{width: "25px"}}><div>5</div></li>
+                                <li className="waves-effect"><a href="#!"><i class="material-icons">chevron_right</i></a></li>
+                            </ul>
                         </div>
                     </div>
                 </div>
@@ -302,10 +354,20 @@ export class TransactionListSummaryPage extends Component {
                         </thead>
         
                         <tbody>
-                            {this.renderSmallImportTransaction()}
+                            {this.renderSmallImportTransaction(importFilteredTransaction)}
+                            {this.renderRemainingItem(importFilteredTransaction, "import")}
                         </tbody>
                     </table>
                 </div>
+                <ul className="col xl12 l12 m12 s12 pagination center">
+                    <li className="disabled"><a href="#!"><i class="material-icons">chevron_left</i></a></li>
+                    <li className="active" style={{width: "25px"}}>1</li>
+                    <li className="waves-effect" style={{width: "25px"}}>2</li>
+                    <li className="waves-effect" style={{width: "25px"}}><div>3</div></li>
+                    <li className="waves-effect" style={{width: "25px"}}><div>4</div></li>
+                    <li className="waves-effect" style={{width: "25px"}}><div>5</div></li>
+                    <li className="waves-effect"><a href="#!"><i class="material-icons">chevron_right</i></a></li>
+                </ul>
             </div>
         )
       }
@@ -336,11 +398,21 @@ export class TransactionListSummaryPage extends Component {
                         </thead>
         
                         <tbody>
-                            {this.renderSmallExportTransaction()}
+                            {this.renderSmallExportTransaction(exportFilteredTransaction)}
+                            {this.renderRemainingItem(exportFilteredTransaction, "export")}
                         </tbody>
                     </table>
                 </div>
-            </div>
+                <ul className="col xl12 l12 m12 s12 pagination center">
+                    <li className="disabled"><a href="#!"><i class="material-icons">chevron_left</i></a></li>
+                    <li className="active" style={{width: "25px"}}>1</li>
+                    <li className="waves-effect" style={{width: "25px"}}>2</li>
+                    <li className="waves-effect" style={{width: "25px"}}><div>3</div></li>
+                    <li className="waves-effect" style={{width: "25px"}}><div>4</div></li>
+                    <li className="waves-effect" style={{width: "25px"}}><div>5</div></li>
+                    <li className="waves-effect"><a href="#!"><i class="material-icons">chevron_right</i></a></li>
+                </ul>
+</div>
         )
       }
       }
