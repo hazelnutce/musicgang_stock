@@ -163,7 +163,6 @@ export class TransactionListSummaryPage extends Component {
             var itemDay = new Date(day)
 
             var filterItem = items.filter(x => x._id === _item)
-            console.log(filterItem.length)
             if(filterItem.length === 1){
                 itemName = filterItem[0].itemName
             }
@@ -200,6 +199,70 @@ export class TransactionListSummaryPage extends Component {
                 </tr>
             )
         })
+    }
+
+    setCurrentPage(page, type, canClick){
+        if(type === "import" && canClick){
+            this.setState({currentImportPage: page})
+        }
+        else if(type === "export" && canClick){
+            this.setState({currentExportPage: page})
+        }
+    }
+
+    renderPaginationBody(arrayOfPage, type){
+        console.log(this.state.currentImportPage, this.state.currentExportPage)
+        arrayOfPage.unshift(-1)
+        arrayOfPage.push(-2)
+        let isFirstPage = true
+        let isLastPage = true
+        let activePage = 0
+        if(type === "import"){
+            isFirstPage = this.state.currentImportPage === arrayOfPage[1]
+            isLastPage = this.state.currentImportPage === arrayOfPage[arrayOfPage.length - 2]
+            activePage = this.state.currentImportPage
+        }
+        else if(type === "export"){
+            isFirstPage = this.state.currentExportPage === arrayOfPage[1]
+            isLastPage = this.state.currentExportPage === arrayOfPage[arrayOfPage.length - 2]
+            activePage = this.state.currentExportPage
+        }
+
+        return _.map(arrayOfPage, (page, index) => {
+            if(page === -1){
+                return <li key={index} onClick={() => this.setCurrentPage(activePage - 1, type, !isFirstPage)} className={isFirstPage ? "disabled" : "waves-effect"} style={{width: "25px"}}><i className="material-icons">chevron_left</i></li>
+            }
+            else if(page === -2){
+                return <li key={index} onClick={() => this.setCurrentPage(activePage + 1, type, !isLastPage)} className={isLastPage ? "disabled" : "waves-effect"} style={{width: "25px", left: "-5px", position: "relative"}}><i className="material-icons">chevron_right</i></li>
+            }
+            else{
+                return <li key={index}  onClick={() => this.setCurrentPage(arrayOfPage[index], type, !(activePage === arrayOfPage[index]))} className={activePage === arrayOfPage[index] ? "active" : "waves-effect"} style={{width: "25px"}}>{arrayOfPage[index]}</li>
+            }
+        })
+    }
+
+    renderPagination(filteredTransaction, type){
+        var numberOfPage = 0
+        var loop = 0
+        var arrayOfPage = []
+        numberOfPage = ((filteredTransaction.length - 1) / 20) + 1
+
+        if(numberOfPage < 5){
+            for(loop = 1; loop <= numberOfPage; loop++){
+                arrayOfPage.push(loop)
+            }
+        }
+        else{
+            for(loop = numberOfPage - 4; loop <= numberOfPage; loop++){
+                arrayOfPage.push(loop)
+            }
+        }
+        
+        return(
+            <ul className="col xl12 l12 m12 s12 pagination center">
+                {this.renderPaginationBody(arrayOfPage, type)}
+            </ul>
+        )
     }
 
     renderRemainingItem(filteredTransaction, type){
@@ -280,15 +343,7 @@ export class TransactionListSummaryPage extends Component {
                                 </tbody>
                             </table>
                             </div>
-                            <ul className="col xl12 l12 m12 s12 pagination center">
-                                <li className="disabled"><a href="#!"><i class="material-icons">chevron_left</i></a></li>
-                                <li className="active" style={{width: "25px"}}>1</li>
-                                <li className="waves-effect" style={{width: "25px"}}>2</li>
-                                <li className="waves-effect" style={{width: "25px"}}><div>3</div></li>
-                                <li className="waves-effect" style={{width: "25px"}}><div>4</div></li>
-                                <li className="waves-effect" style={{width: "25px"}}><div>5</div></li>
-                                <li className="waves-effect"><a href="#!"><i class="material-icons">chevron_right</i></a></li>
-                            </ul>
+                            {this.renderPagination(importFilteredTransaction, "import")}
                         </div>        
                         <div className="col xl6 l6 m12 s12">
                             <div className="col xl12 l12 m12 s12" style={{left: "5px", position: "relative"}}>
@@ -312,15 +367,7 @@ export class TransactionListSummaryPage extends Component {
                                 </tbody>
                                 </table>
                             </div>
-                            <ul className="col xl12 l12 m12 s12 pagination center">
-                                <li className="disabled"><a href="#!"><i class="material-icons">chevron_left</i></a></li>
-                                <li className="active" style={{width: "25px"}}>1</li>
-                                <li className="waves-effect" style={{width: "25px"}}>2</li>
-                                <li className="waves-effect" style={{width: "25px"}}><div>3</div></li>
-                                <li className="waves-effect" style={{width: "25px"}}><div>4</div></li>
-                                <li className="waves-effect" style={{width: "25px"}}><div>5</div></li>
-                                <li className="waves-effect"><a href="#!"><i class="material-icons">chevron_right</i></a></li>
-                            </ul>
+                            {this.renderPagination(exportFilteredTransaction, "export")}
                         </div>
                     </div>
                 </div>
@@ -359,15 +406,7 @@ export class TransactionListSummaryPage extends Component {
                         </tbody>
                     </table>
                 </div>
-                <ul className="col xl12 l12 m12 s12 pagination center">
-                    <li className="disabled"><a href="#!"><i class="material-icons">chevron_left</i></a></li>
-                    <li className="active" style={{width: "25px"}}>1</li>
-                    <li className="waves-effect" style={{width: "25px"}}>2</li>
-                    <li className="waves-effect" style={{width: "25px"}}><div>3</div></li>
-                    <li className="waves-effect" style={{width: "25px"}}><div>4</div></li>
-                    <li className="waves-effect" style={{width: "25px"}}><div>5</div></li>
-                    <li className="waves-effect"><a href="#!"><i class="material-icons">chevron_right</i></a></li>
-                </ul>
+                {this.renderPagination(importFilteredTransaction, "import")}
             </div>
         )
       }
@@ -403,15 +442,7 @@ export class TransactionListSummaryPage extends Component {
                         </tbody>
                     </table>
                 </div>
-                <ul className="col xl12 l12 m12 s12 pagination center">
-                    <li className="disabled"><a href="#!"><i class="material-icons">chevron_left</i></a></li>
-                    <li className="active" style={{width: "25px"}}>1</li>
-                    <li className="waves-effect" style={{width: "25px"}}>2</li>
-                    <li className="waves-effect" style={{width: "25px"}}><div>3</div></li>
-                    <li className="waves-effect" style={{width: "25px"}}><div>4</div></li>
-                    <li className="waves-effect" style={{width: "25px"}}><div>5</div></li>
-                    <li className="waves-effect"><a href="#!"><i class="material-icons">chevron_right</i></a></li>
-                </ul>
+                {this.renderPagination(exportFilteredTransaction, "export")}
 </div>
         )
       }
