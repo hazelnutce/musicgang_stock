@@ -3,6 +3,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import M from 'materialize-css'
 import {connect} from 'react-redux'
 import {reduxForm} from 'redux-form'
+import _ from 'lodash'
 import './main.css'
 import NewCostTransactionForm from '../forms/newcosttransaction/NewCostTransactionForm';
 import DayPickerInput from 'react-day-picker/DayPickerInput'
@@ -17,6 +18,7 @@ import MomentLocaleUtils, {
     formatDate,
     parseDate,
   } from 'react-day-picker/moment';
+import CostTransactionTableHeader from './CostTransactionTableHeader';
 
 const shiftLeft10 = {
   left: "10px",
@@ -41,6 +43,8 @@ export class CostTransactionDetail extends Component {
       selectedDay: new Date(new Date().setHours(0,0,0,0)),
       isLoadingTransaction : true,
       currentMonth :  y * 12 + n,
+      currentCostPage : 1,
+      currentRevenuePage : 1
     }
   }
 
@@ -165,9 +169,98 @@ handleDayChange = (day) => {
     }
 }
 
+isSameMonth = (d1, d2) => {
+    return d1.getMonth() === d2.getMonth() &&
+    d1.getFullYear() === d2.getFullYear();
+}
+
+handleMonthFilter = (monthConst) => {
+    var monthFilter = monthConst % 12
+    var yearFilter = monthConst / 12
+    return new Date(yearFilter, monthFilter, 1)
+}
+
+setCurrentPage(page, type, canClick){
+    if(type === "Cost" && canClick){
+        this.setState({currentSmallRoomPage: page})
+    }
+    else if(type === "Revenue" && canClick){
+        this.setState({currentLargeRoomPage: page})
+    }
+}
+
+renderPaginationBody(arrayOfPage, type){
+    arrayOfPage.unshift(-1)
+    arrayOfPage.push(-2)
+    let isFirstPage = true
+    let isLastPage = true
+    let activePage = 0
+    if(type === "Cost"){
+        isFirstPage = this.state.currentCostPage === arrayOfPage[1]
+        isLastPage = this.state.currentCostPage === arrayOfPage[arrayOfPage.length - 2]
+        activePage = this.state.currentCostPage
+    }
+    else if(type === "Revenue"){
+        isFirstPage = this.state.currentRevenuePage === arrayOfPage[1]
+        isLastPage = this.state.currentRevenuePage === arrayOfPage[arrayOfPage.length - 2]
+        activePage = this.state.currentRevenuePage
+    }
+
+    return _.map(arrayOfPage, (page, index) => {
+        if(page === -1){
+            return <li key={index} onClick={() => this.setCurrentPage(activePage - 1, type, !isFirstPage)} className={isFirstPage ? "disabled" : "waves-effect"} style={{width: "25px"}}><i className="material-icons">chevron_left</i></li>
+        }
+        else if(page === -2){
+            return <li key={index} onClick={() => this.setCurrentPage(activePage + 1, type, !isLastPage)} className={isLastPage ? "disabled" : "waves-effect"} style={{width: "25px", left: "-5px", position: "relative"}}><i className="material-icons">chevron_right</i></li>
+        }
+        else{
+            return <li key={index}  onClick={() => this.setCurrentPage(arrayOfPage[index], type, !(activePage === arrayOfPage[index]))} className={activePage === arrayOfPage[index] ? "active" : "waves-effect"} style={{width: "25px"}}>{arrayOfPage[index]}</li>
+        }
+    })
+}
+
+renderPagination(filteredTransaction, type){
+    var numberOfPage = 0
+    var loop = 0
+    var arrayOfPage = []
+    if(filteredTransaction.length === 0){
+        numberOfPage = 1
+    }
+    else{
+        numberOfPage = ((filteredTransaction.length - 1) / 20) + 1
+    }
+    
+
+    if(numberOfPage < 5){
+        for(loop = 1; loop <= numberOfPage; loop++){
+            arrayOfPage.push(loop)
+        }
+    }
+    else{
+        for(loop = numberOfPage - 4; loop <= numberOfPage; loop++){
+            arrayOfPage.push(loop)
+        }
+    }
+    
+    return(
+        <ul className="col xl12 l12 m12 s12 pagination center">
+            {this.renderPaginationBody(arrayOfPage, type)}
+        </ul>
+    )
+}
+
   render() {
     const {handleSubmit, history, cost: {costTransactions}, invalid} = this.props
     const {stockId} = this.props.location.state
+
+    if(costTransactions != null){
+        var costFilteredTransaction = costTransactions.filter(x => x.costType === "Cost" && x._stock === stockId && this.isSameMonth(new Date(x.day), this.handleMonthFilter(this.state.currentMonth)))
+        costFilteredTransaction = costFilteredTransaction.sort(this.sortDayForTransaction)
+
+        var revenueFilteredTransaction = costTransactions.filter(x => x.costType === "Revenue" && x._stock === stockId && this.isSameMonth(new Date(x.day), this.handleMonthFilter(this.state.currentMonth)))
+        revenueFilteredTransaction = revenueFilteredTransaction.sort(this.sortDayForTransaction)
+    }
+
     return (
       <div className="container" style={{position: "relative", top: "5px"}}>
         <div className="row">
@@ -203,7 +296,7 @@ handleDayChange = (day) => {
             </div>
             <div className="col xl3 l3 m4 s12" >
                   <div className="col xl12 l12 m12 s12" id="addNewRecordButton">
-                      <div data-target="addModal" className="modal-trigger 88waves-effect waves-light btn-small green accent-3"><i className="material-icons right">arrow_upward</i>เพิ่มรายการ</div>
+                      <div data-target="addModal" className="modal-trigger waves-effect waves-light btn-small green accent-3"><i className="material-icons right">arrow_upward</i>เพิ่มรายการ</div>
                   </div>
               </div>
           </div>
@@ -225,13 +318,9 @@ handleDayChange = (day) => {
                                 <table className="highlight centered">
                                     <thead>
                                     <tr>
-                                        <th>วันที่</th>
-                                        <th>รายละเอียด</th>
-                                        <th>จำนวนเงิน</th>
-                                        <th></th>
+                                        <CostTransactionTableHeader isDisplayEditingMenu={this.state.isDisplayEditingMenu} />
                                     </tr>
                                     </thead>
-                    
                                     <tbody>
                                         <CostTransactionTableBody 
                                             costType="Cost" 
@@ -244,7 +333,9 @@ handleDayChange = (day) => {
                                     </tbody>
                                 </table>
                             </div>
+                            {this.renderPagination(costFilteredTransaction, "Cost")}
                         </div>
+                        
                         <div className="col xl6 l6 m12 s12">
                             <div className="col xl12 l12 m12 s12" style={{left: "5px", position: "relative"}}>
                                 <h6>รายรับ</h6>
@@ -253,10 +344,7 @@ handleDayChange = (day) => {
                                 <table className="highlight centered">
                                 <thead>
                                 <tr>
-                                    <th>วันที่</th>
-                                    <th>รายละเอียด</th>
-                                    <th>จำนวนเงิน</th>
-                                    <th></th>
+                                    <CostTransactionTableHeader isDisplayEditingMenu={this.state.isDisplayEditingMenu} />
                                 </tr>
                                 </thead>
                     
@@ -272,7 +360,9 @@ handleDayChange = (day) => {
                                 </tbody>
                                 </table>
                             </div>
+                            {this.renderPagination(revenueFilteredTransaction, "Revenue")}
                         </div>
+                        
                     </div>
             )}
             {this.state.isSelectCostRecord === true && this.state.isSelectAllRecord === false && this.state.isLoadingTransaction === false && (
@@ -292,10 +382,7 @@ handleDayChange = (day) => {
                         <table className="highlight centered">
                             <thead>
                             <tr>
-                                <th>วันที่</th>
-                                <th>รายละเอียด</th>
-                                <th>จำนวนเงิน</th>
-                                <th></th>
+                                <CostTransactionTableHeader isDisplayEditingMenu={this.state.isDisplayEditingMenu} />
                             </tr>
                             </thead>
             
@@ -311,6 +398,7 @@ handleDayChange = (day) => {
                             </tbody>
                         </table>
                     </div>
+                    {this.renderPagination(costFilteredTransaction, "Cost")}
                 </div>
             )}
             {this.state.isSelectRevenueRecord === true && this.state.isSelectAllRecord === false && this.state.isLoadingTransaction === false && (
@@ -330,10 +418,7 @@ handleDayChange = (day) => {
                         <table className="highlight centered">
                             <thead>
                             <tr>
-                                <th>วันที่</th>
-                                <th>รายละเอียด</th>
-                                <th>จำนวนเงิน</th>
-                                <th></th>
+                                <CostTransactionTableHeader isDisplayEditingMenu={this.state.isDisplayEditingMenu} />
                             </tr>
                             </thead>
             
@@ -349,6 +434,7 @@ handleDayChange = (day) => {
                             </tbody>
                         </table>
                     </div>
+                    {this.renderPagination(revenueFilteredTransaction, "Revenue")}
                 </div>
             )}
                 {this.state.isLoadingTransaction === true && (

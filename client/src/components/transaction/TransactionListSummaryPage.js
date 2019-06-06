@@ -245,7 +245,12 @@ export class TransactionListSummaryPage extends Component {
         var numberOfPage = 0
         var loop = 0
         var arrayOfPage = []
-        numberOfPage = ((filteredTransaction.length - 1) / 20) + 1
+        if(filteredTransaction.length === 0){
+            numberOfPage = 1
+        }
+        else{
+            numberOfPage = ((filteredTransaction.length - 1) / 20) + 1
+        }
 
         if(numberOfPage < 5){
             for(loop = 1; loop <= numberOfPage; loop++){
@@ -273,8 +278,8 @@ export class TransactionListSummaryPage extends Component {
             }
         }
         if(type === "export"){
-            if(filteredTransaction.length <= this.state.currentImportPage * 20){
-                additionalRow = this.state.currentImportPage * 20 - filteredTransaction.length 
+            if(filteredTransaction.length <= this.state.currentExportPage * 20){
+                additionalRow = this.state.currentExportPage * 20 - filteredTransaction.length 
             }
         }
                                                       

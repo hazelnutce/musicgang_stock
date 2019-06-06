@@ -46,7 +46,7 @@ export class CostTransactionTableBody extends Component {
     }
 
     render() {
-        console.log(this.state.initializedModal)
+        let returnTableRow = []
         const {transactions, costType, state, stockId, deleteCostTransaction} = this.props
         
         var filteredTransaction = transactions.filter(x => x.costType === costType && x._stock === stockId &&
@@ -56,7 +56,7 @@ export class CostTransactionTableBody extends Component {
             this.initmodal()
         }, 200);
 
-        return _.map(filteredTransaction, (item, index) => {
+        _.map(filteredTransaction, (item, index) => {
             let {description, day, formatCost, _id, cost, costType} = item
             var itemDay = new Date(day)
 
@@ -70,7 +70,7 @@ export class CostTransactionTableBody extends Component {
 
             moment.locale('th')
             
-            return(
+            returnTableRow.push(
                 <React.Fragment key={_id}>
                 <tr >
                     <td>{itemDay !== null ? moment(itemDay).format('ll') : null}</td>
@@ -105,5 +105,46 @@ export class CostTransactionTableBody extends Component {
                 </React.Fragment>
             )
         })
+
+        var additionalRow = 0
+        if(costType === "Cost"){
+            if(filteredTransaction.length <= state.currentCostPage * 20){
+                additionalRow = state.currentCostPage * 20 - filteredTransaction.length 
+            }
+        }
+        if(costType === "Revenue"){
+            if(filteredTransaction.length <= state.currentRevenuePage * 20){
+                additionalRow = state.currentRevenuePage * 20 - filteredTransaction.length 
+            }
+        }
+                                                      
+        var loop = 0
+        for(loop = 0; loop < additionalRow; loop++){
+            if(state.isDisplayEditingMenu === false){
+                returnTableRow.push(
+                    <tr key={loop}>
+                        <td style={{lineHeight: "22px"}}>&nbsp;</td>
+                        <td style={{lineHeight: "22px"}}>&nbsp;</td>
+                        <td style={{lineHeight: "22px"}}>&nbsp;</td>
+                        <td style={{lineHeight: "22px"}}>&nbsp;</td>
+                    </tr>
+                )
+            }
+            else{
+                returnTableRow.push(
+                    <tr key={loop}>
+                        <td style={{lineHeight: "29.5px"}}>&nbsp;</td>
+                        <td style={{lineHeight: "29.5px"}}>&nbsp;</td>
+                        <td style={{lineHeight: "29.5px"}}>&nbsp;</td>
+                        <td style={{lineHeight: "29.5px"}}>&nbsp;</td>
+                        <td style={{lineHeight: "29.5px"}}>&nbsp;</td>
+                    </tr>
+                )
+            }
+            
+
+        }
+
+        return returnTableRow
     }
 }

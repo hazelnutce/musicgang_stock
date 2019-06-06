@@ -34,7 +34,9 @@ export class MusicroomTransactionPage extends Component {
             isLoadingItem: false,
             currentMonth :  y * 12 + n,
             loadingMusicroomRecord : false,
-            isDisplayEditingMenu : false
+            isDisplayEditingMenu : false,
+            currentSmallRoomPage : 1,
+            currentLargeRoomPage : 1
         }
     }
 
@@ -162,16 +164,10 @@ export class MusicroomTransactionPage extends Component {
           d1.getDate() === d2.getDate();
     }
 
-    renderSmallroomRecord(){
-        const {musicroomTransactions} = this.props.musicroom
-        
-        var filteredTransaction = musicroomTransactions.filter(x => x.roomSize === "Small" && 
-                                                        this.isSameMonth(new Date(x.day), this.handleMonthFilter(this.state.currentMonth)))
-        filteredTransaction = filteredTransaction.sort(this.sortDayForTransaction)
-
+    renderSmallroomRecord(filteredTransaction){
         setTimeout(() => {
             this.initModal()
-        }, 500);
+        }, 250);
 
         return _.map(filteredTransaction, (item ,index) => {
             var {formatDiff, formatEndTime, formatPrice, formatStartTime, _id, day, roomSize, isStudentDiscount, isOverNight, startTime, endTime} = item
@@ -223,16 +219,10 @@ export class MusicroomTransactionPage extends Component {
         })
     }
 
-    renderLargeroomRecord(){
-        const {musicroomTransactions} = this.props.musicroom
-        
-        var filteredTransaction = musicroomTransactions.filter(x => x.roomSize === "Large" && 
-                                                        this.isSameMonth(new Date(x.day), this.handleMonthFilter(this.state.currentMonth)))
-        filteredTransaction = filteredTransaction.sort(this.sortDayForTransaction)
-
+    renderLargeroomRecord(filteredTransaction){
         setTimeout(() => {
             this.initModal()
-        }, 500);
+        }, 250);
 
         return _.map(filteredTransaction, (item, index) => {
             var {formatDiff, formatEndTime, formatPrice, formatStartTime, _id, day, roomSize, isStudentDiscount, isOverNight, startTime, endTime} = item
@@ -285,7 +275,130 @@ export class MusicroomTransactionPage extends Component {
         })
     }
 
+    setCurrentPage(page, type, canClick){
+        if(type === "Small" && canClick){
+            this.setState({currentSmallRoomPage: page})
+        }
+        else if(type === "Large" && canClick){
+            this.setState({currentLargeRoomPage: page})
+        }
+    }
+
+    renderPaginationBody(arrayOfPage, type){
+        arrayOfPage.unshift(-1)
+        arrayOfPage.push(-2)
+        let isFirstPage = true
+        let isLastPage = true
+        let activePage = 0
+        if(type === "Small"){
+            isFirstPage = this.state.currentSmallRoomPage === arrayOfPage[1]
+            isLastPage = this.state.currentSmallRoomPage === arrayOfPage[arrayOfPage.length - 2]
+            activePage = this.state.currentSmallRoomPage
+        }
+        else if(type === "Large"){
+            isFirstPage = this.state.currentLargeRoomPage === arrayOfPage[1]
+            isLastPage = this.state.currentLargeRoomPage === arrayOfPage[arrayOfPage.length - 2]
+            activePage = this.state.currentLargeRoomPage
+        }
+
+        return _.map(arrayOfPage, (page, index) => {
+            if(page === -1){
+                return <li key={index} onClick={() => this.setCurrentPage(activePage - 1, type, !isFirstPage)} className={isFirstPage ? "disabled" : "waves-effect"} style={{width: "25px"}}><i className="material-icons">chevron_left</i></li>
+            }
+            else if(page === -2){
+                return <li key={index} onClick={() => this.setCurrentPage(activePage + 1, type, !isLastPage)} className={isLastPage ? "disabled" : "waves-effect"} style={{width: "25px", left: "-5px", position: "relative"}}><i className="material-icons">chevron_right</i></li>
+            }
+            else{
+                return <li key={index}  onClick={() => this.setCurrentPage(arrayOfPage[index], type, !(activePage === arrayOfPage[index]))} className={activePage === arrayOfPage[index] ? "active" : "waves-effect"} style={{width: "25px"}}>{arrayOfPage[index]}</li>
+            }
+        })
+    }
+
+    renderPagination(filteredTransaction, type){
+        var numberOfPage = 0
+        var loop = 0
+        var arrayOfPage = []
+        if(filteredTransaction.length === 0){
+            numberOfPage = 1
+        }
+        else{
+            numberOfPage = ((filteredTransaction.length - 1) / 20) + 1
+        }
+        
+
+        if(numberOfPage < 5){
+            for(loop = 1; loop <= numberOfPage; loop++){
+                arrayOfPage.push(loop)
+            }
+        }
+        else{
+            for(loop = numberOfPage - 4; loop <= numberOfPage; loop++){
+                arrayOfPage.push(loop)
+            }
+        }
+        
+        return(
+            <ul className="col xl12 l12 m12 s12 pagination center">
+                {this.renderPaginationBody(arrayOfPage, type)}
+            </ul>
+        )
+    }
+
+    renderRemainingItem(filteredTransaction, type){
+        var additionalRow = 0
+        if(type === "Small"){
+            if(filteredTransaction.length <= this.state.currentSmallRoomPage * 20){
+                additionalRow = this.state.currentSmallRoomPage * 20 - filteredTransaction.length 
+            }
+        }
+        if(type === "Large"){
+            if(filteredTransaction.length <= this.state.currentLargeRoomPage * 20){
+                additionalRow = this.state.currentLargeRoomPage * 20 - filteredTransaction.length 
+            }
+        }
+                                                      
+        var loop = 0
+        var returnElement = []
+        for(loop = 0; loop < additionalRow; loop++){
+            if(this.state.isDisplayEditingMenu === false){
+                returnElement.push(
+                    <tr key={loop}>
+                        <td style={{lineHeight: "22px"}}>&nbsp;</td>
+                        <td style={{lineHeight: "22px"}}>&nbsp;</td>
+                        <td style={{lineHeight: "22px"}}>&nbsp;</td>
+                        <td style={{lineHeight: "22px"}}>&nbsp;</td>
+                        <td style={{lineHeight: "22px"}}>&nbsp;</td>
+                    </tr>
+                )
+            }
+            else{
+                returnElement.push(
+                    <tr key={loop}>
+                        <td style={{lineHeight: "29.5px"}}>&nbsp;</td>
+                        <td style={{lineHeight: "29.5px"}}>&nbsp;</td>
+                        <td style={{lineHeight: "29.5px"}}>&nbsp;</td>
+                        <td style={{lineHeight: "29.5px"}}>&nbsp;</td>
+                        <td style={{lineHeight: "29.5px"}}>&nbsp;</td>
+                    </tr>
+                )
+            }
+            
+
+        }
+        return returnElement
+    }
+
     render() {
+        const {musicroomTransactions} = this.props.musicroom
+
+        if(musicroomTransactions != null){
+            var smallRoomFilteredTransaction = musicroomTransactions.filter(x => x.roomSize === "Small" && this.isSameMonth(new Date(x.day), this.handleMonthFilter(this.state.currentMonth)))
+            smallRoomFilteredTransaction = smallRoomFilteredTransaction.sort(this.sortDayForTransaction)
+
+            var largeRoomFilteredTransaction = musicroomTransactions.filter(x => x.roomSize === "Large" && this.isSameMonth(new Date(x.day), this.handleMonthFilter(this.state.currentMonth)))
+            largeRoomFilteredTransaction = largeRoomFilteredTransaction.sort(this.sortDayForTransaction)
+        }
+
         return (
             <div className="container" style={{position: "relative", top: "5px"}}>
                 <div className="row">
@@ -354,10 +467,12 @@ export class MusicroomTransactionPage extends Component {
                                     </thead>
                     
                                     <tbody>
-                                        {this.renderSmallroomRecord()}
+                                        {this.renderSmallroomRecord(smallRoomFilteredTransaction)}
+                                        {this.renderRemainingItem(smallRoomFilteredTransaction, "Small")}
                                     </tbody>
                                 </table>
                             </div>
+                            {this.renderPagination(smallRoomFilteredTransaction, "Small")}
                         </div>
                         <div className="col xl6 l6 m12 s12">
                             <div className="col xl12 l12 m12 s12" style={{left: "5px", position: "relative"}}>
@@ -376,10 +491,12 @@ export class MusicroomTransactionPage extends Component {
                                 </thead>
                     
                                 <tbody>
-                                    {this.renderLargeroomRecord()}
+                                    {this.renderLargeroomRecord(largeRoomFilteredTransaction)}
+                                    {this.renderRemainingItem(largeRoomFilteredTransaction, "Large")}
                                 </tbody>
                                 </table>
                             </div>
+                            {this.renderPagination(largeRoomFilteredTransaction, "Large")}
                         </div>
                     </div>
                 )}
@@ -409,10 +526,12 @@ export class MusicroomTransactionPage extends Component {
                                 </thead>
                 
                                 <tbody>
-                                    {this.renderSmallroomRecord()}
+                                    {this.renderSmallroomRecord(smallRoomFilteredTransaction)}
+                                    {this.renderRemainingItem(smallRoomFilteredTransaction, "Small")}
                                 </tbody>
                             </table>
                         </div>
+                        {this.renderPagination(smallRoomFilteredTransaction, "Small")}
                     </div>
                 )}
                 {this.state.isSelectLargeRoomRecord === true && this.state.isSelectAllRecord === false && this.state.loadingMusicroomRecord === true && (
@@ -441,10 +560,12 @@ export class MusicroomTransactionPage extends Component {
                                 </thead>
                 
                                 <tbody>
-                                    {this.renderLargeroomRecord()}
+                                    {this.renderLargeroomRecord(largeRoomFilteredTransaction)}
+                                    {this.renderRemainingItem(largeRoomFilteredTransaction, "Large")}
                                 </tbody>
                             </table>
                         </div>
+                        {this.renderPagination(largeRoomFilteredTransaction, "Large")}
                     </div>
                 )}
                 {this.state.loadingMusicroomRecord === false && (
