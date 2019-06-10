@@ -270,19 +270,9 @@ export class TransactionListSummaryPage extends Component {
         )
     }
 
-    renderRemainingItem(filteredTransaction, type){
-        var additionalRow = 0
-        if(type === "import"){
-            if(filteredTransaction.length <= this.state.currentImportPage * 20){
-                additionalRow = this.state.currentImportPage * 20 - filteredTransaction.length 
-            }
-        }
-        if(type === "export"){
-            if(filteredTransaction.length <= this.state.currentExportPage * 20){
-                additionalRow = this.state.currentExportPage * 20 - filteredTransaction.length 
-            }
-        }
-                                                      
+    renderRemainingItem(filteredTransaction){
+        var additionalRow = 20 - filteredTransaction.length 
+        console.log(additionalRow)                                
         var loop = 0
         var returnElement = []
         for(loop = 0; loop < additionalRow; loop++){
@@ -308,11 +298,14 @@ export class TransactionListSummaryPage extends Component {
                                                       x._stock === stockId &&
                                                       this.isSameMonth(new Date(x.day), this.handleMonthFilter(this.state.currentMonth)))
       importFilteredTransaction = importFilteredTransaction.sort(this.sortDayForTransaction)
+      var slicedImportFilteredTransaction = importFilteredTransaction.slice((this.state.currentImportPage-1) * 20, this.state.currentImportPage * 20)
+      
 
       var exportFilteredTransaction = transactions.filter(x => x.type === "export" &&
                                                           x._stock === stockId && 
                                                           this.isSameMonth(new Date(x.day), this.handleMonthFilter(this.state.currentMonth)))
       exportFilteredTransaction = exportFilteredTransaction.sort(this.sortDayForTransaction)
+      var slicedExportFilteredTransaction = exportFilteredTransaction.slice((this.state.currentExportPage-1) * 20, this.state.currentExportPage * 20)
 
       if(isSelectAllTransaction === true){
         return (
@@ -343,8 +336,8 @@ export class TransactionListSummaryPage extends Component {
                                 </thead>
                 
                                 <tbody>
-                                    {this.renderSmallImportTransaction(importFilteredTransaction)}
-                                    {this.renderRemainingItem(importFilteredTransaction, "import")}
+                                    {this.renderSmallImportTransaction(slicedImportFilteredTransaction)}
+                                    {this.renderRemainingItem(slicedImportFilteredTransaction)}
                                 </tbody>
                             </table>
                             </div>
@@ -367,8 +360,8 @@ export class TransactionListSummaryPage extends Component {
                                 </thead>
                     
                                 <tbody>
-                                    {this.renderSmallExportTransaction(exportFilteredTransaction)}
-                                    {this.renderRemainingItem(exportFilteredTransaction, "export")}
+                                    {this.renderSmallExportTransaction(slicedExportFilteredTransaction)}
+                                    {this.renderRemainingItem(slicedExportFilteredTransaction)}
                                 </tbody>
                                 </table>
                             </div>
@@ -406,8 +399,8 @@ export class TransactionListSummaryPage extends Component {
                         </thead>
         
                         <tbody>
-                            {this.renderSmallImportTransaction(importFilteredTransaction)}
-                            {this.renderRemainingItem(importFilteredTransaction, "import")}
+                            {this.renderSmallImportTransaction(slicedImportFilteredTransaction)}
+                            {this.renderRemainingItem(slicedImportFilteredTransaction)}
                         </tbody>
                     </table>
                 </div>
@@ -442,8 +435,8 @@ export class TransactionListSummaryPage extends Component {
                         </thead>
         
                         <tbody>
-                            {this.renderSmallExportTransaction(exportFilteredTransaction)}
-                            {this.renderRemainingItem(exportFilteredTransaction, "export")}
+                            {this.renderSmallExportTransaction(slicedExportFilteredTransaction)}
+                            {this.renderRemainingItem(slicedExportFilteredTransaction)}
                         </tbody>
                     </table>
                 </div>

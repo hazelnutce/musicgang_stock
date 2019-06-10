@@ -345,19 +345,9 @@ export class MusicroomTransactionPage extends Component {
         )
     }
 
-    renderRemainingItem(filteredTransaction, type){
-        var additionalRow = 0
-        if(type === "Small"){
-            if(filteredTransaction.length <= this.state.currentSmallRoomPage * 20){
-                additionalRow = this.state.currentSmallRoomPage * 20 - filteredTransaction.length 
-            }
-        }
-        if(type === "Large"){
-            if(filteredTransaction.length <= this.state.currentLargeRoomPage * 20){
-                additionalRow = this.state.currentLargeRoomPage * 20 - filteredTransaction.length 
-            }
-        }
-                                                      
+    renderRemainingItem(filteredTransaction){
+        var additionalRow = 20 - filteredTransaction.length
+                                        
         var loop = 0
         var returnElement = []
         for(loop = 0; loop < additionalRow; loop++){
@@ -396,9 +386,11 @@ export class MusicroomTransactionPage extends Component {
         if(musicroomTransactions != null){
             var smallRoomFilteredTransaction = musicroomTransactions.filter(x => x.roomSize === "Small" && this.isSameMonth(new Date(x.day), this.handleMonthFilter(this.state.currentMonth)))
             smallRoomFilteredTransaction = smallRoomFilteredTransaction.sort(this.sortDayForTransaction)
+            var slicedSmallRoomFilteredTransaction = smallRoomFilteredTransaction.slice((this.state.currentSmallRoomPage - 1) * 20, this.state.currentSmallRoomPage * 20)
 
             var largeRoomFilteredTransaction = musicroomTransactions.filter(x => x.roomSize === "Large" && this.isSameMonth(new Date(x.day), this.handleMonthFilter(this.state.currentMonth)))
             largeRoomFilteredTransaction = largeRoomFilteredTransaction.sort(this.sortDayForTransaction)
+            var slicedLargeRoomFilteredTransaction = largeRoomFilteredTransaction.slice((this.state.currentLargeRoomPage - 1) * 20, this.state.currentLargeRoomPage * 20)
         }
 
         return (
@@ -465,8 +457,8 @@ export class MusicroomTransactionPage extends Component {
                                     </thead>
                     
                                     <tbody>
-                                        {this.renderSmallroomRecord(smallRoomFilteredTransaction)}
-                                        {this.renderRemainingItem(smallRoomFilteredTransaction, "Small")}
+                                        {this.renderSmallroomRecord(slicedSmallRoomFilteredTransaction)}
+                                        {this.renderRemainingItem(slicedSmallRoomFilteredTransaction)}
                                     </tbody>
                                 </table>
                             </div>
@@ -485,8 +477,8 @@ export class MusicroomTransactionPage extends Component {
                                 </thead>
                     
                                 <tbody>
-                                    {this.renderLargeroomRecord(largeRoomFilteredTransaction)}
-                                    {this.renderRemainingItem(largeRoomFilteredTransaction, "Large")}
+                                    {this.renderLargeroomRecord(slicedLargeRoomFilteredTransaction)}
+                                    {this.renderRemainingItem(slicedLargeRoomFilteredTransaction)}
                                 </tbody>
                                 </table>
                             </div>
@@ -516,8 +508,8 @@ export class MusicroomTransactionPage extends Component {
                                 </thead>
                 
                                 <tbody>
-                                    {this.renderSmallroomRecord(smallRoomFilteredTransaction)}
-                                    {this.renderRemainingItem(smallRoomFilteredTransaction, "Small")}
+                                    {this.renderSmallroomRecord(slicedSmallRoomFilteredTransaction)}
+                                    {this.renderRemainingItem(slicedSmallRoomFilteredTransaction)}
                                 </tbody>
                             </table>
                         </div>
@@ -546,8 +538,8 @@ export class MusicroomTransactionPage extends Component {
                                 </thead>
                 
                                 <tbody>
-                                    {this.renderLargeroomRecord(largeRoomFilteredTransaction)}
-                                    {this.renderRemainingItem(largeRoomFilteredTransaction, "Large")}
+                                    {this.renderLargeroomRecord(slicedLargeRoomFilteredTransaction)}
+                                    {this.renderRemainingItem(slicedLargeRoomFilteredTransaction)}
                                 </tbody>
                             </table>
                         </div>
