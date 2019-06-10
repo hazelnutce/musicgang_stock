@@ -11,6 +11,7 @@ import ReactNotification from "react-notifications-component";
 import {fetchTransaction, deleteMusicroomTransaction, resetMusicroomTransactionError} from '../../actions/musicroomTransaction'
 import {LoaderSpinner} from '../commons/LoaderSpinner'
 import './main.css'
+import MusicroomTransactionTableHeader from './MusicroomTransactionTableHeader';
 
 const shiftLeft10 = {
     left: "10px",
@@ -379,6 +380,7 @@ export class MusicroomTransactionPage extends Component {
                         <td style={{lineHeight: "29.5px"}}>&nbsp;</td>
                         <td style={{lineHeight: "29.5px"}}>&nbsp;</td>
                         <td style={{lineHeight: "29.5px"}}>&nbsp;</td>
+                        <td style={{lineHeight: "29.5px"}}>&nbsp;</td>
                     </tr>
                 )
             }
@@ -458,11 +460,7 @@ export class MusicroomTransactionPage extends Component {
                                 <table className="highlight centered">
                                     <thead>
                                     <tr>
-                                        <th>วันที่</th>
-                                        <th>เวลา</th>
-                                        <th>จำนวน ชม.</th>
-                                        <th>ราคา</th>
-                                        <th></th>
+                                        <MusicroomTransactionTableHeader isDisplayEditingMenu={this.state.isDisplayEditingMenu}/>
                                     </tr>
                                     </thead>
                     
@@ -482,11 +480,7 @@ export class MusicroomTransactionPage extends Component {
                                 <table className="highlight centered">
                                 <thead>
                                 <tr>
-                                    <th>วันที่</th>
-                                    <th>เวลา</th>
-                                    <th>จำนวน ชม.</th>
-                                    <th>ราคา</th>
-                                    <th></th>
+                                    <MusicroomTransactionTableHeader isDisplayEditingMenu={this.state.isDisplayEditingMenu}/>
                                 </tr>
                                 </thead>
                     
@@ -517,11 +511,7 @@ export class MusicroomTransactionPage extends Component {
                             <table className="highlight centered">
                                 <thead>
                                     <tr>
-                                        <th>วันที่</th>
-                                        <th>เวลา</th>
-                                        <th>จำนวน ชม.</th>
-                                        <th>ราคา</th>
-                                        <th></th>
+                                        <MusicroomTransactionTableHeader isDisplayEditingMenu={this.state.isDisplayEditingMenu}/>
                                     </tr>
                                 </thead>
                 
@@ -551,11 +541,7 @@ export class MusicroomTransactionPage extends Component {
                             <table className="highlight centered">
                                 <thead>
                                     <tr>
-                                        <th>วันที่</th>
-                                        <th>เวลา</th>
-                                        <th>จำนวน ชม.</th>
-                                        <th>ราคา</th>
-                                        <th></th>
+                                        <MusicroomTransactionTableHeader isDisplayEditingMenu={this.state.isDisplayEditingMenu}/>
                                     </tr>
                                 </thead>
                 
