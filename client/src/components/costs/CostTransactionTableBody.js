@@ -45,12 +45,30 @@ export class CostTransactionTableBody extends Component {
         });
     }
 
+    sortDayForTransaction = (a,b) => {
+        var newADay = new Date(a.day)
+        var newBDay = new Date(b.day)
+        if(newADay < newBDay)
+            return -1
+        if(newADay > newBDay)
+            return 1
+        return 0
+    }
+
     render() {
         let returnTableRow = []
         const {transactions, costType, state, stockId, deleteCostTransaction} = this.props
         
         var filteredTransaction = transactions.filter(x => x.costType === costType && x._stock === stockId &&
                                 this.isSameMonth(new Date(x.day), this.handleMonthFilter(state.currentMonth)))
+
+        filteredTransaction = filteredTransaction.sort(this.sortDayForTransaction)
+        if(costType === "Cost"){
+            filteredTransaction = filteredTransaction.slice((state.currentCostPage - 1) * 20, state.currentCostPage * 20)
+        }
+        else if(costType === "Revenue"){
+            filteredTransaction = filteredTransaction.slice((state.currentRevenuePage - 1) * 20, state.currentRevenuePage * 20)
+        }
 
         setTimeout(() => {
             this.initmodal()
@@ -106,18 +124,8 @@ export class CostTransactionTableBody extends Component {
             )
         })
 
-        var additionalRow = 0
-        if(costType === "Cost"){
-            if(filteredTransaction.length <= state.currentCostPage * 20){
-                additionalRow = state.currentCostPage * 20 - filteredTransaction.length 
-            }
-        }
-        if(costType === "Revenue"){
-            if(filteredTransaction.length <= state.currentRevenuePage * 20){
-                additionalRow = state.currentRevenuePage * 20 - filteredTransaction.length 
-            }
-        }
-                                                      
+        var additionalRow = 20 - filteredTransaction.length
+                                       
         var loop = 0
         for(loop = 0; loop < additionalRow; loop++){
             if(state.isDisplayEditingMenu === false){

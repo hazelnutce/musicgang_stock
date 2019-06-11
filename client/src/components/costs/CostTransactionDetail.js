@@ -182,10 +182,10 @@ handleMonthFilter = (monthConst) => {
 
 setCurrentPage(page, type, canClick){
     if(type === "Cost" && canClick){
-        this.setState({currentSmallRoomPage: page})
+        this.setState({currentCostPage: page})
     }
     else if(type === "Revenue" && canClick){
-        this.setState({currentLargeRoomPage: page})
+        this.setState({currentRevenuePage: page})
     }
 }
 
