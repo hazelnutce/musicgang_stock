@@ -16,7 +16,8 @@ import { faGhost,
   faPlus,
   faMinus, 
   faMusic,
-  faClock} from '@fortawesome/free-solid-svg-icons'
+  faClock,
+  faInfo } from '@fortawesome/free-solid-svg-icons'
 
 import Landing from './Landing'
 import StockPage from './stocks/StockPage';
@@ -35,10 +36,13 @@ import EditTransaction from './transaction/EditTransaction'
 import MusicroomTransactionPage from './musicrooms/MusicroomTransactionPage'
 import AddMusicroomTransaction from './musicrooms/AddMusicroomTransaction'
 import EditMusicroomTransaction from "./musicrooms/EditMusicroomTransaction";
+import CostTransactionPage from './costs/CostTransactionPage'
+import CostTransactionDetailPage from './costs/CostTransactionDetail'
+import EditCostTransaction from './costs/EditCostTransaction'
 import ErrorNoticePage from './commons/ErrorProcessNotice'
 
 library.add([faTag, faGhost, faDollarSign, faHandHoldingUsd, faExclamation, faTags, faBoxes, faBoxes,
-  faSignOutAlt, faArrowUp, faArrowDown, faPlus, faMinus, faMusic, faClock])
+  faSignOutAlt, faArrowUp, faArrowDown, faPlus, faMinus, faMusic, faClock, faInfo])
 
 class App extends Component {
   componentDidMount = () => {
@@ -68,6 +72,9 @@ class App extends Component {
                 <Route exact path="/musicrooms" component={MusicroomTransactionPage}></Route>
                 <Route exact path="/musicrooms/new" component={AddMusicroomTransaction}></Route>
                 <Route exact path="/musicrooms/edit" component={EditMusicroomTransaction}></Route>
+                <Route exact path="/costs" component={CostTransactionPage}></Route>
+                <Route exact path="/costs/detail" component={CostTransactionDetailPage}></Route>
+                <Route exact path="/costs/edit" component={EditCostTransaction}></Route>
                 <Route component={ErrorNoticePage} />
               </Switch>
             {/* <Route path="/setting" component={SettingPage}></Route> */}

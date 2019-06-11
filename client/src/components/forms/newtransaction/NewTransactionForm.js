@@ -134,7 +134,7 @@ export class NewTransactionForm extends Component {
               <Field 
                   component={NewTransactionCheckbox}
                   name="isUsedInMusicGang"
-                  checkBoxLabel={"ใช้ในห้องซ้อม (ฟรี)"}
+                  checkBoxLabel={"ฟรี"}
               />
             </div>
         </div> 
