@@ -8,6 +8,7 @@ import {Link} from 'react-router-dom'
 
 import {fetchTransaction} from '../../actions/transaction'
 import {LoaderSpinner} from '../commons/LoaderSpinner'
+import {EmptyTransactionNotice} from '../commons/EmptyTransactionNotice'
 
 export class TransactionListSummaryPage extends Component {
     constructor(props){
@@ -211,7 +212,6 @@ export class TransactionListSummaryPage extends Component {
     }
 
     renderPaginationBody(arrayOfPage, type){
-        console.log(this.state.currentImportPage, this.state.currentExportPage)
         arrayOfPage.unshift(-1)
         arrayOfPage.push(-2)
         let isFirstPage = true
@@ -272,7 +272,7 @@ export class TransactionListSummaryPage extends Component {
 
     renderRemainingItem(filteredTransaction){
         var additionalRow = 20 - filteredTransaction.length 
-        console.log(additionalRow)                                
+                                       
         var loop = 0
         var returnElement = []
         for(loop = 0; loop < additionalRow; loop++){
@@ -323,48 +323,58 @@ export class TransactionListSummaryPage extends Component {
                             <div className="col xl12 l12 m12 s12" style={{right: "5px", position: "relative"}}>
                                 <h6>สินค้านำเข้า</h6>
                             </div>
-                            <div className="col card small xl12 l12 m12 s12" style={{right: "5px", position: "relative", height: "auto"}}>
-                            <table className="highlight centered">
-                                <thead>
-                                <tr>
-                                    <th>วันที่</th>
-                                    <th>ชื่อสินค้า</th>
-                                    <th>จำนวน</th>
-                                    <th>ราคา</th>
-                                    <th></th>
-                                </tr>
-                                </thead>
-                
-                                <tbody>
-                                    {this.renderSmallImportTransaction(slicedImportFilteredTransaction)}
-                                    {this.renderRemainingItem(slicedImportFilteredTransaction)}
-                                </tbody>
-                            </table>
-                            </div>
+                            {slicedImportFilteredTransaction.length === 0 && 
+                                <EmptyTransactionNotice message="ไม่มีรายการในขณะนี้"/>}
+                            {slicedImportFilteredTransaction.length !== 0 && (
+                                <div className="col card small xl12 l12 m12 s12" style={{right: "5px", position: "relative", height: "auto"}}>
+                                <table className="highlight centered">
+                                    <thead>
+                                    <tr>
+                                        <th>วันที่</th>
+                                        <th>ชื่อสินค้า</th>
+                                        <th>จำนวน</th>
+                                        <th>ราคา</th>
+                                        <th></th>
+                                    </tr>
+                                    </thead>
+                    
+                                    <tbody>
+                                        {this.renderSmallImportTransaction(slicedImportFilteredTransaction)}
+                                        {this.renderRemainingItem(slicedImportFilteredTransaction)}
+                                    </tbody>
+                                </table>
+                                </div>
+                            )}
+                            
                             {this.renderPagination(importFilteredTransaction, "import")}
                         </div>        
                         <div className="col xl6 l6 m12 s12">
                             <div className="col xl12 l12 m12 s12" style={{left: "5px", position: "relative"}}>
                                 <h6>สินค้านำออก</h6>
                             </div>
-                            <div className="col card small xl12 l12 m12 s12" style={{right: "5px", position: "relative", height: "auto"}}>
-                                <table className="highlight centered">
-                                <thead>
-                                <tr>
-                                    <th>วันที่</th>
-                                    <th>ชื่อสินค้า</th>
-                                    <th>จำนวน</th>
-                                    <th>ราคา</th>
-                                    <th></th>
-                                </tr>
-                                </thead>
-                    
-                                <tbody>
-                                    {this.renderSmallExportTransaction(slicedExportFilteredTransaction)}
-                                    {this.renderRemainingItem(slicedExportFilteredTransaction)}
-                                </tbody>
-                                </table>
-                            </div>
+                            {slicedExportFilteredTransaction.length === 0 && 
+                                <EmptyTransactionNotice message="ไม่มีรายการในขณะนี้"/>}
+                            {slicedExportFilteredTransaction.length !== 0 && (
+                                <div className="col card small xl12 l12 m12 s12" style={{right: "5px", position: "relative", height: "auto"}}>
+                                    <table className="highlight centered">
+                                    <thead>
+                                    <tr>
+                                        <th>วันที่</th>
+                                        <th>ชื่อสินค้า</th>
+                                        <th>จำนวน</th>
+                                        <th>ราคา</th>
+                                        <th></th>
+                                    </tr>
+                                    </thead>
+                        
+                                    <tbody>
+                                        {this.renderSmallExportTransaction(slicedExportFilteredTransaction)}
+                                        {this.renderRemainingItem(slicedExportFilteredTransaction)}
+                                    </tbody>
+                                    </table>
+                                </div>
+                            )}
+                            
                             {this.renderPagination(exportFilteredTransaction, "export")}
                         </div>
                     </div>
@@ -386,24 +396,29 @@ export class TransactionListSummaryPage extends Component {
                 <div className="col xl12 l12 m12 s12" style={{right: "5px", position: "relative"}}>
                     <h6>สินค้านำเข้า</h6>
                 </div>
-                <div className="col card small xl12 l12 m12 s12" style={{right: "5px", position: "relative", height: "auto"}}>
-                    <table className="highlight centered">
-                        <thead>
-                            <tr>
-                                <th>วันที่</th>
-                                <th>ชื่อสินค้า</th>
-                                <th>จำนวน</th>
-                                <th>ราคา</th>
-                                <th></th>
-                            </tr>
-                        </thead>
-        
-                        <tbody>
-                            {this.renderSmallImportTransaction(slicedImportFilteredTransaction)}
-                            {this.renderRemainingItem(slicedImportFilteredTransaction)}
-                        </tbody>
-                    </table>
-                </div>
+                {slicedImportFilteredTransaction.length === 0 && 
+                    <EmptyTransactionNotice message="ไม่มีรายการในขณะนี้"/>}
+                {slicedImportFilteredTransaction.length !== 0 && (
+                    <div className="col card small xl12 l12 m12 s12" style={{right: "5px", position: "relative", height: "auto"}}>
+                        <table className="highlight centered">
+                            <thead>
+                                <tr>
+                                    <th>วันที่</th>
+                                    <th>ชื่อสินค้า</th>
+                                    <th>จำนวน</th>
+                                    <th>ราคา</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+            
+                            <tbody>
+                                {this.renderSmallImportTransaction(slicedImportFilteredTransaction)}
+                                {this.renderRemainingItem(slicedImportFilteredTransaction)}
+                            </tbody>
+                        </table>
+                    </div>
+                )}
+                
                 {this.renderPagination(importFilteredTransaction, "import")}
             </div>
         )
@@ -422,7 +437,10 @@ export class TransactionListSummaryPage extends Component {
                 <div className="col xl12 l12 m12 s12" style={{left: "5px", position: "relative"}}>
                     <h6>สินค้านำออก</h6>
                 </div>
-                <div className="col card small xl12 l12 m12 s12" style={{left: "5px", position: "relative", height: "auto"}}>
+                {slicedExportFilteredTransaction.length === 0 && 
+                    <EmptyTransactionNotice message="ไม่มีรายการในขณะนี้"/>}
+                {slicedExportFilteredTransaction.length !== 0 && (
+                    <div className="col card small xl12 l12 m12 s12" style={{left: "5px", position: "relative", height: "auto"}}>
                     <table className="highlight centered">
                     <thead>
                             <tr>
@@ -440,6 +458,8 @@ export class TransactionListSummaryPage extends Component {
                         </tbody>
                     </table>
                 </div>
+                )}    
+                
                 {this.renderPagination(exportFilteredTransaction, "export")}
 </div>
         )

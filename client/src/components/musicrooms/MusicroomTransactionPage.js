@@ -12,6 +12,7 @@ import {fetchTransaction, deleteMusicroomTransaction, resetMusicroomTransactionE
 import {LoaderSpinner} from '../commons/LoaderSpinner'
 import './main.css'
 import MusicroomTransactionTableHeader from './MusicroomTransactionTableHeader';
+import EmptyTransactionNotice from '../commons/EmptyTransactionNotice';
 
 const shiftLeft10 = {
     left: "10px",
@@ -448,40 +449,50 @@ export class MusicroomTransactionPage extends Component {
                                 <div className="col xl12 l12 m12 s12" style={{right: "5px", position: "relative"}}>
                                     <h6>ห้องซ้อมเล็ก</h6>
                                 </div>
-                                <div className="col card small xl12 l12 m12 s12" style={{right: "5px", position: "relative", height: "auto"}}>
-                                <table className="highlight centered">
-                                    <thead>
-                                    <tr>
-                                        <MusicroomTransactionTableHeader isDisplayEditingMenu={this.state.isDisplayEditingMenu}/>
-                                    </tr>
-                                    </thead>
-                    
-                                    <tbody>
-                                        {this.renderSmallroomRecord(slicedSmallRoomFilteredTransaction)}
-                                        {this.renderRemainingItem(slicedSmallRoomFilteredTransaction)}
-                                    </tbody>
-                                </table>
-                            </div>
+                                {slicedSmallRoomFilteredTransaction.length === 0 &&
+                                    <EmptyTransactionNotice message="ไม่มีรายการในขณะนี้"/>}
+                                {slicedSmallRoomFilteredTransaction.length !== 0 && (
+                                    <div className="col card small xl12 l12 m12 s12" style={{right: "5px", position: "relative", height: "auto"}}>
+                                        <table className="highlight centered">
+                                            <thead>
+                                            <tr>
+                                                <MusicroomTransactionTableHeader isDisplayEditingMenu={this.state.isDisplayEditingMenu}/>
+                                            </tr>
+                                            </thead>
+                            
+                                            <tbody>
+                                                {this.renderSmallroomRecord(slicedSmallRoomFilteredTransaction)}
+                                                {this.renderRemainingItem(slicedSmallRoomFilteredTransaction)}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                )}
+                                
                             {this.renderPagination(smallRoomFilteredTransaction, "Small")}
                         </div>
                         <div className="col xl6 l6 m12 s12">
                             <div className="col xl12 l12 m12 s12" style={{left: "5px", position: "relative"}}>
                                 <h6>ห้องซ้อมใหญ่</h6>
                             </div>
-                            <div className="col card small xl12 l12 m12 s12" style={{right: "5px", position: "relative", height: "auto"}}>
-                                <table className="highlight centered">
-                                <thead>
-                                <tr>
-                                    <MusicroomTransactionTableHeader isDisplayEditingMenu={this.state.isDisplayEditingMenu}/>
-                                </tr>
-                                </thead>
-                    
-                                <tbody>
-                                    {this.renderLargeroomRecord(slicedLargeRoomFilteredTransaction)}
-                                    {this.renderRemainingItem(slicedLargeRoomFilteredTransaction)}
-                                </tbody>
-                                </table>
-                            </div>
+                            {slicedLargeRoomFilteredTransaction.length === 0 &&
+                                <EmptyTransactionNotice message="ไม่มีรายการในขณะนี้"/>}
+                            {slicedLargeRoomFilteredTransaction.length !== 0 && (
+                                <div className="col card small xl12 l12 m12 s12" style={{right: "5px", position: "relative", height: "auto"}}>
+                                    <table className="highlight centered">
+                                    <thead>
+                                    <tr>
+                                        <MusicroomTransactionTableHeader isDisplayEditingMenu={this.state.isDisplayEditingMenu}/>
+                                    </tr>
+                                    </thead>
+                        
+                                    <tbody>
+                                        {this.renderLargeroomRecord(slicedLargeRoomFilteredTransaction)}
+                                        {this.renderRemainingItem(slicedLargeRoomFilteredTransaction)}
+                                    </tbody>
+                                    </table>
+                                </div>
+                            )}
+                            
                             {this.renderPagination(largeRoomFilteredTransaction, "Large")}
                         </div>
                     </div>
@@ -499,20 +510,24 @@ export class MusicroomTransactionPage extends Component {
                         <div className="col xl12 l12 m12 s12" style={{right: "5px", position: "relative"}}>
                             <h6>ห้องซ้อมเล็ก</h6>
                         </div>
-                        <div className="col card small xl12 l12 m12 s12" style={{right: "5px", position: "relative", height: "auto"}}>
-                            <table className="highlight centered">
-                                <thead>
+                        {slicedSmallRoomFilteredTransaction.length === 0 &&
+                            <EmptyTransactionNotice message="ไม่มีรายการในขณะนี้"/>}
+                        {slicedSmallRoomFilteredTransaction.length !== 0 && (
+                            <div className="col card small xl12 l12 m12 s12" style={{right: "5px", position: "relative", height: "auto"}}>
+                                <table className="highlight centered">
+                                    <thead>
                                     <tr>
                                         <MusicroomTransactionTableHeader isDisplayEditingMenu={this.state.isDisplayEditingMenu}/>
                                     </tr>
-                                </thead>
-                
-                                <tbody>
-                                    {this.renderSmallroomRecord(slicedSmallRoomFilteredTransaction)}
-                                    {this.renderRemainingItem(slicedSmallRoomFilteredTransaction)}
-                                </tbody>
-                            </table>
-                        </div>
+                                    </thead>
+                    
+                                    <tbody>
+                                        {this.renderSmallroomRecord(slicedSmallRoomFilteredTransaction)}
+                                        {this.renderRemainingItem(slicedSmallRoomFilteredTransaction)}
+                                    </tbody>
+                                </table>
+                            </div>
+                        )}
                         {this.renderPagination(smallRoomFilteredTransaction, "Small")}
                     </div>
                 )}
@@ -529,20 +544,24 @@ export class MusicroomTransactionPage extends Component {
                         <div className="col xl12 l12 m12 s12" style={{right: "5px", position: "relative"}}>
                             <h6>ห้องซ้อมใหญ่</h6>
                         </div>
-                        <div className="col card small xl12 l12 m12 s12" style={{right: "5px", position: "relative", height: "auto"}}>
-                            <table className="highlight centered">
+                        {slicedLargeRoomFilteredTransaction.length === 0 &&
+                                <EmptyTransactionNotice message="ไม่มีรายการในขณะนี้"/>}
+                        {slicedLargeRoomFilteredTransaction.length !== 0 && (
+                            <div className="col card small xl12 l12 m12 s12" style={{right: "5px", position: "relative", height: "auto"}}>
+                                <table className="highlight centered">
                                 <thead>
-                                    <tr>
-                                        <MusicroomTransactionTableHeader isDisplayEditingMenu={this.state.isDisplayEditingMenu}/>
-                                    </tr>
+                                <tr>
+                                    <MusicroomTransactionTableHeader isDisplayEditingMenu={this.state.isDisplayEditingMenu}/>
+                                </tr>
                                 </thead>
-                
+                    
                                 <tbody>
                                     {this.renderLargeroomRecord(slicedLargeRoomFilteredTransaction)}
                                     {this.renderRemainingItem(slicedLargeRoomFilteredTransaction)}
                                 </tbody>
-                            </table>
-                        </div>
+                                </table>
+                            </div>
+                        )}
                         {this.renderPagination(largeRoomFilteredTransaction, "Large")}
                     </div>
                 )}
