@@ -16,7 +16,6 @@ require('./models/Category')
 require('./services/passport')
 
 var db = new lokijs('./database.json');
-morgan('tiny')
 
 var coreApp = db.loadDatabase({}, function(err) {
     if (err) {
@@ -73,6 +72,7 @@ var coreApp = db.loadDatabase({}, function(err) {
         app.use(passport.initialize())
         app.use(passport.session())
         app.use(cors({credentials: true, origin:'http://localhost:3000'})) // allows receiving of cookies from front-end
+        app.use(morgan('tiny'))
 
         require('./routes/testingRoute')(app)
         require('./routes/authRoute')(app)

@@ -12,7 +12,13 @@ import {LoaderSpinner} from '../commons/LoaderSpinner'
 import {CostTransactionTableBody} from './CostTransactionTableBody'
 import ReactNotification from "react-notifications-component";
 
-import {addNewCostTransaction, fetchTransaction, deleteCostTransaction, editCostTransaction, resetCostTransactionError} from '../../actions/costTransaction'
+import {addNewCostTransaction, 
+    fetchTransaction, 
+    deleteCostTransaction, 
+    editCostTransaction, 
+    resetCostTransactionError, 
+    getTotalImport,
+    getTotalExport} from '../../actions/costTransaction'
 
 import MomentLocaleUtils, {
     formatDate,
@@ -334,6 +340,8 @@ renderPagination(filteredTransaction, type){
                                                     stockId={stockId}
                                                     deleteCostTransaction={this.props.deleteCostTransaction}
                                                     editCostTransaction={this.props.editCostTransaction}
+                                                    getTotalImport = {this.props.getTotalImport}
+                                                    getTotalExport = {this.props.getTotalExport}
                                                 />
                                             </tbody>
                                         </table>
@@ -367,6 +375,8 @@ renderPagination(filteredTransaction, type){
                                             stockId={stockId}
                                             deleteCostTransaction={this.props.deleteCostTransaction}
                                             editCostTransaction={this.props.editCostTransaction}
+                                            getTotalImport = {this.props.getTotalImport}
+                                            getTotalExport = {this.props.getTotalExport}
                                         />
                                     </tbody>
                                     </table>
@@ -410,6 +420,8 @@ renderPagination(filteredTransaction, type){
                                         stockId={stockId}
                                         deleteCostTransaction={this.props.deleteCostTransaction}
                                         editCostTransaction={this.props.editCostTransaction}
+                                        getTotalImport = {this.props.getTotalImport}
+                                        getTotalExport = {this.props.getTotalExport}
                                     />
                                 </tbody>
                             </table>
@@ -451,6 +463,8 @@ renderPagination(filteredTransaction, type){
                                     stockId={stockId}
                                     deleteCostTransaction={this.props.deleteCostTransaction}
                                     editCostTransaction={this.props.editCostTransaction}
+                                    getTotalImport = {this.props.getTotalImport}
+                                    getTotalExport = {this.props.getTotalExport}
                                 />
                             </tbody>
                             </table>
@@ -534,6 +548,8 @@ CostTransactionDetail = reduxForm({
     validate
 })(CostTransactionDetail)
 
-CostTransactionDetail = connect(mapStateToProps,{addNewCostTransaction, fetchTransaction, deleteCostTransaction, editCostTransaction, resetCostTransactionError})(CostTransactionDetail)
+CostTransactionDetail = connect(mapStateToProps,{addNewCostTransaction, 
+    fetchTransaction, deleteCostTransaction, editCostTransaction, resetCostTransactionError,
+    getTotalImport, getTotalExport})(CostTransactionDetail)
 
 export default CostTransactionDetail

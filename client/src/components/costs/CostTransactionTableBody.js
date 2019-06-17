@@ -55,12 +55,24 @@ export class CostTransactionTableBody extends Component {
         return 0
     }
 
+    componentWillReceiveProps(prevProps){
+        if(prevProps.state.currentMonth !== this.props.state.currentMonth){
+            this.setState({importStopLoading: false, exportStopLoading: false})
+        }
+    }
+
     render() {
         let returnTableRow = []
+        
         const {transactions, costType, state, stockId, deleteCostTransaction} = this.props
         
         var filteredTransaction = transactions.filter(x => x.costType === costType && x._stock === stockId &&
                                 this.isSameMonth(new Date(x.day), this.handleMonthFilter(state.currentMonth)))
+
+        //var importTotal = this.props.getTotalImport(state.currentMonth)
+        //var exportTotal = this.props.getTotalExport(state.currentMonth)
+
+        console.log(this.state.currentImportTotal, this.state.currentExportTotal)
 
         filteredTransaction = filteredTransaction.sort(this.sortDayForTransaction)
         if(costType === "Cost"){
@@ -156,3 +168,5 @@ export class CostTransactionTableBody extends Component {
         return returnTableRow
     }
 }
+
+export default (CostTransactionTableBody)

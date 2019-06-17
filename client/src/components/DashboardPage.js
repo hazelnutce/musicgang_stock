@@ -11,7 +11,7 @@ const mainFeatureName = [
   "หมวดหมู่สินค้า",
   "นำเข้า-นำออกสินค้า",
   "บันทึกห้องซ้อม",
-  "บันทึกค่าใช้จ่ายคลังสินค้า"
+  "บันทึกค่าใช้จ่าย"
 ]
 
 //red lighten-2
@@ -22,7 +22,6 @@ const mainFeatureName = [
 
 export class DashboardPage extends Component {
   render() {
-    console.log(musicroomTransaction)
     return (
       <div className="container" style={{position: "relative", top: "5px"}}>
         <div className="row">

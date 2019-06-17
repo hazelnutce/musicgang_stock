@@ -1,7 +1,13 @@
 const requireLogin = require('../middleware/requireLogin')
 const guid = require('../services/guid')
 
+function checkNameAndYear(d1, d2) {
+    return d1.getMonth() === d2.getMonth() &&
+        d1.getFullYear() === d2.getFullYear();
+}
+
 module.exports = (app, Db, Transaction, Stock, Item) => {
+
     app.get('/api/transaction/findstock', requireLogin, (req,res) => {
         var results = Stock.find({_user: req.user.id.toString()})
         results.forEach((result) => {
@@ -150,5 +156,51 @@ module.exports = (app, Db, Transaction, Stock, Item) => {
         }
 
         res.status(200).send("Deleted transaction successfully")
+    })
+
+    app.post('/api/transaction/getTotalImport/:month',requireLogin, async (req,res) => {
+        const month = req.params.month
+
+        var currentYear = parseInt(month / 12)
+        var currentMonth = month % 12
+
+        var currentDateInstance = new Date(currentYear, currentMonth)
+
+        var result = Transaction.where((obj) => {
+            return obj._user == req.user.id.toString() && checkNameAndYear(currentDateInstance, new Date(obj.day)) && obj.type == "import";
+        })
+
+        var resultTotal = 0
+
+        if(result.length > 0){
+            resultTotal = result.reduce(function(prev, cur) {
+                return prev + cur.total;
+            }, 0)
+        }
+
+        res.send(resultTotal.toString())
+    })
+
+    app.post('/api/transaction/getTotalExport/:month',requireLogin, async (req,res) => {
+        const month = req.params.month
+
+        var currentYear = parseInt(month / 12)
+        var currentMonth = month % 12
+
+        var currentDateInstance = new Date(currentYear, currentMonth)
+
+        var result = Transaction.where((obj) => {
+            return obj._user == req.user.id.toString() && checkNameAndYear(currentDateInstance, new Date(obj.day)) && obj.type == "export";
+        })
+
+        var resultTotal = 0
+
+        if(result.length > 0){
+            resultTotal = result.reduce(function(prev, cur) {
+                return prev + cur.total;
+            }, 0)
+        }
+
+        res.send(resultTotal.toString())
     })
 }
