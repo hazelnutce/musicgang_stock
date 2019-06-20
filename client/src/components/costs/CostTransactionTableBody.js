@@ -61,6 +61,15 @@ export class CostTransactionTableBody extends Component {
         }
     }
 
+    guid() {
+        function s4() {
+          return Math.floor((1 + Math.random()) * 0x10000)
+            .toString(16)
+            .substring(1);
+        }
+        return s4() + s4() + '-' + s4() + '-' + s4() + '-' + s4() + '-' + s4() + s4() + s4();
+      }
+
     render() {
         let returnTableRow = []
         
@@ -69,16 +78,24 @@ export class CostTransactionTableBody extends Component {
         var filteredTransaction = transactions.filter(x => x.costType === costType && x._stock === stockId &&
                                 this.isSameMonth(new Date(x.day), this.handleMonthFilter(state.currentMonth)))
 
-        //var importTotal = this.props.getTotalImport(state.currentMonth)
-        //var exportTotal = this.props.getTotalExport(state.currentMonth)
-
-        console.log(this.state.currentImportTotal, this.state.currentExportTotal)
-
         filteredTransaction = filteredTransaction.sort(this.sortDayForTransaction)
+        
         if(costType === "Cost"){
+            filteredTransaction.unshift({
+                day: new Date(state.currentMonth / 12,state.currentMonth % 12, 1),
+                _id: this.guid(),
+                description: "รายจ่ายคลังสินค้าประจำเดือน",
+                formatCost: state.currentImportTotal,
+            })
             filteredTransaction = filteredTransaction.slice((state.currentCostPage - 1) * 20, state.currentCostPage * 20)
         }
         else if(costType === "Revenue"){
+            filteredTransaction.unshift({
+                day: new Date(state.currentMonth / 12,state.currentMonth % 12, 1),
+                _id: this.guid(),
+                description: "รายรับคลังสินค้าประจำเดือน",
+                formatCost: state.currentExportTotal,
+            })
             filteredTransaction = filteredTransaction.slice((state.currentRevenuePage - 1) * 20, state.currentRevenuePage * 20)
         }
 

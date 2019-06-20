@@ -25,7 +25,6 @@ import MomentLocaleUtils, {
     parseDate,
   } from 'react-day-picker/moment';
 import CostTransactionTableHeader from './CostTransactionTableHeader';
-import EmptyTransactionNotice from '../commons/EmptyTransactionNotice';
 
 const shiftLeft10 = {
   left: "10px",
@@ -51,7 +50,9 @@ export class CostTransactionDetail extends Component {
       isLoadingTransaction : true,
       currentMonth :  y * 12 + n,
       currentCostPage : 1,
-      currentRevenuePage : 1
+      currentRevenuePage : 1,
+      currentImportTotal: 0,
+      currentExportTotal: 0,
     }
   }
 
@@ -66,6 +67,12 @@ export class CostTransactionDetail extends Component {
         description : ""
     })
     this.props.fetchTransaction()
+    let promiseImport = this.props.getTotalImport(this.state.currentMonth)
+    let promiseExport = this.props.getTotalExport(this.state.currentMonth)
+    Promise.all([promiseImport, promiseExport]).then(values => {
+        this.setState({currentImportTotal: values[0].data,
+            currentExportTotal: values[1].data})
+    })
   }
 
   addNotification = (message) => {
@@ -159,15 +166,36 @@ numberWithCommas(x) {
   }
 
 handleAddMonth = () => {
-    this.setState({currentMonth: this.state.currentMonth + 1})
+    let promiseImport = this.props.getTotalImport(this.state.currentMonth + 1)
+    let promiseExport = this.props.getTotalExport(this.state.currentMonth + 1)
+    Promise.all([promiseImport, promiseExport]).then(values => {
+        console.log("next month")
+        this.setState({currentMonth: this.state.currentMonth + 1, 
+            currentImportTotal: values[0].data,
+            currentExportTotal: values[1].data})
+    })
 }
 
 handleMinusMonth = () => {
-    this.setState({currentMonth: this.state.currentMonth - 1})
+    let promiseImport = this.props.getTotalImport(this.state.currentMonth - 1)
+    let promiseExport = this.props.getTotalExport(this.state.currentMonth - 1)
+    Promise.all([promiseImport, promiseExport]).then(values => {
+        console.log("previous month")
+        this.setState({currentMonth: this.state.currentMonth - 1, 
+            currentImportTotal: values[0].data,
+            currentExportTotal: values[1].data})
+    })
 }
 
 handleSetMonth = (integerMonth) => {
-    this.setState({currentMonth: integerMonth})
+    let promiseImport = this.props.getTotalImport(integerMonth)
+    let promiseExport = this.props.getTotalExport(integerMonth)
+    Promise.all([promiseImport, promiseExport]).then(values => {
+        console.log("set month")
+        this.setState({currentMonth: integerMonth, 
+            currentImportTotal: values[0].data,
+            currentExportTotal: values[1].data})
+    })
 }
 
 handleDayChange = (day) => {
@@ -321,10 +349,6 @@ renderPagination(filteredTransaction, type){
                                 <div className="col xl12 l12 m12 s12" style={{right: "5px", position: "relative"}}>
                                     <h6>รายจ่าย</h6>
                                 </div>
-                                {costFilteredTransaction.length === 0 && (
-                                    <EmptyTransactionNotice message="ไม่มีรายการในขณะนี้" />
-                                )}
-                                {costFilteredTransaction.length !== 0 && (
                                     <div className="col card small xl12 l12 m12 s12" style={{ height: "auto"}}>
                                         <table className="highlight centered">
                                             <thead>
@@ -340,14 +364,10 @@ renderPagination(filteredTransaction, type){
                                                     stockId={stockId}
                                                     deleteCostTransaction={this.props.deleteCostTransaction}
                                                     editCostTransaction={this.props.editCostTransaction}
-                                                    getTotalImport = {this.props.getTotalImport}
-                                                    getTotalExport = {this.props.getTotalExport}
                                                 />
                                             </tbody>
                                         </table>
                                     </div>
-                                )}
-                                
                             {this.renderPagination(costFilteredTransaction, "Cost")}
                         </div>
                         
@@ -355,10 +375,6 @@ renderPagination(filteredTransaction, type){
                             <div className="col xl12 l12 m12 s12" style={{left: "5px", position: "relative"}}>
                                 <h6>รายรับ</h6>
                             </div>
-                            {revenueFilteredTransaction.length === 0 && (
-                                <EmptyTransactionNotice message="ไม่มีรายการในขณะนี้" />
-                            )}
-                            {revenueFilteredTransaction.length !== 0 && (
                                 <div className="col card small xl12 l12 m12 s12" style={{ height: "auto"}}>
                                     <table className="highlight centered">
                                     <thead>
@@ -375,14 +391,10 @@ renderPagination(filteredTransaction, type){
                                             stockId={stockId}
                                             deleteCostTransaction={this.props.deleteCostTransaction}
                                             editCostTransaction={this.props.editCostTransaction}
-                                            getTotalImport = {this.props.getTotalImport}
-                                            getTotalExport = {this.props.getTotalExport}
                                         />
                                     </tbody>
                                     </table>
                                 </div>
-                            )}
-                            
                             {this.renderPagination(revenueFilteredTransaction, "Revenue")}
                         </div>
                         
@@ -401,10 +413,6 @@ renderPagination(filteredTransaction, type){
                     <div className="col xl12 l12 m12 s12" style={{right: "5px", position: "relative"}}>
                         <h6>รายจ่าย</h6>
                     </div>
-                    {costFilteredTransaction.length === 0 && (
-                        <EmptyTransactionNotice message="ไม่มีรายการในขณะนี้" />
-                    )}
-                    {costFilteredTransaction.length !== 0 && (
                         <div className="col card small xl12 l12 m12 s12" style={{ height: "auto"}}>
                             <table className="highlight centered">
                                 <thead>
@@ -420,13 +428,10 @@ renderPagination(filteredTransaction, type){
                                         stockId={stockId}
                                         deleteCostTransaction={this.props.deleteCostTransaction}
                                         editCostTransaction={this.props.editCostTransaction}
-                                        getTotalImport = {this.props.getTotalImport}
-                                        getTotalExport = {this.props.getTotalExport}
                                     />
                                 </tbody>
                             </table>
                         </div>
-                    )}
                     {this.renderPagination(costFilteredTransaction, "Cost")}
                 </div>
             )}
@@ -443,10 +448,6 @@ renderPagination(filteredTransaction, type){
                     <div className="col xl12 l12 m12 s12" style={{right: "5px", position: "relative"}}>
                         <h6>รายรับ</h6>
                     </div>
-                    {revenueFilteredTransaction.length === 0 && (
-                        <EmptyTransactionNotice message="ไม่มีรายการในขณะนี้" />
-                    )}
-                    {revenueFilteredTransaction.length !== 0 && (
                         <div className="col card small xl12 l12 m12 s12" style={{ height: "auto"}}>
                             <table className="highlight centered">
                             <thead>
@@ -463,13 +464,10 @@ renderPagination(filteredTransaction, type){
                                     stockId={stockId}
                                     deleteCostTransaction={this.props.deleteCostTransaction}
                                     editCostTransaction={this.props.editCostTransaction}
-                                    getTotalImport = {this.props.getTotalImport}
-                                    getTotalExport = {this.props.getTotalExport}
                                 />
                             </tbody>
                             </table>
                         </div>
-                    )}
                     {this.renderPagination(revenueFilteredTransaction, "Revenue")}
                 </div>
             )}
