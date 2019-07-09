@@ -53,6 +53,7 @@ export class CostTransactionDetail extends Component {
       currentRevenuePage : 1,
       currentImportTotal: 0,
       currentExportTotal: 0,
+      isLoadingImportExportCost: false
     }
   }
 
@@ -67,11 +68,13 @@ export class CostTransactionDetail extends Component {
         description : ""
     })
     this.props.fetchTransaction()
+    this.setState({isLoadingImportExportCost: true})
     let promiseImport = this.props.getTotalImport(this.state.currentMonth)
     let promiseExport = this.props.getTotalExport(this.state.currentMonth)
     Promise.all([promiseImport, promiseExport]).then(values => {
         this.setState({currentImportTotal: values[0].data,
-            currentExportTotal: values[1].data})
+            currentExportTotal: values[1].data,
+            isLoadingImportExportCost: false})
     })
   }
 
@@ -166,35 +169,38 @@ numberWithCommas(x) {
   }
 
 handleAddMonth = () => {
+    this.setState({isLoadingImportExportCost: true})
     let promiseImport = this.props.getTotalImport(this.state.currentMonth + 1)
     let promiseExport = this.props.getTotalExport(this.state.currentMonth + 1)
     Promise.all([promiseImport, promiseExport]).then(values => {
-        console.log("next month")
         this.setState({currentMonth: this.state.currentMonth + 1, 
             currentImportTotal: values[0].data,
-            currentExportTotal: values[1].data})
+            currentExportTotal: values[1].data,
+            isLoadingImportExportCost: false})
     })
 }
 
 handleMinusMonth = () => {
+    this.setState({isLoadingImportExportCost: true})
     let promiseImport = this.props.getTotalImport(this.state.currentMonth - 1)
     let promiseExport = this.props.getTotalExport(this.state.currentMonth - 1)
     Promise.all([promiseImport, promiseExport]).then(values => {
-        console.log("previous month")
         this.setState({currentMonth: this.state.currentMonth - 1, 
             currentImportTotal: values[0].data,
-            currentExportTotal: values[1].data})
+            currentExportTotal: values[1].data,
+            isLoadingImportExportCost: false})
     })
 }
 
 handleSetMonth = (integerMonth) => {
+    this.setState({isLoadingImportExportCost: true})
     let promiseImport = this.props.getTotalImport(integerMonth)
     let promiseExport = this.props.getTotalExport(integerMonth)
     Promise.all([promiseImport, promiseExport]).then(values => {
-        console.log("set month")
         this.setState({currentMonth: integerMonth, 
             currentImportTotal: values[0].data,
-            currentExportTotal: values[1].data})
+            currentExportTotal: values[1].data,
+            isLoadingImportExportCost: false})
     })
 }
 
@@ -342,7 +348,8 @@ renderPagination(filteredTransaction, type){
                                 handleAddMonth={this.handleAddMonth} 
                                 handleMinusMonth={this.handleMinusMonth} 
                                 handleSetMonth={this.handleSetMonth}
-                                currentMonth={this.state.currentMonth} 
+                                currentMonth={this.state.currentMonth}
+                                disabled={this.state.isLoadingImportExportCost} 
                             />
                         </div>
                         <div className="col xl6 l6 m12 s12">
@@ -408,6 +415,7 @@ renderPagination(filteredTransaction, type){
                             handleMinusMonth={this.handleMinusMonth} 
                             handleSetMonth={this.handleSetMonth}
                             currentMonth={this.state.currentMonth} 
+                            disabled={this.state.isLoadingImportExportCost} 
                         />
                     </div>
                     <div className="col xl12 l12 m12 s12" style={{right: "5px", position: "relative"}}>
@@ -443,6 +451,7 @@ renderPagination(filteredTransaction, type){
                             handleMinusMonth={this.handleMinusMonth} 
                             handleSetMonth={this.handleSetMonth}
                             currentMonth={this.state.currentMonth} 
+                            disabled={this.state.isLoadingImportExportCost} 
                         />
                     </div>
                     <div className="col xl12 l12 m12 s12" style={{right: "5px", position: "relative"}}>
