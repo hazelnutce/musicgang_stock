@@ -37,12 +37,14 @@ export const editCostTransaction = (values, history) => async dispatch => {
     })
 }
 
-export const getTotalImport = (month) => async dispatch => {
-    return app.post(`/api/transaction/getTotalImport/${month}`)
+export const getTotalImport = (month, stockId) => async dispatch => {
+    var values = {stockId}
+    return app.post(`/api/transaction/getTotalImport/${month}`, values)
 }
 
-export const getTotalExport = (month) => async dispatch => {
-    return app.post(`/api/transaction/getTotalExport/${month}`)
+export const getTotalExport = (month, stockId) => async dispatch => {
+    var values = {stockId}
+    return app.post(`/api/transaction/getTotalExport/${month}`, values)
 }
 
 export const resetCostTransactionError = () => async dispatch => {

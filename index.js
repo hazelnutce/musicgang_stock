@@ -114,6 +114,4 @@ var coreApp = db.loadDatabase({}, function(err) {
     }
 });
 
-console.log(coreApp)
-
 module.exports = coreApp

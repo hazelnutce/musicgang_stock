@@ -69,8 +69,8 @@ export class CostTransactionDetail extends Component {
     })
     this.props.fetchTransaction()
     this.setState({isLoadingImportExportCost: true})
-    let promiseImport = this.props.getTotalImport(this.state.currentMonth)
-    let promiseExport = this.props.getTotalExport(this.state.currentMonth)
+    let promiseImport = this.props.getTotalImport(this.state.currentMonth, this.props.location.state.stockId)
+    let promiseExport = this.props.getTotalExport(this.state.currentMonth, this.props.location.state.stockId)
     Promise.all([promiseImport, promiseExport]).then(values => {
         this.setState({currentImportTotal: values[0].data,
             currentExportTotal: values[1].data,
@@ -170,8 +170,8 @@ numberWithCommas(x) {
 
 handleAddMonth = () => {
     this.setState({isLoadingImportExportCost: true})
-    let promiseImport = this.props.getTotalImport(this.state.currentMonth + 1)
-    let promiseExport = this.props.getTotalExport(this.state.currentMonth + 1)
+    let promiseImport = this.props.getTotalImport(this.state.currentMonth + 1, this.props.location.state.stockId)
+    let promiseExport = this.props.getTotalExport(this.state.currentMonth + 1, this.props.location.state.stockId)
     Promise.all([promiseImport, promiseExport]).then(values => {
         this.setState({currentMonth: this.state.currentMonth + 1, 
             currentImportTotal: values[0].data,
@@ -182,8 +182,8 @@ handleAddMonth = () => {
 
 handleMinusMonth = () => {
     this.setState({isLoadingImportExportCost: true})
-    let promiseImport = this.props.getTotalImport(this.state.currentMonth - 1)
-    let promiseExport = this.props.getTotalExport(this.state.currentMonth - 1)
+    let promiseImport = this.props.getTotalImport(this.state.currentMonth - 1, this.props.location.state.stockId)
+    let promiseExport = this.props.getTotalExport(this.state.currentMonth - 1, this.props.location.state.stockId)
     Promise.all([promiseImport, promiseExport]).then(values => {
         this.setState({currentMonth: this.state.currentMonth - 1, 
             currentImportTotal: values[0].data,
@@ -194,8 +194,8 @@ handleMinusMonth = () => {
 
 handleSetMonth = (integerMonth) => {
     this.setState({isLoadingImportExportCost: true})
-    let promiseImport = this.props.getTotalImport(integerMonth)
-    let promiseExport = this.props.getTotalExport(integerMonth)
+    let promiseImport = this.props.getTotalImport(integerMonth, this.props.location.state.stockId)
+    let promiseExport = this.props.getTotalExport(integerMonth, this.props.location.state.stockId)
     Promise.all([promiseImport, promiseExport]).then(values => {
         this.setState({currentMonth: integerMonth, 
             currentImportTotal: values[0].data,
@@ -310,7 +310,7 @@ renderPagination(filteredTransaction, type){
                     <i >
                         <FontAwesomeIcon className="fas fa-sm" icon="dollar-sign"/>
                     </i>
-                    <span style={shiftLeft10}>ค่าใช้จ่ายคลังสินค้า</span>
+                    <span style={shiftLeft10}>{`ค่าใช้จ่ายคลังสินค้า / คลัง : ${this.props.location.state.stockName}`}</span>
                 </h5>
                 <div className="col s12 m12 l12 xl12">
                     <div className="row">

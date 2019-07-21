@@ -241,7 +241,7 @@ module.exports = (app, Db, Transaction, Stock, Item) => {
         var currentDateInstance = new Date(currentYear, currentMonth)
 
         var result = Transaction.where((obj) => {
-            return obj._user == req.user.id.toString() && checkNameAndYear(currentDateInstance, new Date(obj.day)) && obj.type == "import";
+            return obj._user == req.user.id.toString() && checkNameAndYear(currentDateInstance, new Date(obj.day)) && obj.type == "import" && obj._stock == req.body.stockId;
         })
 
         var resultTotal = 0
@@ -264,7 +264,7 @@ module.exports = (app, Db, Transaction, Stock, Item) => {
         var currentDateInstance = new Date(currentYear, currentMonth)
 
         var result = Transaction.where((obj) => {
-            return obj._user == req.user.id.toString() && checkNameAndYear(currentDateInstance, new Date(obj.day)) && obj.type == "export";
+            return obj._user == req.user.id.toString() && checkNameAndYear(currentDateInstance, new Date(obj.day)) && obj.type == "export" && obj._stock == req.body.stockId;
         })
 
         var resultTotal = 0
