@@ -243,7 +243,7 @@ export class CategoryPage extends Component {
     }
 
     componentDidUpdate = (prevProps) => {
-        if(prevProps.stocks !== this.props.stocks || prevProps.category.categories !== this.props.category.categories){
+        if((prevProps.stocks !== this.props.stocks || prevProps.category.categories !== this.props.category.categories) && this.props.stocks.length !== 0){
             if(this.props.stocks != null && this.props.category.categories != null){
                 this.setState({
                     loadingCategory: true,
@@ -258,6 +258,12 @@ export class CategoryPage extends Component {
                     M.FormSelect.init(elems, {});
                 })
             }
+        }
+        else if((prevProps.stocks !== this.props.stocks || prevProps.category.categories !== this.props.category.categories) && this.props.stocks.length === 0){
+            this.setState({
+                loadingCategory: true,
+                loadingStock: true
+            })
         }
         if(this.props.editError != null){
             this.addNotification(this.props.editError)

@@ -3,7 +3,6 @@ const guid = require('../services/guid')
 
 module.exports = (app, Db, Stock, Item) => {
     app.get('/api/stock',requireLogin,(req,res) => {
-        console.log('/api/stocks')
         var results = Stock.find({_user: req.user.id.toString()})
         results.forEach((result) => {
             result.itemCount = Item.find({_stock : result._id.toString()}).length
@@ -16,7 +15,6 @@ module.exports = (app, Db, Stock, Item) => {
     })
 
     app.get('/api/stock/stockName',requireLogin,(req,res) => {
-        console.log('/api/stock/stockName')
         var result = Stock.find({_user: req.user.id.toString()},{stockName: 1,_id: 1})
         res.send(result)
     })

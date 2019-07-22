@@ -37,6 +37,16 @@ export const editCostTransaction = (values, history) => async dispatch => {
     })
 }
 
+export const getTotalImport = (month, stockId) => async dispatch => {
+    var values = {stockId}
+    return app.post(`/api/transaction/getTotalImport/${month}`, values)
+}
+
+export const getTotalExport = (month, stockId) => async dispatch => {
+    var values = {stockId}
+    return app.post(`/api/transaction/getTotalExport/${month}`, values)
+}
+
 export const resetCostTransactionError = () => async dispatch => {
     dispatch({type: COST_TRANSACTION_ERROR, payload : null})
 }

@@ -12,14 +12,19 @@ import {LoaderSpinner} from '../commons/LoaderSpinner'
 import {CostTransactionTableBody} from './CostTransactionTableBody'
 import ReactNotification from "react-notifications-component";
 
-import {addNewCostTransaction, fetchTransaction, deleteCostTransaction, editCostTransaction, resetCostTransactionError} from '../../actions/costTransaction'
+import {addNewCostTransaction, 
+    fetchTransaction, 
+    deleteCostTransaction, 
+    editCostTransaction, 
+    resetCostTransactionError, 
+    getTotalImport,
+    getTotalExport} from '../../actions/costTransaction'
 
 import MomentLocaleUtils, {
     formatDate,
     parseDate,
   } from 'react-day-picker/moment';
 import CostTransactionTableHeader from './CostTransactionTableHeader';
-import EmptyTransactionNotice from '../commons/EmptyTransactionNotice';
 
 const shiftLeft10 = {
   left: "10px",
@@ -45,7 +50,10 @@ export class CostTransactionDetail extends Component {
       isLoadingTransaction : true,
       currentMonth :  y * 12 + n,
       currentCostPage : 1,
-      currentRevenuePage : 1
+      currentRevenuePage : 1,
+      currentImportTotal: 0,
+      currentExportTotal: 0,
+      isLoadingImportExportCost: false
     }
   }
 
@@ -60,6 +68,14 @@ export class CostTransactionDetail extends Component {
         description : ""
     })
     this.props.fetchTransaction()
+    this.setState({isLoadingImportExportCost: true})
+    let promiseImport = this.props.getTotalImport(this.state.currentMonth, this.props.location.state.stockId)
+    let promiseExport = this.props.getTotalExport(this.state.currentMonth, this.props.location.state.stockId)
+    Promise.all([promiseImport, promiseExport]).then(values => {
+        this.setState({currentImportTotal: values[0].data,
+            currentExportTotal: values[1].data,
+            isLoadingImportExportCost: false})
+    })
   }
 
   addNotification = (message) => {
@@ -153,15 +169,39 @@ numberWithCommas(x) {
   }
 
 handleAddMonth = () => {
-    this.setState({currentMonth: this.state.currentMonth + 1})
+    this.setState({isLoadingImportExportCost: true})
+    let promiseImport = this.props.getTotalImport(this.state.currentMonth + 1, this.props.location.state.stockId)
+    let promiseExport = this.props.getTotalExport(this.state.currentMonth + 1, this.props.location.state.stockId)
+    Promise.all([promiseImport, promiseExport]).then(values => {
+        this.setState({currentMonth: this.state.currentMonth + 1, 
+            currentImportTotal: values[0].data,
+            currentExportTotal: values[1].data,
+            isLoadingImportExportCost: false})
+    })
 }
 
 handleMinusMonth = () => {
-    this.setState({currentMonth: this.state.currentMonth - 1})
+    this.setState({isLoadingImportExportCost: true})
+    let promiseImport = this.props.getTotalImport(this.state.currentMonth - 1, this.props.location.state.stockId)
+    let promiseExport = this.props.getTotalExport(this.state.currentMonth - 1, this.props.location.state.stockId)
+    Promise.all([promiseImport, promiseExport]).then(values => {
+        this.setState({currentMonth: this.state.currentMonth - 1, 
+            currentImportTotal: values[0].data,
+            currentExportTotal: values[1].data,
+            isLoadingImportExportCost: false})
+    })
 }
 
 handleSetMonth = (integerMonth) => {
-    this.setState({currentMonth: integerMonth})
+    this.setState({isLoadingImportExportCost: true})
+    let promiseImport = this.props.getTotalImport(integerMonth, this.props.location.state.stockId)
+    let promiseExport = this.props.getTotalExport(integerMonth, this.props.location.state.stockId)
+    Promise.all([promiseImport, promiseExport]).then(values => {
+        this.setState({currentMonth: integerMonth, 
+            currentImportTotal: values[0].data,
+            currentExportTotal: values[1].data,
+            isLoadingImportExportCost: false})
+    })
 }
 
 handleDayChange = (day) => {
@@ -270,7 +310,7 @@ renderPagination(filteredTransaction, type){
                     <i >
                         <FontAwesomeIcon className="fas fa-sm" icon="dollar-sign"/>
                     </i>
-                    <span style={shiftLeft10}>ค่าใช้จ่ายคลังสินค้า</span>
+                    <span style={shiftLeft10}>{`ค่าใช้จ่ายคลังสินค้า / คลัง : ${this.props.location.state.stockName}`}</span>
                 </h5>
                 <div className="col s12 m12 l12 xl12">
                     <div className="row">
@@ -308,17 +348,14 @@ renderPagination(filteredTransaction, type){
                                 handleAddMonth={this.handleAddMonth} 
                                 handleMinusMonth={this.handleMinusMonth} 
                                 handleSetMonth={this.handleSetMonth}
-                                currentMonth={this.state.currentMonth} 
+                                currentMonth={this.state.currentMonth}
+                                disabled={this.state.isLoadingImportExportCost} 
                             />
                         </div>
                         <div className="col xl6 l6 m12 s12">
                                 <div className="col xl12 l12 m12 s12" style={{right: "5px", position: "relative"}}>
                                     <h6>รายจ่าย</h6>
                                 </div>
-                                {costFilteredTransaction.length === 0 && (
-                                    <EmptyTransactionNotice message="ไม่มีรายการในขณะนี้" />
-                                )}
-                                {costFilteredTransaction.length !== 0 && (
                                     <div className="col card small xl12 l12 m12 s12" style={{ height: "auto"}}>
                                         <table className="highlight centered">
                                             <thead>
@@ -338,8 +375,6 @@ renderPagination(filteredTransaction, type){
                                             </tbody>
                                         </table>
                                     </div>
-                                )}
-                                
                             {this.renderPagination(costFilteredTransaction, "Cost")}
                         </div>
                         
@@ -347,10 +382,6 @@ renderPagination(filteredTransaction, type){
                             <div className="col xl12 l12 m12 s12" style={{left: "5px", position: "relative"}}>
                                 <h6>รายรับ</h6>
                             </div>
-                            {revenueFilteredTransaction.length === 0 && (
-                                <EmptyTransactionNotice message="ไม่มีรายการในขณะนี้" />
-                            )}
-                            {revenueFilteredTransaction.length !== 0 && (
                                 <div className="col card small xl12 l12 m12 s12" style={{ height: "auto"}}>
                                     <table className="highlight centered">
                                     <thead>
@@ -371,8 +402,6 @@ renderPagination(filteredTransaction, type){
                                     </tbody>
                                     </table>
                                 </div>
-                            )}
-                            
                             {this.renderPagination(revenueFilteredTransaction, "Revenue")}
                         </div>
                         
@@ -386,15 +415,12 @@ renderPagination(filteredTransaction, type){
                             handleMinusMonth={this.handleMinusMonth} 
                             handleSetMonth={this.handleSetMonth}
                             currentMonth={this.state.currentMonth} 
+                            disabled={this.state.isLoadingImportExportCost} 
                         />
                     </div>
                     <div className="col xl12 l12 m12 s12" style={{right: "5px", position: "relative"}}>
                         <h6>รายจ่าย</h6>
                     </div>
-                    {costFilteredTransaction.length === 0 && (
-                        <EmptyTransactionNotice message="ไม่มีรายการในขณะนี้" />
-                    )}
-                    {costFilteredTransaction.length !== 0 && (
                         <div className="col card small xl12 l12 m12 s12" style={{ height: "auto"}}>
                             <table className="highlight centered">
                                 <thead>
@@ -414,7 +440,6 @@ renderPagination(filteredTransaction, type){
                                 </tbody>
                             </table>
                         </div>
-                    )}
                     {this.renderPagination(costFilteredTransaction, "Cost")}
                 </div>
             )}
@@ -426,15 +451,12 @@ renderPagination(filteredTransaction, type){
                             handleMinusMonth={this.handleMinusMonth} 
                             handleSetMonth={this.handleSetMonth}
                             currentMonth={this.state.currentMonth} 
+                            disabled={this.state.isLoadingImportExportCost} 
                         />
                     </div>
                     <div className="col xl12 l12 m12 s12" style={{right: "5px", position: "relative"}}>
                         <h6>รายรับ</h6>
                     </div>
-                    {revenueFilteredTransaction.length === 0 && (
-                        <EmptyTransactionNotice message="ไม่มีรายการในขณะนี้" />
-                    )}
-                    {revenueFilteredTransaction.length !== 0 && (
                         <div className="col card small xl12 l12 m12 s12" style={{ height: "auto"}}>
                             <table className="highlight centered">
                             <thead>
@@ -455,7 +477,6 @@ renderPagination(filteredTransaction, type){
                             </tbody>
                             </table>
                         </div>
-                    )}
                     {this.renderPagination(revenueFilteredTransaction, "Revenue")}
                 </div>
             )}
@@ -534,6 +555,8 @@ CostTransactionDetail = reduxForm({
     validate
 })(CostTransactionDetail)
 
-CostTransactionDetail = connect(mapStateToProps,{addNewCostTransaction, fetchTransaction, deleteCostTransaction, editCostTransaction, resetCostTransactionError})(CostTransactionDetail)
+CostTransactionDetail = connect(mapStateToProps,{addNewCostTransaction, 
+    fetchTransaction, deleteCostTransaction, editCostTransaction, resetCostTransactionError,
+    getTotalImport, getTotalExport})(CostTransactionDetail)
 
 export default CostTransactionDetail

@@ -37,6 +37,15 @@ export class CostTransactionTableBody extends Component {
           d1.getDate() === d2.getDate();
     }
 
+    numberWithCommas(x) {
+        if(x != null){
+          var parts = x.toString().split(".");
+          parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+          return parts.join(".");
+        }
+        return null
+      }
+
     initmodal(){
         var elems = document.querySelectorAll('.forDeleteAction');
         M.Modal.init(elems, {
@@ -55,18 +64,51 @@ export class CostTransactionTableBody extends Component {
         return 0
     }
 
+    componentWillReceiveProps(prevProps){
+        if(prevProps.state.currentMonth !== this.props.state.currentMonth){
+            this.setState({importStopLoading: false, exportStopLoading: false})
+        }
+    }
+
+    guid() {
+        function s4() {
+          return Math.floor((1 + Math.random()) * 0x10000)
+            .toString(16)
+            .substring(1);
+        }
+        return s4() + s4() + '-' + s4() + '-' + s4() + '-' + s4() + '-' + s4() + s4() + s4();
+      }
+
     render() {
         let returnTableRow = []
+        let backGroundColor = "";
+        let fontSize = ""
+        
         const {transactions, costType, state, stockId, deleteCostTransaction} = this.props
         
         var filteredTransaction = transactions.filter(x => x.costType === costType && x._stock === stockId &&
                                 this.isSameMonth(new Date(x.day), this.handleMonthFilter(state.currentMonth)))
 
         filteredTransaction = filteredTransaction.sort(this.sortDayForTransaction)
+        
         if(costType === "Cost"){
+            filteredTransaction.unshift({
+                day: new Date(state.currentMonth / 12,state.currentMonth % 12, 1),
+                _id: this.guid(),
+                description: "รายจ่ายคลังสินค้าประจำเดือน",
+                formatCost: this.numberWithCommas(parseFloat(state.currentImportTotal).toFixed(2)),
+            })
+            backGroundColor = "#ef5350";
             filteredTransaction = filteredTransaction.slice((state.currentCostPage - 1) * 20, state.currentCostPage * 20)
         }
         else if(costType === "Revenue"){
+            filteredTransaction.unshift({
+                day: new Date(state.currentMonth / 12,state.currentMonth % 12, 1),
+                _id: this.guid(),
+                description: "รายรับคลังสินค้าประจำเดือน",
+                formatCost: this.numberWithCommas(parseFloat(state.currentExportTotal).toFixed(2)),
+            })
+            backGroundColor = "#00e676";
             filteredTransaction = filteredTransaction.slice((state.currentRevenuePage - 1) * 20, state.currentRevenuePage * 20)
         }
 
@@ -77,6 +119,7 @@ export class CostTransactionTableBody extends Component {
         _.map(filteredTransaction, (item, index) => {
             let {description, day, formatCost, _id, cost, costType} = item
             var itemDay = new Date(day)
+            var preparedDescription = description
 
             var copiedItemDay = itemDay
             if(index > 0){
@@ -87,12 +130,21 @@ export class CostTransactionTableBody extends Component {
             }
 
             moment.locale('th')
+            backGroundColor = index === 0 ? backGroundColor : ""
+
+            if(preparedDescription.length > 25){
+                preparedDescription = preparedDescription.substring(0,22)
+                preparedDescription = preparedDescription + "..."
+            }
+            else{
+                fontSize = "15px"
+            }
             
             returnTableRow.push(
                 <React.Fragment key={_id}>
-                <tr >
+                <tr style={{backgroundColor : backGroundColor}}>
                     <td>{itemDay !== null ? moment(itemDay).format('ll') : null}</td>
-                    <td>{description}</td>
+                    <td style={{fontSize}}>{preparedDescription}</td>
                     <td>{formatCost}</td>
                     {
                         state.isDisplayEditingMenu && (
@@ -156,3 +208,5 @@ export class CostTransactionTableBody extends Component {
         return returnTableRow
     }
 }
+
+export default (CostTransactionTableBody)
