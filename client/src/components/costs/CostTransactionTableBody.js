@@ -130,7 +130,7 @@ export class CostTransactionTableBody extends Component {
             }
 
             moment.locale('th')
-            backGroundColor = index == 0 ? backGroundColor : ""
+            backGroundColor = index === 0 ? backGroundColor : ""
 
             if(preparedDescription.length > 25){
                 preparedDescription = preparedDescription.substring(0,22)

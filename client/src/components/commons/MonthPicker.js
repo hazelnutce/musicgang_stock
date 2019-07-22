@@ -58,7 +58,7 @@ export class MonthPicker extends Component {
   }
 
   render() {
-    const disabled = this.props.disabled == true ? "disabled" : ""
+    const disabled = this.props.disabled === true ? "disabled" : ""
     return (
       <div>
         <h6>
