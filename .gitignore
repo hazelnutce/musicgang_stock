@@ -80,6 +80,7 @@ node.exe
 node.lib
 database/*
 database.json
+musicgang_stock-win32-x64
 
 package-lock.json
 .vscode

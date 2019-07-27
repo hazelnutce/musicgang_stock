@@ -13,7 +13,7 @@ let mainWindow;
 
 function createWindow() {
     // Create the browser window.
-    mainWindow = new BrowserWindow({width: 800, height: 600,autoHideMenuBar: true});
+    mainWindow = new BrowserWindow({width: 1600, height: 900, autoHideMenuBar: true});
 
     const startUrl = process.env.ELECTRON_START_URL || url.format({
         pathname: path.join(__dirname, '/server.html'),
@@ -24,7 +24,7 @@ function createWindow() {
     mainWindow.loadURL(startUrl);
     
     // Open the DevTools.
-    mainWindow.webContents.openDevTools();
+    //mainWindow.webContents.openDevTools();
     
     mainWindow.on("close", function(){
         mainWindow.webContents.send("stop-server")
