@@ -46,7 +46,7 @@ export class CostTransactionPage extends Component {
       )
     }
 
-    var filterStockInTransaction = stocksInTransaction.filter(x => x.itemCount !== 0)
+    var filterStockInTransaction = stocksInTransaction
     return (
         _.map(filterStockInTransaction,(stock) => {
             return(

@@ -16,7 +16,7 @@
         "electron": "set ELECTRON_START_URL=http://localhost:3000 && set NODE_ENV=development && electron .",
         "electron-production": "npm run build --prefix client && electron .",
         "electron-dev": "nf start",
-        "package": "npm run build --prefix client && electron-packager . musicgang_stock --overwrite"
+        "package": "electron-packager . musicgang_stock --overwrite"
     },
     "keywords": [
         "musicgang"
