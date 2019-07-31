@@ -3,6 +3,7 @@ import _ from 'lodash'
 import moment from 'moment'
 import {Link} from 'react-router-dom'
 import M from 'materialize-css'
+import EmptyTransactionNotice from '../commons/EmptyTransactionNotice';
 
 export class CostTransactionTableBody extends Component {
 
@@ -91,27 +92,6 @@ export class CostTransactionTableBody extends Component {
 
         filteredTransaction = filteredTransaction.sort(this.sortDayForTransaction)
         
-        if(costType === "Cost"){
-            filteredTransaction.unshift({
-                day: new Date(state.currentMonth / 12,state.currentMonth % 12, 1),
-                _id: this.guid(),
-                description: "รายจ่ายคลังสินค้าประจำเดือน",
-                formatCost: this.numberWithCommas(parseFloat(state.currentImportTotal).toFixed(2)),
-            })
-            backGroundColor = "#ef5350";
-            filteredTransaction = filteredTransaction.slice((state.currentCostPage - 1) * 20, state.currentCostPage * 20)
-        }
-        else if(costType === "Revenue"){
-            filteredTransaction.unshift({
-                day: new Date(state.currentMonth / 12,state.currentMonth % 12, 1),
-                _id: this.guid(),
-                description: "รายรับคลังสินค้าประจำเดือน",
-                formatCost: this.numberWithCommas(parseFloat(state.currentExportTotal).toFixed(2)),
-            })
-            backGroundColor = "#00e676";
-            filteredTransaction = filteredTransaction.slice((state.currentRevenuePage - 1) * 20, state.currentRevenuePage * 20)
-        }
-
         setTimeout(() => {
             this.initmodal()
         }, 200);
