@@ -19,7 +19,8 @@ import {addNewCostTransaction,
     editCostTransaction, 
     resetCostTransactionError, 
     getTotalImport,
-    getTotalExport} from '../../actions/costTransaction'
+    getTotalExport
+    } from '../../actions/costTransaction'
 
 import MomentLocaleUtils, {
     formatDate,
@@ -55,6 +56,7 @@ export class CostTransactionDetail extends Component {
       currentRevenuePage : 1,
       currentImportTotal: 0,
       currentExportTotal: 0,
+      currentMusicroomTotal: 0,
       isLoadingImportExportCost: false
     }
   }
@@ -348,11 +350,9 @@ renderPagination(filteredTransaction, type){
                 <div className="row">
                     <CostMonthlySummaryPanel color={"red lighten-1"} message={"รายจ่ายจากการนำเข้าสินค้า"} currentMonth={this.state.currentMonth} cost={this.state.currentImportTotal}/>
                     <CostMonthlySummaryPanel color={"green lighten-1"} message={"รายรับจากการนำออกสินค้า"} currentMonth={this.state.currentMonth} cost={this.state.currentExportTotal}/>
-                    <CostMonthlySummaryPanel color={"green lighten-1"} message={"รายรับจากห้องซ้อมดนตรี"} currentMonth={this.state.currentMonth} cost={0.0}/>
                 </div>
               )
           }
-          
           {this.state.isSelectAllRecord === true && this.state.isLoadingTransaction === false && (
                     <div className="row" style={{marginTop: "-20px"}}>
                         <div className="col x12 l12 m12 s12 center">
