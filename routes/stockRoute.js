@@ -1,7 +1,7 @@
 const requireLogin = require('../middleware/requireLogin');
 const guid = require('../services/guid')
 
-module.exports = (app, Db, Stock, Item) => {
+module.exports = (app, Db, Stock, Item, Category) => {
     app.get('/api/stock',requireLogin,(req,res) => {
         var results = Stock.find({_user: req.user.id.toString()})
         results.forEach((result) => {
@@ -14,7 +14,7 @@ module.exports = (app, Db, Stock, Item) => {
         res.send(results)
     })
 
-    app.get('/api/stock/stockName',requireLogin,(req,res) => {
+    app.get('/api/stock/stockName', requireLogin, (req,res) => {
         var result = Stock.find({_user: req.user.id.toString()},{stockName: 1,_id: 1})
         res.send(result)
     })
@@ -39,9 +39,20 @@ module.exports = (app, Db, Stock, Item) => {
         }
         newStock.tag.push(stockName)
 
+        var generalCategory = {
+            categoryNameTh: "ทั่วไป",
+            categoryNameEn: "General",
+            labelColor: "#000000",
+            textColor: "#ffffff",
+            _user: req.user.id.toString(),
+            stockName: stockName,
+            _id: guid()
+        }
+
         //save it
         try{
             await Stock.insert(newStock)
+            await Category.insert(generalCategory)
         }
         catch(e){
             console.log(e)
