@@ -5,6 +5,7 @@ module.exports = (app, Db, Stock, Item, Category) => {
     app.get('/api/stock',requireLogin,(req,res) => {
         var results = Stock.find({_user: req.user.id.toString()})
         results.forEach((result) => {
+            result.items = Item.find({_stock : result._id.toString()})
             result.itemCount = Item.find({_stock : result._id.toString()}).length
             result.itemWarning = Item.where((obj) => {
                 return obj.itemRemaining <= obj.itemWarning && obj._stock == result._id.toString() && obj.itemRemaining != 0;

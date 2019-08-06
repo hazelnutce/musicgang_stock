@@ -3,7 +3,6 @@ import _ from 'lodash'
 import moment from 'moment'
 import {Link} from 'react-router-dom'
 import M from 'materialize-css'
-import EmptyTransactionNotice from '../commons/EmptyTransactionNotice';
 
 export class CostTransactionTableBody extends Component {
 

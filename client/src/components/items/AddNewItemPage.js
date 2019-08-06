@@ -1,7 +1,6 @@
 import React, { Component } from 'react'
 import {reduxForm} from 'redux-form'
 import {connect} from 'react-redux'
-import {Link} from 'react-router-dom'
 import ReactNotification from "react-notifications-component";
 
 import {NewItemForm} from '../forms/newitem/NewItemForm'
