@@ -14,10 +14,12 @@ module.exports = (app, Db, Category, Item) => {
         const stock = await Category.findOne({
             '$or' : [{
                 categoryNameTh : categoryNameTh,
-                _user: req.user.id.toString()
+                _user: req.user.id.toString(),
+                stockName
             },{
                 categoryNameEn : categoryNameEn,
-                _user: req.user.id.toString()
+                _user: req.user.id.toString(),
+                stockName
             }]
         });
         if(stock){

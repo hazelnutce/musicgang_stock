@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import {Field} from 'redux-form';
 import _ from 'lodash'
+import {Link} from 'react-router-dom'
 
 import NewItemField from './NewItemField'
 import NewItemCheckbox from './NewItemCheckbox'
@@ -118,7 +119,19 @@ export class NewItemForm extends Component {
         </div>
           
         <div className="row" style={{position: "relative", top: "-20px"}}>
-          <h6>- หมวดหมู่สินค้า</h6>
+          <h6>
+            - หมวดหมู่สินค้า   
+            <span style={{position: "relative", left: "20px", fontSize: "12px"}}>
+              <Link 
+                to={{ pathname: "/categories/new", 
+                state: {
+                  stockName : this.props.stockName, 
+                  mode: "create", 
+                  currentStock: this.props.stockName} }} >
+                  <i className="material-icons right">add</i>เพิ่มหมวดหมู่สินค้า
+              </Link>
+            </span>
+          </h6>
         </div>
         <div className="row" style={{position: "relative", top: "-20px"}}>
           {!this.state.loadingCategory && (

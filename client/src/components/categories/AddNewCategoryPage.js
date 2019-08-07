@@ -120,7 +120,7 @@ export class AddNewCategoryPage extends Component {
                         </div>
                         <div className="row">
                             <button onClick={this.props.handleSubmit((values) => this.props.addCategory(values, this.props.history, this.props.location.state.mode))} className="col xl2 push-xl7 l2 push-l7 m3 push-m6 s5 push-s2 green modal-close waves-effect waves-light btn" style={{marginRight: "20px"}}><i className="material-icons right">add_circle</i>Confirm</button> 
-                            <Link to="/categories" className="col xl2 push-xl7 l2 push-l7 m3 push-m6 s5 push-s2 red modal-close waves-effect waves-light btn"><i className="material-icons right">cancel</i>Cancel</Link>
+                            <div onClick={() => this.props.history.goBack()} className="col xl2 push-xl7 l2 push-l7 m3 push-m6 s5 push-s2 red modal-close waves-effect waves-light btn"><i className="material-icons right">cancel</i>Cancel</div>
                         </div>
                         <ReactNotification ref={this.notificationDOMRef} onNotificationRemoval={() => {
                             this.props.resetCreateError()
