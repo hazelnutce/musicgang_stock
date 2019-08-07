@@ -1,8 +1,10 @@
 import React, { Component } from 'react'
 import {Field} from 'redux-form';
+import _ from 'lodash'
 
-import NewItemField from './NewItemField';
-import NewItemCategory from './NewItemCategory'
+import NewItemField from './NewItemField'
+import NewItemCheckbox from './NewItemCheckbox'
+import {LoaderSpinner} from '../../commons/LoaderSpinner'
 
 export class NewItemForm extends Component {
   constructor(props){
@@ -11,6 +13,25 @@ export class NewItemForm extends Component {
     this.state = {
       loadingCategory: false
     }
+  }
+
+  renderCategory(categories){
+    var query = (categories.filter((item) => item.stockName === this.props.stockName))
+
+    return _.map(query, category => {
+      return (
+        <Field 
+          key={category._id}
+          component={NewItemCheckbox}
+          name="category"
+          checkBoxLabel={category.categoryNameTh}
+          boxValue={category.categoryNameTh}
+          labelColor={category.labelColor}
+          textColor={category.textColor}
+        />
+
+      )
+    })
   }
 
   componentDidUpdate(prevProps){
@@ -29,6 +50,9 @@ export class NewItemForm extends Component {
     return (
       <div className="container-fluid">
         <div className="row">
+          <h6>- รายละเอียดสินค้า</h6>
+        </div>
+        <div className="row" style={{position: "relative", top: "-20px"}}>
           <Field 
               component={NewItemField} 
               name={"itemName"}
@@ -47,27 +71,8 @@ export class NewItemForm extends Component {
               faRequire={false}
           />
         </div>
-        <div className="row">
-          {!this.state.loadingCategory &&
-          <Field
-            component={NewItemCategory}
-            name="category"
-            type={"text"}
-            icon={"tag"}
-            keyLabel={"หมวดหมู่สินค้า"}
-            options={null}
-          />}
 
-          {this.state.loadingCategory &&
-          <Field
-            component={NewItemCategory}
-            name="category"
-            type={"text"}
-            icon={"tag"}
-            keyLabel={"หมวดหมู่สินค้า"}
-            options={this.flattenObject(this.props.category.categories)}
-          />}
-
+        <div className="row" style={{position: "relative", top: "-20px"}}>
           <Field 
               component={NewItemField}
               name="cost"
@@ -83,9 +88,8 @@ export class NewItemForm extends Component {
               }}
               inputmode="numeric"
           />
-        </div>
-        <div className="row">
-        <Field 
+
+          <Field 
             component={NewItemField}
             name="income"
             type={"text"}
@@ -99,17 +103,36 @@ export class NewItemForm extends Component {
               return val;
             }}
             inputmode="numeric"
-        />
+          />
+        </div>
 
-        <Field 
+        <div className="row" style={{position: "relative", top: "-20px"}}>
+          <Field 
             component={NewItemField}
             name="itemWarning"
             type={"number"}
             icon={"exclamation"}
             keyLabel={"จำนวนสินค้าที่ต้องแจ้งเตือน"}
             faRequire={true}
-        />
+          />
         </div>
+          
+        <div className="row" style={{position: "relative", top: "-20px"}}>
+          <h6>- หมวดหมู่สินค้า</h6>
+        </div>
+        <div className="row" style={{position: "relative", top: "-20px"}}>
+          {!this.state.loadingCategory && (
+            <div className="left">
+              <LoaderSpinner loading={this.state.loadingCategory} color={'#123abc'} doNotShift={true}/>
+            </div>
+            
+          )}
+
+          {this.state.loadingCategory && 
+            this.renderCategory(this.props.category.categories)
+          }
+        </div>
+        
       </div>
     )
   }

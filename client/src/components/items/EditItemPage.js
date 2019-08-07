@@ -56,7 +56,7 @@ export class EditItemPage extends Component {
     return (
         <div className="container" style={{position: "relative", top: "5px"}}>
             <div className="row">
-                <h5 className="col s12"><i className="material-icons">edit</i><span style={{marginLeft: "20px"}}>แก้ไขสินค้า</span></h5>
+                <h5 className="col s12"><i className="material-icons">edit</i><span style={{marginLeft: "20px"}}>แก้ไขสินค้า / คลัง : {stockName}</span></h5>
             </div>
             <div className="row" style={{position: "relative", bottom: "10px"}}>
               <EditItemForm category={category} stockName={stockName}/>
