@@ -1,6 +1,11 @@
 const requireLogin = require('../middleware/requireLogin')
 const guid = require('../services/guid')
 
+function checkNameAndYear(d1, d2) {
+    return d1.getMonth() === d2.getMonth() &&
+        d1.getFullYear() === d2.getFullYear();
+}
+
 module.exports = (app, Db, Musicroom) => {
     app.get('/api/musicroom',requireLogin,(req,res) => {
         var result = Musicroom.find({_user: req.user.id.toString()})
@@ -87,5 +92,28 @@ module.exports = (app, Db, Musicroom) => {
             res.status(500).send("รายการไม่ถูกต้อง กรุณาลองใหม่อีกครั้ง")
             return
         }
+    })
+
+    app.post('/api/musicroom/getTotalRevenue/:month',requireLogin, async (req,res) => {
+        const month = req.params.month
+
+        var currentYear = parseInt(month / 12)
+        var currentMonth = month % 12
+
+        var currentDateInstance = new Date(currentYear, currentMonth)
+
+        var result = Musicroom.where((obj) => {
+            return obj._user == req.user.id.toString() && checkNameAndYear(currentDateInstance, new Date(obj.day));
+        })
+
+        var resultTotal = 0
+
+        if(result.length > 0){
+            resultTotal = result.reduce(function(prev, cur) {
+                return prev + parseFloat(cur.formatPrice);
+            }, 0)
+        }
+
+        res.send(resultTotal.toString())
     })
 }

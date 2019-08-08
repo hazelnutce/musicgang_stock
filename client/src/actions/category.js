@@ -13,7 +13,7 @@ export const fetchCategory = () => async dispatch => {
 export const addCategory = (values, history, mode) => async dispatch => {
     if(mode === "create"){
         app.post('/api/category/new',values).then(async res => {
-            history.push('/categories')
+            history.goBack()
         }).catch(error => {
             if (error.response) {
                 dispatch({type: ERROR_CREATE_CATEGORY, payload: error.response.data})

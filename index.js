@@ -76,7 +76,7 @@ var coreApp = db.loadDatabase({}, function(err) {
 
         require('./routes/testingRoute')(app)
         require('./routes/authRoute')(app)
-        require('./routes/stockRoute')(app, db, Stock, Item)
+        require('./routes/stockRoute')(app, db, Stock, Item, Category)
         require('./routes/categoryRoute')(app, db, Category, Item)
         require('./routes/itemRoute')(app, db, Item, Category)
         require('./routes/transactionRoute')(app, db, Transaction, Stock, Item)

@@ -27,7 +27,9 @@ export class EditMusicroomTransaction extends Component {
         this.state = {
             selectedDay: this.props.location.state.itemDay,
             resetSignal: false,
-            editSignal: false
+            editSignal: false,
+            customPrice: "",
+            isSelectCustomPrice: false
         }
     }
 
@@ -46,7 +48,7 @@ export class EditMusicroomTransaction extends Component {
       }
 
     componentDidMount(){
-        const {endTime, startTime, isOverNight, isStudentDiscount, roomSize} = this.props.location.state
+        const {endTime, startTime, isOverNight, isStudentDiscount, roomSize, isSelectCustomPrice, formatPrice} = this.props.location.state
         this.setState({editSignal: true}, () => {
             this.props.initialize({
                 endTime,
@@ -55,6 +57,10 @@ export class EditMusicroomTransaction extends Component {
                 isOverNight,
                 isStudentDiscount
             })
+
+            if(isSelectCustomPrice === true){
+                this.setState({customPrice: formatPrice, isSelectCustomPrice: true})
+            }
         })
         setTimeout(() => {
             this.setState({editSignal: false})
@@ -122,12 +128,33 @@ export class EditMusicroomTransaction extends Component {
     editOneTransaction(values, history){
         let result = this.calculatePrice(values)
         const {_id} = this.props.location.state
+        let currentPrice = this.state.customPrice
 
         values.formatStartTime = `${parseInt(values.startTime / 60)}:${this.pad(values.startTime % 60, 2)}`
         values.formatEndTime = `${parseInt(values.endTime / 60)}:${this.pad(values.endTime % 60, 2)}`
         values.formatRoomsize = values.roomSize === "Small" ? "ห้องเล็ก" : "ห้องใหญ่"
         values.formatDiff = `${parseInt(result.diff/60)} ชม. ${parseInt(result.diff%60)} นาที`
-        values.formatPrice = `${this.numberWithCommas(parseFloat(result.price).toFixed(2))}`
+
+        if(this.state.isSelectCustomPrice === true){
+            values.isSelectCustomPrice = true
+            if(isNaN(parseFloat(currentPrice))){
+                if(currentPrice.slice(-1) === "."){
+                    let newPrice = currentPrice.substring(0, currentPrice.length - 1);
+                    values.formatPrice = `${this.numberWithCommas(parseFloat(newPrice).toFixed(2))}`
+                }
+                else{
+                    values.formatPrice = `0.00`
+                }
+            }
+            else{
+                values.formatPrice = `${this.numberWithCommas(parseFloat(currentPrice).toFixed(2))}`
+            }
+            
+        }
+        else{
+            values.formatPrice = `${this.numberWithCommas(parseFloat(result.price).toFixed(2))}`
+        }
+
         values._id = _id
         values.day = this.state.selectedDay
 
@@ -147,21 +174,89 @@ export class EditMusicroomTransaction extends Component {
         }
     }
 
+    handleTwoDecimalPoint(e){
+        e.preventDefault()
+        let {value} = e.target
+        if(value === ""){
+            this.setState({customPrice: ""})
+        }
+        else if((/^\d+\.?\d{0,2}$/.test(value))){
+            this.setState({customPrice: value})
+        }
+    }
+
     calculatePriceRoom = (diff, roomSize, isStudentDiscount) => {
         var price = 0
+
         if(roomSize === "Small"){
             price = diff * 3;
             if(isStudentDiscount === true){
                 price = price * 0.95
             }
-            return <h6>รวมราคา : {this.numberWithCommas(parseFloat(price).toFixed(2))} บาท</h6>
+            if(this.state.isSelectCustomPrice === true){
+                let labelClassName = ""
+                if(this.state.customPrice !== ""){
+                    labelClassName = "active"
+                }
+                return (
+                    <div className="row">
+                        <div className="input-field col s10 m6 l6 xl6">
+                            <i className="prefix"><FontAwesomeIcon icon={"dollar-sign"}/></i>
+                            <input value={this.state.customPrice} onChange={(e) => this.handleTwoDecimalPoint(e)} id={"ราคาห้องซ้อม"} type="text" autoComplete="off" className="validate"/>
+                            <label className={labelClassName} htmlFor={"ราคาห้องซ้อม"}>{"ราคาห้องซ้อม"}</label>
+                        </div>  
+                        <span className="input-field col s2 m2 l2 xl2" onClick={() => this.setState({isSelectCustomPrice: false})} style={{position: "relative", left: "20px", top: "20px" ,fontSize: "12px", cursor: "pointer", textDecoration: "underline", color: "#1c90d4"}}>
+                            คิดราคาตามปกติ
+                        </span>
+                    </div>
+                    
+                )
+            }
+            else{
+                return (
+                    <h6>
+                        รวมราคา : {this.numberWithCommas(parseFloat(price).toFixed(2))} บาท
+                        <span onClick={() => this.setState({isSelectCustomPrice: true})} style={{position: "relative", left: "20px", fontSize: "12px", cursor: "pointer", textDecoration: "underline", color: "#1c90d4"}}>
+                            ระบุราคาเอง
+                        </span>
+                    </h6>
+                )
+            }
         }
         else if(roomSize === "Large"){
             price = diff * 220 / 60;
             if(isStudentDiscount === true){
                 price = price * 0.95
             }
-            return <h6>รวมราคา : {this.numberWithCommas(parseFloat(price).toFixed(2))} บาท</h6>
+            if(this.state.isSelectCustomPrice === true){
+                let labelClassName = ""
+                if(this.state.customPrice !== ""){
+                    labelClassName = "active"
+                }
+                return (
+                    <div className="row">
+                        <div className="input-field col s10 m6 l6 xl6">
+                            <i className="prefix"><FontAwesomeIcon icon={"dollar-sign"}/></i>
+                            <input value={this.state.customPrice} onChange={(e) => this.handleTwoDecimalPoint(e)} id={"ราคาห้องซ้อม"} type="text" autoComplete="off" className="validate"/>
+                            <label className={labelClassName} htmlFor={"ราคาห้องซ้อม"}>{"ราคาห้องซ้อม"}</label>
+                        </div>  
+                        <span className="input-field col s2 m2 l2 xl2" onClick={() => this.setState({isSelectCustomPrice: false})} style={{position: "relative", left: "20px", top: "20px" ,fontSize: "12px", cursor: "pointer", textDecoration: "underline", color: "#1c90d4"}}>
+                            คิดราคาตามปกติ
+                        </span>
+                    </div>
+                    
+                )
+            }
+            else{
+                return (
+                    <h6>
+                        รวมราคา : {this.numberWithCommas(parseFloat(price).toFixed(2))} บาท
+                        <span onClick={() => this.setState({isSelectCustomPrice: true})} style={{position: "relative", left: "20px", fontSize: "12px", cursor: "pointer", textDecoration: "underline", color: "#1c90d4"}}>
+                            ระบุราคาเอง
+                        </span>
+                    </h6>
+                )
+            }
         }
         else{
             return(

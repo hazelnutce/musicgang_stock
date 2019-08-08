@@ -94,7 +94,7 @@ export class ItemPage extends Component {
                 item._category = this.props.allCategory.categories.filter(x => (x._id === item._category._id))[0]
             }
 
-            const {itemName, _category : {categoryNameTh, categoryNameEn, labelColor, textColor}, cost, revenue, formatCost, formatRevenue, itemWarning, itemRemaining} = item
+            const {itemName, _category : {categoryNameTh, labelColor, textColor}, cost, revenue, formatCost, formatRevenue, itemWarning, itemRemaining} = item
             return(
                     <tr key={item._id}>
                         <td>{itemName}</td>
@@ -106,7 +106,7 @@ export class ItemPage extends Component {
                         <td>{itemRemaining}</td>
                         <td>
                             <Link to={{ pathname: `/items/edit/${item._id}`, 
-                                state: { stockId, stockName, itemName, category: `${categoryNameTh}(${categoryNameEn})`, cost, revenue, itemWarning} }} 
+                                state: { stockId, stockName, itemName, category: `${categoryNameTh}`, cost, revenue, itemWarning} }} 
                                 className="material-icons black-text">edit
                             </Link>
                             <a className="modal-trigger" href={"#"+item._id}><i className="material-icons black-text">delete</i></a>

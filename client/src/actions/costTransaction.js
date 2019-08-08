@@ -47,6 +47,10 @@ export const getTotalExport = (month, stockId) => async dispatch => {
     return app.post(`/api/transaction/getTotalExport/${month}`, values)
 }
 
+export const getTotalMusicroom = (month) => async dispatch => {
+    return app.post(`/api/musicroom/getTotalRevenue/${month}`)
+}
+
 export const resetCostTransactionError = () => async dispatch => {
     dispatch({type: COST_TRANSACTION_ERROR, payload : null})
 }

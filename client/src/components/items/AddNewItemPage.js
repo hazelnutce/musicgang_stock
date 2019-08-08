@@ -1,7 +1,6 @@
 import React, { Component } from 'react'
 import {reduxForm} from 'redux-form'
 import {connect} from 'react-redux'
-import {Link} from 'react-router-dom'
 import ReactNotification from "react-notifications-component";
 
 import {NewItemForm} from '../forms/newitem/NewItemForm'
@@ -16,29 +15,6 @@ export class AddNewItemPage extends Component {
 
   componentDidMount = () => {
     this.props.fetchCategory()
-    const {itemName, category, cost, revenue, itemWarning, itemRemaining} = this.props.location.state
-    if(itemName != null && category != null && cost != null &&
-      revenue != null && itemWarning != null && itemRemaining != null)
-      {
-        var newitemName = itemName
-        if(!itemName.includes("#")){
-          newitemName = newitemName.concat(" #2");
-        }
-        else{
-          var stringArray = newitemName.split("#")
-          var newOrder = parseInt(stringArray[1])
-          newitemName = stringArray[0].trim().concat(` #${newOrder + 1}`);
-        }
-        this.props.initialize({
-          itemName : newitemName,
-          category,
-          cost,
-          income : revenue,
-          itemWarning,
-          initialItem: itemRemaining
-        })
-      }
-    
   }
 
   addNotification = (message) => {
@@ -61,6 +37,13 @@ export class AddNewItemPage extends Component {
         this.addNotification(this.props.createError)
       }
     }
+    if(this.props.category.categories !== prevProps.category.categories){
+      let stockName = this.props.history.location.state.stockName
+      let categories = this.props.category.categories.filter(item => item.stockName === stockName)
+      this.props.initialize({
+        category: categories[0].categoryNameTh
+      })
+    }
   }
   
   render() {
@@ -71,14 +54,14 @@ export class AddNewItemPage extends Component {
     return (
         <div className="container" style={{position: "relative", top: "5px"}}>
           <div className="row">
-            <h5>เพิ่มสินค้า</h5>
+            <h5>เพิ่มสินค้า / คลัง : {stockName}</h5>
           </div>
           <div className="row" style={{position: "relative", bottom: "10px"}}>
             <NewItemForm category={category} stockName={stockName}/>
           </div>
-          <div className="row">
-            <button onClick={this.props.handleSubmit((values) => this.props.addNewItems(values, stockId, stockName, history))} className="col xl2 push-xl7 l2 push-l7 m3 push-m6 s5 push-s2 green modal-close waves-effect waves-light btn" style={{marginRight: "20px"}}><i className="material-icons right">add_circle</i>Confirm</button> 
-            <Link to={{ state: {stockName}, pathname: `/items/${stockId}`}} className="col xl2 push-xl7 l2 push-l7 m3 push-m6 s5 push-s2 red modal-close waves-effect waves-light btn"><i className="material-icons right">cancel</i>Cancel</Link>
+          <div className="row" style={{position: "relative", bottom: "50px"}}>
+            <button onClick={this.props.handleSubmit((values) => this.props.addNewItems(values, stockId, stockName, history))} className="col xl2 push-xl7 l2 push-l7 m3 push-m6 s5 push-s2 green modal-close waves-effect waves-light btn" style={{marginRight: "20px"}}><i className="material-icons right">add_circle</i>Confirm</button>
+            <button onClick={() => this.props.history.goBack()} className="col xl2 push-xl7 l2 push-l7 m3 push-m6 s5 push-s2 red modal-close waves-effect waves-light btn"><i className="material-icons right">cancel</i>Cancel</button>
           </div>
           <ReactNotification ref={this.notificationDOMRef} onNotificationRemoval={() => {
               this.props.resetCreateError();

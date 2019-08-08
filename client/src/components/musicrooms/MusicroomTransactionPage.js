@@ -9,10 +9,12 @@ import M from 'materialize-css'
 import ReactNotification from "react-notifications-component";
 
 import {fetchTransaction, deleteMusicroomTransaction, resetMusicroomTransactionError} from '../../actions/musicroomTransaction'
+import {getTotalMusicroom} from '../../actions/costTransaction'
 import {LoaderSpinner} from '../commons/LoaderSpinner'
 import './main.css'
 import MusicroomTransactionTableHeader from './MusicroomTransactionTableHeader';
 import EmptyTransactionNotice from '../commons/EmptyTransactionNotice';
+import {CostMonthlySummaryPanel} from '../costs/CostMonthlySummaryPanel'
 
 const shiftLeft10 = {
     left: "10px",
@@ -38,7 +40,9 @@ export class MusicroomTransactionPage extends Component {
             loadingMusicroomRecord : false,
             isDisplayEditingMenu : false,
             currentSmallRoomPage : 1,
-            currentLargeRoomPage : 1
+            currentLargeRoomPage : 1,
+            currentMusicroomTotal : 0,
+            isLoadingTotalRevenue : false,
         }
     }
 
@@ -57,15 +61,33 @@ export class MusicroomTransactionPage extends Component {
       }
 
     handleAddMonth = () => {
-        this.setState({currentMonth: this.state.currentMonth + 1})
+        this.setState({isLoadingTotalRevenue: true})
+        let promiseMusicroom = this.props.getTotalMusicroom(this.state.currentMonth + 1)
+        Promise.all([promiseMusicroom]).then(values => {
+            this.setState({currentMonth: this.state.currentMonth + 1, 
+                currentMusicroomTotal: values[0].data,
+                isLoadingTotalRevenue: false})
+        })
     }
 
     handleMinusMonth = () => {
-        this.setState({currentMonth: this.state.currentMonth - 1})
+        this.setState({isLoadingTotalRevenue: true})
+        let promiseMusicroom = this.props.getTotalMusicroom(this.state.currentMonth - 1)
+        Promise.all([promiseMusicroom]).then(values => {
+            this.setState({currentMonth: this.state.currentMonth - 1, 
+                currentMusicroomTotal: values[0].data,
+                isLoadingTotalRevenue: false})
+        })
     }
 
     handleSetMonth = (integerMonth) => {
-        this.setState({currentMonth: integerMonth})
+        this.setState({isLoadingTotalRevenue: true})
+        let promiseMusicroom = this.props.getTotalMusicroom(integerMonth)
+        Promise.all([promiseMusicroom]).then(values => {
+            this.setState({currentMonth: integerMonth, 
+                currentMusicroomTotal: values[0].data,
+                isLoadingTotalRevenue: false})
+        })
     }
 
     handleCheckboxes = (buttonString) => {
@@ -103,6 +125,13 @@ export class MusicroomTransactionPage extends Component {
         M.Modal.init(elems, {
             opacity: 0.6
         }); 
+        this.setState({isLoadingTotalRevenue: true})
+        let promiseMusicroom = this.props.getTotalMusicroom(this.state.currentMonth)
+        Promise.all([promiseMusicroom]).then(values => {
+            this.setState({currentMonth: this.state.currentMonth, 
+                currentMusicroomTotal: values[0].data,
+                isLoadingTotalRevenue: false})
+        })
     }
 
     componentDidUpdate = (prevProps) => {
@@ -172,7 +201,7 @@ export class MusicroomTransactionPage extends Component {
         }, 250);
 
         return _.map(filteredTransaction, (item ,index) => {
-            var {formatDiff, formatEndTime, formatPrice, formatStartTime, _id, day, roomSize, isStudentDiscount, isOverNight, startTime, endTime} = item
+            var {formatDiff, formatEndTime, formatPrice, formatStartTime, _id, day, roomSize, isStudentDiscount, isOverNight, startTime, endTime, isSelectCustomPrice} = item
             var itemDay = new Date(day)
 
             var copiedItemDay = itemDay
@@ -184,7 +213,7 @@ export class MusicroomTransactionPage extends Component {
             }
 
             moment.locale('th')
-            
+
             return(
                 <tr key={_id}>
                     <td>{itemDay !== null ? moment(itemDay).format('ll') : null}</td>
@@ -196,7 +225,7 @@ export class MusicroomTransactionPage extends Component {
                         <td>
                             <div style={{display: "inline-block", marginRight: "10px", cursor: "pointer"}}>
                                 <Link to={{ pathname: `/musicrooms/edit`,
-                                    state: {itemDay: copiedItemDay, roomSize, isStudentDiscount, isOverNight, startTime, endTime, _id} }} 
+                                    state: {itemDay: copiedItemDay, roomSize, isStudentDiscount, isOverNight, startTime, endTime, _id, isSelectCustomPrice, formatPrice} }} 
                                     className="material-icons black-text">edit
                                 </Link>
                             </div>
@@ -227,7 +256,7 @@ export class MusicroomTransactionPage extends Component {
         }, 250);
 
         return _.map(filteredTransaction, (item, index) => {
-            var {formatDiff, formatEndTime, formatPrice, formatStartTime, _id, day, roomSize, isStudentDiscount, isOverNight, startTime, endTime} = item
+            var {formatDiff, formatEndTime, formatPrice, formatStartTime, _id, day, roomSize, isStudentDiscount, isOverNight, startTime, endTime, isSelectCustomPrice} = item
             var itemDay = new Date(day)
 
             var copiedItemDay = itemDay
@@ -251,7 +280,7 @@ export class MusicroomTransactionPage extends Component {
                         <td>
                             <div style={{display: "inline-block", marginRight: "10px", cursor: "pointer"}}>
                                 <Link to={{ pathname: `/musicrooms/edit`,
-                                    state: {itemDay: copiedItemDay, roomSize, isStudentDiscount, isOverNight, startTime, endTime, _id} }} 
+                                    state: {itemDay: copiedItemDay, roomSize, isStudentDiscount, isOverNight, startTime, endTime, _id, isSelectCustomPrice, formatPrice} }} 
                                     className="material-icons black-text">edit
                                 </Link>
                             </div>
@@ -442,8 +471,12 @@ export class MusicroomTransactionPage extends Component {
                                 handleAddMonth={this.handleAddMonth} 
                                 handleMinusMonth={this.handleMinusMonth} 
                                 handleSetMonth={this.handleSetMonth}
-                                currentMonth={this.state.currentMonth} 
+                                currentMonth={this.state.currentMonth}
+                                disabled={this.state.isLoadingTotalRevenue} 
                             />
+                        </div>
+                        <div className="row">
+                            <CostMonthlySummaryPanel color={"green lighten-1"} message={"รายรับจากห้องซ้อมดนตรี"} currentMonth={this.state.currentMonth} cost={this.state.currentMusicroomTotal}/>
                         </div>
                         <div className="col xl6 l6 m12 s12">
                                 <div className="col xl12 l12 m12 s12" style={{right: "5px", position: "relative"}}>
@@ -505,6 +538,7 @@ export class MusicroomTransactionPage extends Component {
                                 handleMinusMonth={this.handleMinusMonth} 
                                 handleSetMonth={this.handleSetMonth}
                                 currentMonth={this.state.currentMonth} 
+                                disabled={this.state.isLoadingTotalRevenue} 
                             />
                         </div>
                         <div className="col xl12 l12 m12 s12" style={{right: "5px", position: "relative"}}>
@@ -538,7 +572,8 @@ export class MusicroomTransactionPage extends Component {
                                 handleAddMonth={this.handleAddMonth} 
                                 handleMinusMonth={this.handleMinusMonth} 
                                 handleSetMonth={this.handleSetMonth}
-                                currentMonth={this.state.currentMonth} 
+                                currentMonth={this.state.currentMonth}
+                                disabled={this.state.isLoadingTotalRevenue} 
                             />
                         </div>
                         <div className="col xl12 l12 m12 s12" style={{right: "5px", position: "relative"}}>
@@ -582,4 +617,4 @@ function mapStateToProps(state){
     return {musicroom : state.musicroom}
 }
 
-export default connect(mapStateToProps, {fetchTransaction, deleteMusicroomTransaction, resetMusicroomTransactionError})(MusicroomTransactionPage)
+export default connect(mapStateToProps, {fetchTransaction, deleteMusicroomTransaction, resetMusicroomTransactionError, getTotalMusicroom})(MusicroomTransactionPage)

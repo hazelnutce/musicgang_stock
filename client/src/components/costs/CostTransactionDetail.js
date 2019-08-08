@@ -11,6 +11,7 @@ import {MonthPicker} from '../commons/MonthPicker'
 import {LoaderSpinner} from '../commons/LoaderSpinner'
 import {CostTransactionTableBody} from './CostTransactionTableBody'
 import ReactNotification from "react-notifications-component";
+import {CostMonthlySummaryPanel} from './CostMonthlySummaryPanel'
 
 import {addNewCostTransaction, 
     fetchTransaction, 
@@ -18,13 +19,15 @@ import {addNewCostTransaction,
     editCostTransaction, 
     resetCostTransactionError, 
     getTotalImport,
-    getTotalExport} from '../../actions/costTransaction'
+    getTotalExport
+    } from '../../actions/costTransaction'
 
 import MomentLocaleUtils, {
     formatDate,
     parseDate,
   } from 'react-day-picker/moment';
 import CostTransactionTableHeader from './CostTransactionTableHeader';
+import EmptyTransactionNotice from '../commons/EmptyTransactionNotice';
 
 const shiftLeft10 = {
   left: "10px",
@@ -53,6 +56,7 @@ export class CostTransactionDetail extends Component {
       currentRevenuePage : 1,
       currentImportTotal: 0,
       currentExportTotal: 0,
+      currentMusicroomTotal: 0,
       isLoadingImportExportCost: false
     }
   }
@@ -341,6 +345,14 @@ renderPagination(filteredTransaction, type){
                   </div>
               </div>
           </div>
+          {
+              this.state.isLoadingTransaction === false && (
+                <div className="row">
+                    <CostMonthlySummaryPanel color={"red lighten-1"} message={"รายจ่ายจากการนำเข้าสินค้า"} currentMonth={this.state.currentMonth} cost={this.state.currentImportTotal}/>
+                    <CostMonthlySummaryPanel color={"green lighten-1"} message={"รายรับจากการนำออกสินค้า"} currentMonth={this.state.currentMonth} cost={this.state.currentExportTotal}/>
+                </div>
+              )
+          }
           {this.state.isSelectAllRecord === true && this.state.isLoadingTransaction === false && (
                     <div className="row" style={{marginTop: "-20px"}}>
                         <div className="col x12 l12 m12 s12 center">
@@ -356,25 +368,31 @@ renderPagination(filteredTransaction, type){
                                 <div className="col xl12 l12 m12 s12" style={{right: "5px", position: "relative"}}>
                                     <h6>รายจ่าย</h6>
                                 </div>
-                                    <div className="col card small xl12 l12 m12 s12" style={{ height: "auto"}}>
-                                        <table className="highlight centered">
-                                            <thead>
-                                            <tr>
-                                                <CostTransactionTableHeader isDisplayEditingMenu={this.state.isDisplayEditingMenu} />
-                                            </tr>
-                                            </thead>
-                                            <tbody>
-                                                <CostTransactionTableBody 
-                                                    costType="Cost" 
-                                                    transactions={costTransactions} 
-                                                    state={this.state}
-                                                    stockId={stockId}
-                                                    deleteCostTransaction={this.props.deleteCostTransaction}
-                                                    editCostTransaction={this.props.editCostTransaction}
-                                                />
-                                            </tbody>
-                                        </table>
-                                    </div>
+                                    {costTransactions.length === 0 && (
+                                        <EmptyTransactionNotice message="ไม่มีค่าใช้จ่ายขณะนี้"/>
+                                    )}
+                                    {costTransactions.length !== 0 && (
+                                        <div className="col card small xl12 l12 m12 s12" style={{ height: "auto"}}>
+                                            <table className="highlight centered">
+                                                <thead>
+                                                <tr>
+                                                    <CostTransactionTableHeader isDisplayEditingMenu={this.state.isDisplayEditingMenu} />
+                                                </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <CostTransactionTableBody 
+                                                        costType="Cost" 
+                                                        transactions={costTransactions} 
+                                                        state={this.state}
+                                                        stockId={stockId}
+                                                        deleteCostTransaction={this.props.deleteCostTransaction}
+                                                        editCostTransaction={this.props.editCostTransaction}
+                                                    />
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    )}
+                                    
                             {this.renderPagination(costFilteredTransaction, "Cost")}
                         </div>
                         
@@ -382,6 +400,10 @@ renderPagination(filteredTransaction, type){
                             <div className="col xl12 l12 m12 s12" style={{left: "5px", position: "relative"}}>
                                 <h6>รายรับ</h6>
                             </div>
+                            {costTransactions.length === 0 && (
+                                        <EmptyTransactionNotice message="ไม่มีค่าใช้จ่ายขณะนี้"/>
+                             )}
+                             {costTransactions.length !== 0 && (
                                 <div className="col card small xl12 l12 m12 s12" style={{ height: "auto"}}>
                                     <table className="highlight centered">
                                     <thead>
@@ -402,6 +424,8 @@ renderPagination(filteredTransaction, type){
                                     </tbody>
                                     </table>
                                 </div>
+                             )}
+                                
                             {this.renderPagination(revenueFilteredTransaction, "Revenue")}
                         </div>
                         
@@ -421,25 +445,31 @@ renderPagination(filteredTransaction, type){
                     <div className="col xl12 l12 m12 s12" style={{right: "5px", position: "relative"}}>
                         <h6>รายจ่าย</h6>
                     </div>
-                        <div className="col card small xl12 l12 m12 s12" style={{ height: "auto"}}>
-                            <table className="highlight centered">
-                                <thead>
-                                <tr>
-                                    <CostTransactionTableHeader isDisplayEditingMenu={this.state.isDisplayEditingMenu} />
-                                </tr>
-                                </thead>
-                                <tbody>
-                                    <CostTransactionTableBody 
-                                        costType="Cost" 
-                                        transactions={costTransactions} 
-                                        state={this.state}
-                                        stockId={stockId}
-                                        deleteCostTransaction={this.props.deleteCostTransaction}
-                                        editCostTransaction={this.props.editCostTransaction}
-                                    />
-                                </tbody>
-                            </table>
-                        </div>
+                        {costTransactions.length === 0 && (
+                            <EmptyTransactionNotice message="ไม่มีค่าใช้จ่ายขณะนี้"/>
+                        )}
+                        {costTransactions.length !== 0 && (
+                            <div className="col card small xl12 l12 m12 s12" style={{ height: "auto"}}>
+                                <table className="highlight centered">
+                                    <thead>
+                                    <tr>
+                                        <CostTransactionTableHeader isDisplayEditingMenu={this.state.isDisplayEditingMenu} />
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                        <CostTransactionTableBody 
+                                            costType="Cost" 
+                                            transactions={costTransactions} 
+                                            state={this.state}
+                                            stockId={stockId}
+                                            deleteCostTransaction={this.props.deleteCostTransaction}
+                                            editCostTransaction={this.props.editCostTransaction}
+                                        />
+                                    </tbody>
+                                </table>
+                            </div>
+                        )}
+                        
                     {this.renderPagination(costFilteredTransaction, "Cost")}
                 </div>
             )}
@@ -457,6 +487,10 @@ renderPagination(filteredTransaction, type){
                     <div className="col xl12 l12 m12 s12" style={{right: "5px", position: "relative"}}>
                         <h6>รายรับ</h6>
                     </div>
+                    {costTransactions.length === 0 && (
+                        <EmptyTransactionNotice message="ไม่มีค่าใช้จ่ายขณะนี้"/>
+                    )}
+                    {costTransactions.length !== 0 && (
                         <div className="col card small xl12 l12 m12 s12" style={{ height: "auto"}}>
                             <table className="highlight centered">
                             <thead>
@@ -477,6 +511,8 @@ renderPagination(filteredTransaction, type){
                             </tbody>
                             </table>
                         </div>
+                    )}
+                        
                     {this.renderPagination(revenueFilteredTransaction, "Revenue")}
                 </div>
             )}
