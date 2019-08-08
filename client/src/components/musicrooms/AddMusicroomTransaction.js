@@ -232,7 +232,6 @@ export class AddMusicroomTransaction extends Component {
       }
 
     calculatePriceRoom = (diff, roomSize, isStudentDiscount) => {
-        console.log(this.state.isSelectCustomPrice)
         var price = 0
         if(roomSize === "Small"){
             price = diff * 3;
@@ -240,12 +239,16 @@ export class AddMusicroomTransaction extends Component {
                 price = price * 0.95
             }
             if(this.state.isSelectCustomPrice === true){
+                let labelClassName = ""
+                if(this.state.customPrice !== ""){
+                    labelClassName = "active"
+                }
                 return (
                     <div className="row">
                         <div className="input-field col s10 m6 l6 xl6">
                             <i className="prefix"><FontAwesomeIcon icon={"dollar-sign"}/></i>
                             <input value={this.state.customPrice} onChange={(e) => this.handleTwoDecimalPoint(e)} id={"ราคาห้องซ้อม"} type="text" autoComplete="off" className="validate"/>
-                            <label htmlFor={"ราคาห้องซ้อม"}>{"ราคาห้องซ้อม"}</label>
+                            <label className={labelClassName} htmlFor={"ราคาห้องซ้อม"}>{"ราคาห้องซ้อม"}</label>
                         </div>  
                         <span className="input-field col s2 m2 l2 xl2" onClick={() => this.setState({isSelectCustomPrice: false})} style={{position: "relative", left: "20px", top: "20px" ,fontSize: "12px", cursor: "pointer", textDecoration: "underline", color: "#1c90d4"}}>
                             คิดราคาตามปกติ
@@ -267,6 +270,10 @@ export class AddMusicroomTransaction extends Component {
             
         }
         else if(roomSize === "Large"){
+            let labelClassName = ""
+                if(this.state.customPrice !== ""){
+                    labelClassName = "active"
+                }
             price = diff * 220 / 60;
             if(isStudentDiscount === true){
                 price = price * 0.95
@@ -277,7 +284,7 @@ export class AddMusicroomTransaction extends Component {
                         <div className="input-field col s10 m6 l6 xl6">
                             <i className="prefix"><FontAwesomeIcon icon={"dollar-sign"}/></i>
                             <input value={this.state.customPrice} onChange={(e) => this.handleTwoDecimalPoint(e)} id={"ราคาห้องซ้อม"} type="number" autoComplete="off" className="validate"/>
-                            <label htmlFor={"ราคาห้องซ้อม"}>{"ราคาห้องซ้อม"}</label>
+                            <label className={labelClassName} htmlFor={"ราคาห้องซ้อม"}>{"ราคาห้องซ้อม"}</label>
                         </div>  
                         <span className="input-field col s2 m2 l2 xl2" onClick={() => this.setState({isSelectCustomPrice: false})} style={{position: "relative", left: "20px", top: "20px" ,fontSize: "12px", cursor: "pointer", textDecoration: "underline", color: "#1c90d4"}}>
                             คิดราคาตามปกติ

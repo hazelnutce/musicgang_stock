@@ -201,7 +201,7 @@ export class MusicroomTransactionPage extends Component {
         }, 250);
 
         return _.map(filteredTransaction, (item ,index) => {
-            var {formatDiff, formatEndTime, formatPrice, formatStartTime, _id, day, roomSize, isStudentDiscount, isOverNight, startTime, endTime} = item
+            var {formatDiff, formatEndTime, formatPrice, formatStartTime, _id, day, roomSize, isStudentDiscount, isOverNight, startTime, endTime, isSelectCustomPrice} = item
             var itemDay = new Date(day)
 
             var copiedItemDay = itemDay
@@ -213,7 +213,7 @@ export class MusicroomTransactionPage extends Component {
             }
 
             moment.locale('th')
-            
+
             return(
                 <tr key={_id}>
                     <td>{itemDay !== null ? moment(itemDay).format('ll') : null}</td>
@@ -225,7 +225,7 @@ export class MusicroomTransactionPage extends Component {
                         <td>
                             <div style={{display: "inline-block", marginRight: "10px", cursor: "pointer"}}>
                                 <Link to={{ pathname: `/musicrooms/edit`,
-                                    state: {itemDay: copiedItemDay, roomSize, isStudentDiscount, isOverNight, startTime, endTime, _id} }} 
+                                    state: {itemDay: copiedItemDay, roomSize, isStudentDiscount, isOverNight, startTime, endTime, _id, isSelectCustomPrice, formatPrice} }} 
                                     className="material-icons black-text">edit
                                 </Link>
                             </div>
@@ -256,7 +256,7 @@ export class MusicroomTransactionPage extends Component {
         }, 250);
 
         return _.map(filteredTransaction, (item, index) => {
-            var {formatDiff, formatEndTime, formatPrice, formatStartTime, _id, day, roomSize, isStudentDiscount, isOverNight, startTime, endTime} = item
+            var {formatDiff, formatEndTime, formatPrice, formatStartTime, _id, day, roomSize, isStudentDiscount, isOverNight, startTime, endTime, isSelectCustomPrice} = item
             var itemDay = new Date(day)
 
             var copiedItemDay = itemDay
@@ -280,7 +280,7 @@ export class MusicroomTransactionPage extends Component {
                         <td>
                             <div style={{display: "inline-block", marginRight: "10px", cursor: "pointer"}}>
                                 <Link to={{ pathname: `/musicrooms/edit`,
-                                    state: {itemDay: copiedItemDay, roomSize, isStudentDiscount, isOverNight, startTime, endTime, _id} }} 
+                                    state: {itemDay: copiedItemDay, roomSize, isStudentDiscount, isOverNight, startTime, endTime, _id, isSelectCustomPrice, formatPrice} }} 
                                     className="material-icons black-text">edit
                                 </Link>
                             </div>
