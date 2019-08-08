@@ -32,7 +32,9 @@ export class AddMusicroomTransaction extends Component {
             lastCurrentAction: "create",
             currentItemId: null,
             resetSignal: false,
-            editSignal: false
+            editSignal: false,
+            customPrice: "",
+            isSelectCustomPrice: false
         }
     }
 
@@ -135,20 +137,23 @@ export class AddMusicroomTransaction extends Component {
         this.setState({lastCurrentAction: action, currentItemId: item != null ? item._id : null})
         
         if(action === "create"){
-            this.setState({resetSignal: true}, () => {
-                this.props.initialize({
-                    startTime: -1,
-                    endTime: -1,
-                    roomSize: "Small",
-                    isOverNight: false,
-                    isStudentDiscount: false
-                })
-            })
+                this.setState({resetSignal: true}, () => {
+                    this.props.initialize({
+                        startTime: -1,
+                        endTime: -1,
+                        roomSize: "Small",
+                        isOverNight: false,
+                        isStudentDiscount: false
+                    })
 
-            setTimeout(() => {
-                this.setState({resetSignal: false})
-            }, 250)
+                this.setState({isSelectCustomPrice: false, customPrice: ""})
+
+                setTimeout(() => {
+                    this.setState({resetSignal: false})
+                }, 250)
+            })
         }
+
         else if(action === "edit"){
             this.setState({editSignal: true}, () => {
                 this.props.initialize({
@@ -159,6 +164,10 @@ export class AddMusicroomTransaction extends Component {
                     isStudentDiscount: item.isStudentDiscount
                 })
             })
+
+            if(item.isSelectCustomPrice === true){
+                this.setState({isSelectCustomPrice: true, customPrice: item.formatPrice})
+            }
 
             setTimeout(() => {
                 this.setState({editSignal: false})
@@ -202,6 +211,17 @@ export class AddMusicroomTransaction extends Component {
         }); 
     }
 
+    handleTwoDecimalPoint(e){
+        e.preventDefault()
+        let {value} = e.target
+        if(value === ""){
+            this.setState({customPrice: ""})
+        }
+        else if((/^\d+\.?\d{0,2}$/.test(value))){
+            this.setState({customPrice: value})
+        }
+    }
+
     numberWithCommas(x) {
         if(x != null){
           var parts = x.toString().split(".");
@@ -212,20 +232,70 @@ export class AddMusicroomTransaction extends Component {
       }
 
     calculatePriceRoom = (diff, roomSize, isStudentDiscount) => {
+        console.log(this.state.isSelectCustomPrice)
         var price = 0
         if(roomSize === "Small"){
             price = diff * 3;
             if(isStudentDiscount === true){
                 price = price * 0.95
             }
-            return <h6>รวมราคา : {this.numberWithCommas(parseFloat(price).toFixed(2))} บาท</h6>
+            if(this.state.isSelectCustomPrice === true){
+                return (
+                    <div className="row">
+                        <div className="input-field col s10 m6 l6 xl6">
+                            <i className="prefix"><FontAwesomeIcon icon={"dollar-sign"}/></i>
+                            <input value={this.state.customPrice} onChange={(e) => this.handleTwoDecimalPoint(e)} id={"ราคาห้องซ้อม"} type="text" autoComplete="off" className="validate"/>
+                            <label htmlFor={"ราคาห้องซ้อม"}>{"ราคาห้องซ้อม"}</label>
+                        </div>  
+                        <span className="input-field col s2 m2 l2 xl2" onClick={() => this.setState({isSelectCustomPrice: false})} style={{position: "relative", left: "20px", top: "20px" ,fontSize: "12px", cursor: "pointer", textDecoration: "underline", color: "#1c90d4"}}>
+                            คิดราคาตามปกติ
+                        </span>
+                    </div>
+                    
+                )
+            }
+            else{
+                return (
+                    <h6>
+                        รวมราคา : {this.numberWithCommas(parseFloat(price).toFixed(2))} บาท
+                        <span onClick={() => this.setState({isSelectCustomPrice: true})} style={{position: "relative", left: "20px", fontSize: "12px", cursor: "pointer", textDecoration: "underline", color: "#1c90d4"}}>
+                            ระบุราคาเอง
+                        </span>
+                    </h6>
+                )
+            }
+            
         }
         else if(roomSize === "Large"){
             price = diff * 220 / 60;
             if(isStudentDiscount === true){
                 price = price * 0.95
             }
-            return <h6>รวมราคา : {this.numberWithCommas(parseFloat(price).toFixed(2))} บาท</h6>
+            if(this.state.isSelectCustomPrice === true){
+                return (
+                    <div className="row">
+                        <div className="input-field col s10 m6 l6 xl6">
+                            <i className="prefix"><FontAwesomeIcon icon={"dollar-sign"}/></i>
+                            <input value={this.state.customPrice} onChange={(e) => this.handleTwoDecimalPoint(e)} id={"ราคาห้องซ้อม"} type="number" autoComplete="off" className="validate"/>
+                            <label htmlFor={"ราคาห้องซ้อม"}>{"ราคาห้องซ้อม"}</label>
+                        </div>  
+                        <span className="input-field col s2 m2 l2 xl2" onClick={() => this.setState({isSelectCustomPrice: false})} style={{position: "relative", left: "20px", top: "20px" ,fontSize: "12px", cursor: "pointer", textDecoration: "underline", color: "#1c90d4"}}>
+                            คิดราคาตามปกติ
+                        </span>
+                    </div>
+                )
+            }
+            else{
+                return (
+                    <h6>
+                        รวมราคา : {this.numberWithCommas(parseFloat(price).toFixed(2))} บาท
+                        <span onClick={() => this.setState({isSelectCustomPrice: true})} style={{position: "relative", left: "20px", fontSize: "12px", cursor: "pointer", textDecoration: "underline", color: "#1c90d4"}}>
+                            ระบุราคาเอง
+                        </span>
+                    </h6>
+                )
+            }
+            
         }
         else{
             return(
@@ -286,6 +356,7 @@ export class AddMusicroomTransaction extends Component {
 
     addOneMusicroomTransaction = (values) => {
         if(this.state.lastCurrentAction === "create"){
+            values.isSelectCustomPrice = false
             this.props.reset()
 
             this.setState({resetSignal: true})
@@ -294,18 +365,38 @@ export class AddMusicroomTransaction extends Component {
             }, 250)
 
             let result = this.calculatePrice(values)
+            let currentPrice = this.state.customPrice
 
             values._id = this.guid()
             values.formatStartTime = `${parseInt(values.startTime / 60)}:${this.pad(values.startTime % 60, 2)}`
             values.formatEndTime = `${parseInt(values.endTime / 60)}:${this.pad(values.endTime % 60, 2)}`
             values.formatRoomsize = values.roomSize === "Small" ? "ห้องเล็ก" : "ห้องใหญ่"
             values.formatDiff = `${parseInt(result.diff/60)} ชม. ${parseInt(result.diff%60)} นาที`
-            values.formatPrice = `${this.numberWithCommas(parseFloat(result.price).toFixed(2))}`
-
+            if(this.state.isSelectCustomPrice === true){
+                values.isSelectCustomPrice = true
+                if(isNaN(parseFloat(currentPrice))){
+                    if(currentPrice.slice(-1) === "."){
+                        let newPrice = currentPrice.substring(0, currentPrice.length - 1);
+                        values.formatPrice = `${this.numberWithCommas(parseFloat(newPrice).toFixed(2))}`
+                    }
+                    else{
+                        values.formatPrice = `0.00`
+                    }
+                }
+                else{
+                    values.formatPrice = `${this.numberWithCommas(parseFloat(currentPrice).toFixed(2))}`
+                }
+                
+            }
+            else{
+                values.formatPrice = `${this.numberWithCommas(parseFloat(result.price).toFixed(2))}`
+            }
+           
             //set state with new value
             this.setState({allRecordedItem: [...this.state.allRecordedItem, values]})
         }
         else if(this.state.lastCurrentAction === "edit"){
+            values.isSelectCustomPrice = false
             this.props.reset()
             this.setState({resetSignal: true})
             setTimeout(() => {
@@ -317,13 +408,32 @@ export class AddMusicroomTransaction extends Component {
             var arrayIndex = currentItem.findIndex(obj => obj._id === this.state.currentItemId)
 
             let result = this.calculatePrice(values)
+            let currentPrice = this.state.customPrice
 
             values._id = this.guid()
             values.formatStartTime = `${parseInt(values.startTime / 60)}:${this.pad(values.startTime % 60, 2)}`
             values.formatEndTime = `${parseInt(values.endTime / 60)}:${this.pad(values.endTime % 60, 2)}`
             values.formatRoomsize = values.roomSize === "Small" ? "ห้องเล็ก" : "ห้องใหญ่"
             values.formatDiff = `${parseInt(result.diff/60)} ชม. ${parseInt(result.diff%60)} นาที`
-            values.formatPrice = `${this.numberWithCommas(parseFloat(result.price).toFixed(2))}`
+            if(this.state.isSelectCustomPrice === true){
+                values.isSelectCustomPrice = true
+                if(isNaN(parseFloat(currentPrice))){
+                    if(currentPrice.slice(-1) === "."){
+                        let newPrice = currentPrice.substring(0, currentPrice.length - 1);
+                        values.formatPrice = `${this.numberWithCommas(parseFloat(newPrice).toFixed(2))}`
+                    }
+                    else{
+                        values.formatPrice = `0.00`
+                    }
+                }
+                else{
+                    values.formatPrice = `${this.numberWithCommas(parseFloat(currentPrice).toFixed(2))}`
+                }
+                
+            }
+            else{
+                values.formatPrice = `${this.numberWithCommas(parseFloat(result.price).toFixed(2))}`
+            }
             
             currentItem[arrayIndex] = values
 

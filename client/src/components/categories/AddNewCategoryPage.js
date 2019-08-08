@@ -1,6 +1,5 @@
 import React, { Component } from 'react'
 import {reduxForm, formValueSelector} from 'redux-form'
-import {Link} from 'react-router-dom'
 import M from 'materialize-css'
 import {connect} from 'react-redux'
 import ReactNotification from "react-notifications-component";
