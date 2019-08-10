@@ -22,8 +22,8 @@ export const fetchStock = () => async dispatch => {
     dispatch({type: ADD_STOCK, payload: res.data})
 }
 
-export const deleteStock = (stockId) => async dispatch => {
-    await app.delete(`/api/stock/delete/${stockId}`);
+export const deleteStock = (stockId, stockName) => async dispatch => {
+    await app.post(`/api/stock/delete/${stockId}`, {stockName});
     const res = await app.get('/api/stock');
     dispatch({type: ADD_STOCK, payload: res.data})
 }
