@@ -195,6 +195,23 @@ export class MusicroomTransactionPage extends Component {
           d1.getDate() === d2.getDate();
     }
 
+    refreshTotalMusicroomTransaction = () => {
+        this.setState({isLoadingTotalRevenue: true})
+        let promiseMusicroom = this.props.getTotalMusicroom(this.state.currentMonth)
+        Promise.all([promiseMusicroom]).then(values => {
+            this.setState({currentMonth: this.state.currentMonth, 
+                currentMusicroomTotal: values[0].data,
+                isLoadingTotalRevenue: false})
+        })
+    }
+
+    deleteMusicroomTransaction = async (itemId) => {
+        this.props.deleteMusicroomTransaction(itemId)
+        setTimeout(() => {
+            this.refreshTotalMusicroomTransaction()
+        }, 500);
+    }
+
     renderSmallroomRecord(filteredTransaction){
         setTimeout(() => {
             this.initModal()
@@ -240,7 +257,7 @@ export class MusicroomTransactionPage extends Component {
                                 <p>คุณต้องการจะลบรายการห้องซ้อมนี้ใช่หรือไม่ ?</p>
                             </div>
                             <div className="modal-footer">
-                                <button className="green modal-close waves-effect waves-light btn" onClick={() => this.props.deleteMusicroomTransaction(item._id)} style={{position: "relative", right: "20px"}}><i className="material-icons right">add_circle</i>ยืนยัน</button> 
+                                <button className="green modal-close waves-effect waves-light btn" onClick={() => this.deleteMusicroomTransaction(item._id)} style={{position: "relative", right: "20px"}}><i className="material-icons right">add_circle</i>ยืนยัน</button> 
                                 <button className="red modal-close waves-effect waves-light btn"><i className="material-icons right">cancel</i>ยกเลิก</button>
                             </div>
                         </div> 
