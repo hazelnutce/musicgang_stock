@@ -57,9 +57,11 @@ export class CostTransactionTableBody extends Component {
     sortDayForTransaction = (a,b) => {
         var newADay = new Date(a.day)
         var newBDay = new Date(b.day)
-        if(newADay < newBDay)
+        var newATime = newADay.getTime()
+        var newBTime = newBDay.getTime()
+        if(newATime < newBTime)
             return -1
-        if(newADay > newBDay)
+        if(newATime > newBTime)
             return 1
         return 0
     }
