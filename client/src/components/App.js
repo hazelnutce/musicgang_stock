@@ -36,6 +36,7 @@ import EditTransaction from './transaction/EditTransaction'
 import MusicroomTransactionPage from './musicrooms/MusicroomTransactionPage'
 import AddMusicroomTransaction from './musicrooms/AddMusicroomTransaction'
 import EditMusicroomTransaction from "./musicrooms/EditMusicroomTransaction";
+import ViewMusicroomTransaction from './musicrooms/ViewMusicroomTransaction'
 import CostTransactionPage from './costs/CostTransactionPage'
 import CostTransactionDetailPage from './costs/CostTransactionDetail'
 import EditCostTransaction from './costs/EditCostTransaction'
@@ -71,6 +72,7 @@ class App extends Component {
                 <Route exact path="/transactions/edit" component={EditTransaction}></Route>
                 <Route exact path="/musicrooms" component={MusicroomTransactionPage}></Route>
                 <Route exact path="/musicrooms/new" component={AddMusicroomTransaction}></Route>
+                <Route exact path="/musicrooms/view" component={ViewMusicroomTransaction}></Route>
                 <Route exact path="/musicrooms/edit" component={EditMusicroomTransaction}></Route>
                 <Route exact path="/costs" component={CostTransactionPage}></Route>
                 <Route exact path="/costs/detail" component={CostTransactionDetailPage}></Route>

@@ -232,11 +232,17 @@ export class MusicroomTransactionPage extends Component {
             }
 
             moment.locale('th')
+            let formatStartAndEndTime = formatStartTime + "-" + formatEndTime
 
             return(
                 <tr key={_id}>
                     <td>{itemDay !== null ? moment(itemDay).format('ll') : null}</td>
-                    <td>{formatStartTime + "-" + formatEndTime}</td>
+                    <td>
+                        <Link to={{pathname: `/musicrooms/view`,
+                                state: {itemDay: copiedItemDay, formatDiff, formatStartAndEndTime, roomSize, isStudentDiscount, isOverNight, startTime, endTime, _id, isSelectCustomPrice, formatPrice} }}>
+                            {formatStartAndEndTime}
+                        </Link>
+                    </td>
                     <td>{formatDiff}</td>
                     <td>{formatPrice}</td>
                     {
@@ -291,7 +297,12 @@ export class MusicroomTransactionPage extends Component {
             return(
                 <tr key={_id}>
                     <td>{itemDay !== null ? moment(itemDay).format('ll') : null}</td>
-                    <td>{formatStartTime + "-" + formatEndTime}</td>
+                    <td>
+                        <Link to={{pathname: `/musicrooms/view`,
+                                state: {itemDay: copiedItemDay, roomSize, isStudentDiscount, isOverNight, startTime, endTime, _id, isSelectCustomPrice, formatPrice} }}>
+                            {formatStartTime + "-" + formatEndTime}
+                        </Link>
+                    </td>
                     <td>{formatDiff}</td>
                     <td>{formatPrice}</td>
                     {
