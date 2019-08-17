@@ -459,7 +459,6 @@ export class MusicroomTransactionPage extends Component {
         if(musicroomTransactions != null){
             var smallRoomFilteredTransaction = musicroomTransactions.filter(x => x.roomSize === "Small" && this.isSameMonth(new Date(x.day), this.handleMonthFilter(this.state.currentMonth)))
             this.prepareOvernightItem(smallRoomFilteredTransaction)
-            console.log(smallRoomFilteredTransaction)
             smallRoomFilteredTransaction = smallRoomFilteredTransaction.sort(this.sortDayForTransaction)
             var slicedSmallRoomFilteredTransaction = smallRoomFilteredTransaction.slice((this.state.currentSmallRoomPage - 1) * 20, this.state.currentSmallRoomPage * 20)
 

@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import {PropagateLoader} from 'react-spinners'
 import {ViewHeader} from '../commons/ViewHeader'
 import {ViewGeneralBody} from '../commons/ViewGeneralBody'
-import {getMusicroomTransaction} from '../../actions/musicroomTransaction'
+import {getMusicroomTransaction, deleteMusicroomTransaction} from '../../actions/musicroomTransaction'
 import {connect} from 'react-redux'
 import moment from 'moment'
 
@@ -73,8 +73,13 @@ export class ViewMusicroomTransaction extends Component {
                 <ViewHeader 
                         headerTopic={"รายละเอียดห้องซ้อม"} 
                         editDestination={"/musicrooms/edit"} 
-                        editState={{itemDay: new Date(day), roomSize, isStudentDiscount, isOverNight, startTime, endTime, _id, isSelectCustomPrice, formatPrice}}/>
+                        editState={{itemDay: new Date(day), roomSize, isStudentDiscount, isOverNight, startTime, endTime, _id, isSelectCustomPrice, formatPrice}}
+                        deletedId={_id}
+                        historyInstance={this.props.history}
+                        deleteMusicroomTransaction={this.props.deleteMusicroomTransaction} >
+                </ViewHeader>
                 {this.renderLoader(this.state.isLoadingRecord)}
+                 
             </div>
         )
     }
@@ -84,4 +89,4 @@ function mapStateToProps(state){
     return {currentRecord : state.musicroom.currentMusicroomTransaction}
 }
 
-export default connect(mapStateToProps, {getMusicroomTransaction})(ViewMusicroomTransaction)
+export default connect(mapStateToProps, {getMusicroomTransaction, deleteMusicroomTransaction})(ViewMusicroomTransaction)

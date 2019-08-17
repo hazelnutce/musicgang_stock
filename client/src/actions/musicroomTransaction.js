@@ -18,9 +18,12 @@ export const addNewMusicroomTransaction = (values, history) => async dispatch =>
     })
 }
 
-export const deleteMusicroomTransaction = (id) => async dispatch => {
+export const deleteMusicroomTransaction = (id, history = null) => async dispatch => {
     app.delete('/api/musicroom/delete/' + id).then(async (res) => {
         dispatch({type: FETCH_MUSICROOM_TRANSACTION, payload: res.data})
+        if(history !== null){
+            history.goBack()
+        }
     }).catch(error => {
         if (error.response) {
             dispatch({type: MUSICROOM_TRANSACTION_ERROR, payload: error.response.data})
