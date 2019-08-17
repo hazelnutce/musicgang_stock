@@ -1,5 +1,6 @@
 import {MUSICROOM_TRANSACTION_ERROR,
-        FETCH_MUSICROOM_TRANSACTION} from './types'
+        FETCH_MUSICROOM_TRANSACTION,
+        GET_MUSICROOM_TRANSACTION} from './types'
 import { app } from './axiosConfig';
 
 export const fetchTransaction = () => async dispatch => {
@@ -30,6 +31,16 @@ export const deleteMusicroomTransaction = (id) => async dispatch => {
 export const editMusicroomTransaction = (values, history) => async dispatch => {
     app.post(`/api/musicroom/edit`,values).then(async res => {
         history.goBack()
+    }).catch(error => {
+        if (error.response) {
+            dispatch({type: MUSICROOM_TRANSACTION_ERROR, payload: error.response.data})
+        }
+    })
+}
+
+export const getMusicroomTransaction = (recordId, history) => async dispatch => {
+    app.post(`/api/musicroom/get`,{recordId}).then(async res => {
+        dispatch({type: GET_MUSICROOM_TRANSACTION, payload: res.data})
     }).catch(error => {
         if (error.response) {
             dispatch({type: MUSICROOM_TRANSACTION_ERROR, payload: error.response.data})

@@ -239,7 +239,7 @@ export class MusicroomTransactionPage extends Component {
                     <td>{itemDay !== null ? moment(itemDay).format('ll') : null}</td>
                     <td>
                         <Link to={{pathname: `/musicrooms/view`,
-                                state: {itemDay: copiedItemDay, formatDiff, formatStartAndEndTime, roomSize, isStudentDiscount, isOverNight, startTime, endTime, _id, isSelectCustomPrice, formatPrice} }}>
+                                state: {_id} }}>
                             {formatStartAndEndTime}
                         </Link>
                     </td>
@@ -299,7 +299,7 @@ export class MusicroomTransactionPage extends Component {
                     <td>{itemDay !== null ? moment(itemDay).format('ll') : null}</td>
                     <td>
                         <Link to={{pathname: `/musicrooms/view`,
-                                state: {itemDay: copiedItemDay, roomSize, isStudentDiscount, isOverNight, startTime, endTime, _id, isSelectCustomPrice, formatPrice} }}>
+                                state: {_id} }}>
                             {formatStartTime + "-" + formatEndTime}
                         </Link>
                     </td>
@@ -459,6 +459,7 @@ export class MusicroomTransactionPage extends Component {
         if(musicroomTransactions != null){
             var smallRoomFilteredTransaction = musicroomTransactions.filter(x => x.roomSize === "Small" && this.isSameMonth(new Date(x.day), this.handleMonthFilter(this.state.currentMonth)))
             this.prepareOvernightItem(smallRoomFilteredTransaction)
+            console.log(smallRoomFilteredTransaction)
             smallRoomFilteredTransaction = smallRoomFilteredTransaction.sort(this.sortDayForTransaction)
             var slicedSmallRoomFilteredTransaction = smallRoomFilteredTransaction.slice((this.state.currentSmallRoomPage - 1) * 20, this.state.currentSmallRoomPage * 20)
 

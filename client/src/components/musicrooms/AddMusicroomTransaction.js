@@ -455,7 +455,7 @@ export class AddMusicroomTransaction extends Component {
         }
         values.record.forEach((e) => {
           return(
-            e.day = values.day
+            e.day = new Date(values.day.setHours(0,0,0,0))
           )
         })
         this.props.addNewMusicroomTransaction(values.record, history)

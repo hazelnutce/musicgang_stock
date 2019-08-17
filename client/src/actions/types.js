@@ -25,6 +25,7 @@ export const FETCH_TRANSACTIONS = "fetch_transactions"
 
 export const MUSICROOM_TRANSACTION_ERROR = "musicroom_transaction_error"
 export const FETCH_MUSICROOM_TRANSACTION = "fetch_musicroom_transaction"
+export const GET_MUSICROOM_TRANSACTION = "get_musicroom_transaction"
 
 export const COST_TRANSACTION_ERROR = "cost_transaction_error"
 export const FETCH_COST_TRANSACTION = "fetch_cost_transaction"
