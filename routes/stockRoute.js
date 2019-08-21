@@ -49,6 +49,7 @@ module.exports = (app, Db, Stock, Item, Category) => {
             stockName: stockName,
             _id: guid()
         }
+        
 
         //save it
         try{
@@ -66,11 +67,13 @@ module.exports = (app, Db, Stock, Item, Category) => {
         res.status(200).send("Created stock successfully")
     })
 
-    app.delete('/api/stock/delete/:stockId',requireLogin,async (req,res) => {
+    app.post('/api/stock/delete/:stockId',requireLogin,async (req,res) => {
         const stockId = req.params.stockId
+        const stockName = req.body.stockName
         try{
             await Item.findAndRemove({_stock : stockId.toString()})
             await Stock.removeWhere({_id: stockId})
+            await Category.findAndRemove({stockName : stockName})
         }
         catch(e){
             res.status(500).send(e)

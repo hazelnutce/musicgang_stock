@@ -156,7 +156,7 @@ export class EditMusicroomTransaction extends Component {
         }
 
         values._id = _id
-        values.day = this.state.selectedDay
+        values.day = new Date(this.state.selectedDay.setHours(0,0,0,0))
 
         if(values.day === null || values.day === undefined){
             values.day = new Date(new Date().setHours(0,0,0,0))

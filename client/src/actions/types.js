@@ -22,9 +22,11 @@ export const IMPORT_TRANSACTION_ERROR = "import_transaction_error"
 export const EXPORT_TRANSACTION_ERROR = "export_transaction_error"
 export const EDIT_TRANSACTION_ERROR = "edit_transaction_error"
 export const FETCH_TRANSACTIONS = "fetch_transactions"
+export const GET_TRANSACTION = "get_transaction"
 
 export const MUSICROOM_TRANSACTION_ERROR = "musicroom_transaction_error"
 export const FETCH_MUSICROOM_TRANSACTION = "fetch_musicroom_transaction"
+export const GET_MUSICROOM_TRANSACTION = "get_musicroom_transaction"
 
 export const COST_TRANSACTION_ERROR = "cost_transaction_error"
 export const FETCH_COST_TRANSACTION = "fetch_cost_transaction"

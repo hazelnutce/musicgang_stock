@@ -35,6 +35,19 @@ module.exports = (app, Db, Musicroom) => {
         res.status(200).send("Created musicroom transaction successfully")
     })
 
+    app.post('/api/musicroom/get', requireLogin, async(req,res) => {
+        var {recordId} = req.body
+
+        var result = Musicroom.find({_user: req.user.id.toString(), _id: recordId.toString()})
+
+        if(result.length == 1){
+            res.send(result[0])
+        }
+        else{
+            res.status(500).send("ข้อมูลผิดพลาด กรุณารีเฟรชหน้าหรือลองใหม่อีกครั้ง")
+        }
+    })
+
     app.delete('/api/musicroom/delete/:itemId',requireLogin,async (req,res) => {
         const musicroomId = req.params.itemId
 

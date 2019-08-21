@@ -111,7 +111,7 @@ export class StockDetail extends Component {
                     </div>
                     <div className="modal-footer">
                         <button className="red modal-close waves-effect waves-light btn right"><i className="material-icons right">cancel</i>ยกเลิก</button>
-                        <button onClick={() => this.props.deleteStock(stock._id)} className="green modal-close waves-effect waves-light btn right" style={{position: "relative", right: "20px"}}><i className="material-icons right">add_circle</i>ยืนยัน</button> 
+                        <button onClick={() => this.props.deleteStock(stock._id, stock.stockName)} className="green modal-close waves-effect waves-light btn right" style={{position: "relative", right: "20px"}}><i className="material-icons right">add_circle</i>ยืนยัน</button> 
                     </div>
                     
                 </div>

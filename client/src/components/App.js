@@ -33,9 +33,11 @@ import TransactionSummaryPage from './transaction/TransactionSummaryPage'
 import TransactionImport from './transaction/AddNewTransactionIn'
 import TransactionExport from './transaction/AddNewTransactionOut'
 import EditTransaction from './transaction/EditTransaction'
+import ViewTransaction from './transaction/ViewTransaction'
 import MusicroomTransactionPage from './musicrooms/MusicroomTransactionPage'
 import AddMusicroomTransaction from './musicrooms/AddMusicroomTransaction'
 import EditMusicroomTransaction from "./musicrooms/EditMusicroomTransaction";
+import ViewMusicroomTransaction from './musicrooms/ViewMusicroomTransaction'
 import CostTransactionPage from './costs/CostTransactionPage'
 import CostTransactionDetailPage from './costs/CostTransactionDetail'
 import EditCostTransaction from './costs/EditCostTransaction'
@@ -65,12 +67,14 @@ class App extends Component {
                 <Route path="/items/add/new/:stockId" component={AddNewItemPage}></Route>
                 <Route path="/items/edit/:itemId" component={EditItemPage}></Route>
                 <Route exact path="/transactions" component={TransactionPage}></Route>
+                <Route exact path="/transactions/view" component={ViewTransaction}></Route>
                 <Route exact path="/transactions/new/import" component={TransactionImport}></Route>
                 <Route exact path="/transactions/new/export" component={TransactionExport}></Route>
                 <Route exact path="/transactions/detail" component={TransactionSummaryPage}></Route>
                 <Route exact path="/transactions/edit" component={EditTransaction}></Route>
                 <Route exact path="/musicrooms" component={MusicroomTransactionPage}></Route>
                 <Route exact path="/musicrooms/new" component={AddMusicroomTransaction}></Route>
+                <Route exact path="/musicrooms/view" component={ViewMusicroomTransaction}></Route>
                 <Route exact path="/musicrooms/edit" component={EditMusicroomTransaction}></Route>
                 <Route exact path="/costs" component={CostTransactionPage}></Route>
                 <Route exact path="/costs/detail" component={CostTransactionDetailPage}></Route>

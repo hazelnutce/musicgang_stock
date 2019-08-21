@@ -38,7 +38,6 @@ export class MusicroomTransactionPage extends Component {
             isLoadingItem: false,
             currentMonth :  y * 12 + n,
             loadingMusicroomRecord : false,
-            isDisplayEditingMenu : false,
             currentSmallRoomPage : 1,
             currentLargeRoomPage : 1,
             currentMusicroomTotal : 0,
@@ -114,9 +113,6 @@ export class MusicroomTransactionPage extends Component {
                 isSelectLargeRoomRecord : true,
             })
         }
-        else if(buttonString === "4"){
-            this.setState({isDisplayEditingMenu: !this.state.isDisplayEditingMenu})
-        }
     }
 
     componentDidMount(){
@@ -168,15 +164,17 @@ export class MusicroomTransactionPage extends Component {
     sortDayForTransaction = (a,b) => {
         var newADay = new Date(a.day)
         var newBDay = new Date(b.day)
-        if(newADay < newBDay)
+        var newATime = newADay.getTime()
+        var newBTime = newBDay.getTime()
+        if(newATime < newBTime)
             return -1
-        if(newADay > newBDay)
+        if(newATime > newBTime)
             return 1
-        if(newADay === newBDay){
+        if(newATime === newBTime){
             if(a.startTime < b.startTime)
-                return 1
-            if(a.startTime > b.startTime)
                 return -1
+            if(a.startTime > b.startTime)
+                return 1
             return 0
         }
         return 0
@@ -195,16 +193,32 @@ export class MusicroomTransactionPage extends Component {
           d1.getDate() === d2.getDate();
     }
 
+    refreshTotalMusicroomTransaction = () => {
+        this.setState({isLoadingTotalRevenue: true})
+        let promiseMusicroom = this.props.getTotalMusicroom(this.state.currentMonth)
+        Promise.all([promiseMusicroom]).then(values => {
+            this.setState({currentMonth: this.state.currentMonth, 
+                currentMusicroomTotal: values[0].data,
+                isLoadingTotalRevenue: false})
+        })
+    }
+
+    deleteMusicroomTransaction = async (itemId) => {
+        this.props.deleteMusicroomTransaction(itemId)
+        setTimeout(() => {
+            this.refreshTotalMusicroomTransaction()
+        }, 500);
+    }
+
     renderSmallroomRecord(filteredTransaction){
         setTimeout(() => {
             this.initModal()
         }, 250);
 
         return _.map(filteredTransaction, (item ,index) => {
-            var {formatDiff, formatEndTime, formatPrice, formatStartTime, _id, day, roomSize, isStudentDiscount, isOverNight, startTime, endTime, isSelectCustomPrice} = item
+            var {formatDiff, formatEndTime, formatPrice, formatStartTime, _id, day} = item
             var itemDay = new Date(day)
 
-            var copiedItemDay = itemDay
             if(index > 0){
                 var previousItemDay = new Date(filteredTransaction[index-1].day)
                 if(this.isSameDay(itemDay, previousItemDay)){
@@ -213,38 +227,19 @@ export class MusicroomTransactionPage extends Component {
             }
 
             moment.locale('th')
+            let formatStartAndEndTime = formatStartTime + "-" + formatEndTime
 
             return(
                 <tr key={_id}>
                     <td>{itemDay !== null ? moment(itemDay).format('ll') : null}</td>
-                    <td>{formatStartTime + "-" + formatEndTime}</td>
+                    <td>
+                        <Link to={{pathname: `/musicrooms/view`,
+                                state: {_id} }}>
+                            {formatStartAndEndTime}
+                        </Link>
+                    </td>
                     <td>{formatDiff}</td>
                     <td>{formatPrice}</td>
-                    {
-                        this.state.isDisplayEditingMenu && (
-                        <td>
-                            <div style={{display: "inline-block", marginRight: "10px", cursor: "pointer"}}>
-                                <Link to={{ pathname: `/musicrooms/edit`,
-                                    state: {itemDay: copiedItemDay, roomSize, isStudentDiscount, isOverNight, startTime, endTime, _id, isSelectCustomPrice, formatPrice} }} 
-                                    className="material-icons black-text">edit
-                                </Link>
-                            </div>
-                            <div style={{display: "inline-block", cursor: "pointer"}} data-target={item._id} className="modal-trigger"><i className="material-icons black-text">delete</i></div>
-                        </td>
-                        )
-                    }
-                    <td>
-                        <div id={item._id} className="modal">
-                            <div className="modal-content">
-                                <h4>ยืนยันการลบ</h4>
-                                <p>คุณต้องการจะลบรายการห้องซ้อมนี้ใช่หรือไม่ ?</p>
-                            </div>
-                            <div className="modal-footer">
-                                <button className="green modal-close waves-effect waves-light btn" onClick={() => this.props.deleteMusicroomTransaction(item._id)} style={{position: "relative", right: "20px"}}><i className="material-icons right">add_circle</i>ยืนยัน</button> 
-                                <button className="red modal-close waves-effect waves-light btn"><i className="material-icons right">cancel</i>ยกเลิก</button>
-                            </div>
-                        </div> 
-                    </td>
                 </tr>
             )
         })
@@ -256,10 +251,9 @@ export class MusicroomTransactionPage extends Component {
         }, 250);
 
         return _.map(filteredTransaction, (item, index) => {
-            var {formatDiff, formatEndTime, formatPrice, formatStartTime, _id, day, roomSize, isStudentDiscount, isOverNight, startTime, endTime, isSelectCustomPrice} = item
+            var {formatDiff, formatEndTime, formatPrice, formatStartTime, _id, day} = item
             var itemDay = new Date(day)
 
-            var copiedItemDay = itemDay
             if(index > 0){
                 var previousItemDay = new Date(filteredTransaction[index-1].day)
                 if(this.isSameDay(itemDay, previousItemDay)){
@@ -272,35 +266,14 @@ export class MusicroomTransactionPage extends Component {
             return(
                 <tr key={_id}>
                     <td>{itemDay !== null ? moment(itemDay).format('ll') : null}</td>
-                    <td>{formatStartTime + "-" + formatEndTime}</td>
+                    <td>
+                        <Link to={{pathname: `/musicrooms/view`,
+                                state: {_id} }}>
+                            {formatStartTime + "-" + formatEndTime}
+                        </Link>
+                    </td>
                     <td>{formatDiff}</td>
                     <td>{formatPrice}</td>
-                    {
-                        this.state.isDisplayEditingMenu && (
-                        <td>
-                            <div style={{display: "inline-block", marginRight: "10px", cursor: "pointer"}}>
-                                <Link to={{ pathname: `/musicrooms/edit`,
-                                    state: {itemDay: copiedItemDay, roomSize, isStudentDiscount, isOverNight, startTime, endTime, _id, isSelectCustomPrice, formatPrice} }} 
-                                    className="material-icons black-text">edit
-                                </Link>
-                            </div>
-                            <div style={{display: "inline-block", cursor: "pointer"}} data-target={item._id} className="modal-trigger"><i className="material-icons black-text">delete</i></div>
-                        </td>
-                        )
-                    }
-                    <td>
-                        <div id={item._id} className="modal">
-                            <div className="modal-content">
-                                <h4>ยืนยันการลบ</h4>
-                                <p>คุณต้องการจะลบรายการห้องซ้อมนี้ใช่หรือไม่ ?</p>
-                            </div>
-                            <div className="modal-footer">
-                                <button className="green modal-close waves-effect waves-light btn" style={{position: "relative", right: "20px"}}  onClick={() => this.props.deleteMusicroomTransaction(item._id)}><i className="material-icons right">add_circle</i>ยืนยัน</button> 
-                                <button className="red modal-close waves-effect waves-light btn"><i className="material-icons right">cancel</i>ยกเลิก</button>
-                            </div>
-                        </div> 
-                    </td>
-                    
                 </tr>
             )
         })
@@ -381,33 +354,31 @@ export class MusicroomTransactionPage extends Component {
         var loop = 0
         var returnElement = []
         for(loop = 0; loop < additionalRow; loop++){
-            if(this.state.isDisplayEditingMenu === false){
-                returnElement.push(
-                    <tr key={loop}>
-                        <td style={{lineHeight: "22px"}}>&nbsp;</td>
-                        <td style={{lineHeight: "22px"}}>&nbsp;</td>
-                        <td style={{lineHeight: "22px"}}>&nbsp;</td>
-                        <td style={{lineHeight: "22px"}}>&nbsp;</td>
-                        <td style={{lineHeight: "22px"}}>&nbsp;</td>
-                    </tr>
-                )
-            }
-            else{
-                returnElement.push(
-                    <tr key={loop}>
-                        <td style={{lineHeight: "29.5px"}}>&nbsp;</td>
-                        <td style={{lineHeight: "29.5px"}}>&nbsp;</td>
-                        <td style={{lineHeight: "29.5px"}}>&nbsp;</td>
-                        <td style={{lineHeight: "29.5px"}}>&nbsp;</td>
-                        <td style={{lineHeight: "29.5px"}}>&nbsp;</td>
-                        <td style={{lineHeight: "29.5px"}}>&nbsp;</td>
-                    </tr>
-                )
-            }
+            returnElement.push(
+                <tr key={loop}>
+                    <td style={{lineHeight: "22px"}}>&nbsp;</td>
+                    <td style={{lineHeight: "22px"}}>&nbsp;</td>
+                    <td style={{lineHeight: "22px"}}>&nbsp;</td>
+                    <td style={{lineHeight: "22px"}}>&nbsp;</td>
+                    <td style={{lineHeight: "22px"}}>&nbsp;</td>
+                </tr>
+            )
             
-
         }
         return returnElement
+    }
+
+    prepareOvernightItem(transactions){
+        _.map(transactions, transaction => {
+            if(transaction.isOverNight === true){
+                if(transaction.startTime <= 360){
+                    transaction.startTime = transaction.startTime + 1440
+                }
+                if(transaction.endTime <= 360){
+                    transaction.endTime = transaction.endTime + 1440
+                }
+            }
+        })
     }
 
     render() {
@@ -415,10 +386,12 @@ export class MusicroomTransactionPage extends Component {
 
         if(musicroomTransactions != null){
             var smallRoomFilteredTransaction = musicroomTransactions.filter(x => x.roomSize === "Small" && this.isSameMonth(new Date(x.day), this.handleMonthFilter(this.state.currentMonth)))
+            this.prepareOvernightItem(smallRoomFilteredTransaction)
             smallRoomFilteredTransaction = smallRoomFilteredTransaction.sort(this.sortDayForTransaction)
             var slicedSmallRoomFilteredTransaction = smallRoomFilteredTransaction.slice((this.state.currentSmallRoomPage - 1) * 20, this.state.currentSmallRoomPage * 20)
 
             var largeRoomFilteredTransaction = musicroomTransactions.filter(x => x.roomSize === "Large" && this.isSameMonth(new Date(x.day), this.handleMonthFilter(this.state.currentMonth)))
+            this.prepareOvernightItem(largeRoomFilteredTransaction)
             largeRoomFilteredTransaction = largeRoomFilteredTransaction.sort(this.sortDayForTransaction)
             var slicedLargeRoomFilteredTransaction = largeRoomFilteredTransaction.slice((this.state.currentLargeRoomPage - 1) * 20, this.state.currentLargeRoomPage * 20)
         }
@@ -448,14 +421,6 @@ export class MusicroomTransactionPage extends Component {
                                     <span>รายการห้องซ้อมใหญ่</span>
                                 </label>
                             </div>
-                            <div className="row" style={{marginTop:"-10px"}}>
-                                <label className="col xl4 l4 m5 s6">
-                                    <input type="checkbox" className="filled-in" onChange={() => this.handleCheckboxes("4")} checked={this.state.isDisplayEditingMenu} />
-                                    <span>แสดงเมนูแก้ไขรายการ</span>
-                                </label>
-                            </div>
-                            
-                            
                         </div>
                     </div>
                     <div className="col xl3 l3 m4 s12" >
@@ -489,7 +454,7 @@ export class MusicroomTransactionPage extends Component {
                                         <table className="highlight centered">
                                             <thead>
                                             <tr>
-                                                <MusicroomTransactionTableHeader isDisplayEditingMenu={this.state.isDisplayEditingMenu}/>
+                                                <MusicroomTransactionTableHeader />
                                             </tr>
                                             </thead>
                             
@@ -514,7 +479,7 @@ export class MusicroomTransactionPage extends Component {
                                     <table className="highlight centered">
                                     <thead>
                                     <tr>
-                                        <MusicroomTransactionTableHeader isDisplayEditingMenu={this.state.isDisplayEditingMenu}/>
+                                        <MusicroomTransactionTableHeader/>
                                     </tr>
                                     </thead>
                         
@@ -551,7 +516,7 @@ export class MusicroomTransactionPage extends Component {
                                 <table className="highlight centered">
                                     <thead>
                                     <tr>
-                                        <MusicroomTransactionTableHeader isDisplayEditingMenu={this.state.isDisplayEditingMenu}/>
+                                        <MusicroomTransactionTableHeader/>
                                     </tr>
                                     </thead>
                     
@@ -586,7 +551,7 @@ export class MusicroomTransactionPage extends Component {
                                 <table className="highlight centered">
                                 <thead>
                                 <tr>
-                                    <MusicroomTransactionTableHeader isDisplayEditingMenu={this.state.isDisplayEditingMenu}/>
+                                    <MusicroomTransactionTableHeader />
                                 </tr>
                                 </thead>
                     
