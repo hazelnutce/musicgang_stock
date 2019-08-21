@@ -3,7 +3,8 @@ import {FETCH_STOCK_IN_TRANSACTION,
     IMPORT_TRANSACTION_ERROR, 
     EXPORT_TRANSACTION_ERROR,
     FETCH_TRANSACTIONS,
-    EDIT_TRANSACTION_ERROR} from './types'
+    EDIT_TRANSACTION_ERROR,
+    GET_TRANSACTION} from './types'
 import { app } from './axiosConfig';
 
 export const fetchStockInTransaction = () => async dispatch => {
@@ -26,6 +27,16 @@ export const importNewTransaction = (values, history) => async dispatch => {
     }).catch(error => {
         if (error.response) {
             dispatch({type: IMPORT_TRANSACTION_ERROR, payload: error.response.data})
+        }
+    })
+}
+
+export const getTransaction = (recordId) => async dispatch => {
+    app.post(`/api/transaction/get`,{recordId}).then(async res => {
+        dispatch({type: GET_TRANSACTION, payload: res.data})
+    }).catch(error => {
+        if (error.response) {
+            dispatch({type: EDIT_TRANSACTION_ERROR, payload: error.response.data})
         }
     })
 }

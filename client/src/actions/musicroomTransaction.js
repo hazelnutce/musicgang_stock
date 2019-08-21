@@ -41,7 +41,7 @@ export const editMusicroomTransaction = (values, history) => async dispatch => {
     })
 }
 
-export const getMusicroomTransaction = (recordId, history) => async dispatch => {
+export const getMusicroomTransaction = (recordId) => async dispatch => {
     app.post(`/api/musicroom/get`,{recordId}).then(async res => {
         dispatch({type: GET_MUSICROOM_TRANSACTION, payload: res.data})
     }).catch(error => {

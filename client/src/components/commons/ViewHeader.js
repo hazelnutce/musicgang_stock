@@ -37,7 +37,7 @@ export class ViewHeader extends Component {
                             <p>คุณต้องการจะลบรายการห้องซ้อมนี้ใช่หรือไม่ ?</p>
                         </div>
                         <div className="modal-footer">
-                            <button className="green modal-close waves-effect waves-light btn" style={{position: "relative", right: "20px"}}  onClick={() => this.props.deleteMusicroomTransaction(this.props.deletedId, this.props.historyInstance)}><i className="material-icons right">add_circle</i>ยืนยัน</button> 
+                            <button className="green modal-close waves-effect waves-light btn" style={{position: "relative", right: "20px"}}  onClick={() => this.props.deleteRecordMethod(this.props.deletedId, this.props.historyInstance)}><i className="material-icons right">add_circle</i>ยืนยัน</button> 
                             <button className="red modal-close waves-effect waves-light btn"><i className="material-icons right">cancel</i>ยกเลิก</button>
                         </div>
                     </div>

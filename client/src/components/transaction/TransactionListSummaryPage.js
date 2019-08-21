@@ -116,7 +116,7 @@ export class TransactionListSummaryPage extends Component {
     }
     
     renderSmallImportTransaction = (filteredTransaction) => {
-        const {items} = this.props
+        const {items, stockId} = this.props
         return _.map(filteredTransaction, (item, index) => {
             const isExportMode = item.type === "export"
             var isItemValid = true
@@ -142,7 +142,12 @@ export class TransactionListSummaryPage extends Component {
             return(
                 <tr key={_id}>
                     <td>{itemDay !== null ? moment(itemDay).format('ll') : null}</td>
-                    <td>{itemName}</td>
+                    <td>
+                        <Link to={{pathname: `/transactions/view`,
+                                    state: {_id, stockId} }}>
+                                {itemName}
+                        </Link>
+                    </td>
                     <td>{itemAmount}</td>
                     {tooltipMessage !== null && <td className="tooltipped" data-tooltip={tooltipMessage}>{formatTotal}</td>}
                     {tooltipMessage === null && <td>{formatTotal}</td>}
@@ -158,7 +163,7 @@ export class TransactionListSummaryPage extends Component {
     }
 
     renderSmallExportTransaction = (filteredTransaction) => {
-        const {items} = this.props
+        const {items, stockId} = this.props
         return _.map(filteredTransaction, (item, index) => {
             const isExportMode = item.type === "export"
             var isItemValid = true
@@ -189,7 +194,12 @@ export class TransactionListSummaryPage extends Component {
             return(
                 <tr key={_id}>
                     <td>{itemDay !== null ? moment(itemDay).format('ll') : null}</td>
-                    <td>{itemName}</td>
+                    <td>
+                        <Link to={{pathname: `/transactions/view`,
+                                    state: {_id, stockId} }}>
+                                {itemName}
+                        </Link>
+                    </td>
                     <td>{itemAmount}</td>
                     {tooltipMessage !== null && <td className="tooltipped" data-tooltip={tooltipMessage}>{formatTotal}</td>}
                     {tooltipMessage === null && <td>{formatTotal}</td>}

@@ -18,7 +18,7 @@ export class ViewMusicroomTransaction extends Component {
 
     componentDidMount(){
         let {_id} = this.props.location.state
-        this.props.getMusicroomTransaction(_id, this.props.history)
+        this.props.getMusicroomTransaction(_id)
     }
 
     componentDidUpdate(prevProps){
@@ -76,7 +76,7 @@ export class ViewMusicroomTransaction extends Component {
                         editState={{itemDay: new Date(day), roomSize, isStudentDiscount, isOverNight, startTime, endTime, _id, isSelectCustomPrice, formatPrice}}
                         deletedId={_id}
                         historyInstance={this.props.history}
-                        deleteMusicroomTransaction={this.props.deleteMusicroomTransaction} >
+                        deleteRecordMethod={this.props.deleteMusicroomTransaction} >
                 </ViewHeader>
                 {this.renderLoader(this.state.isLoadingRecord)}
                  
