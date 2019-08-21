@@ -116,20 +116,11 @@ export class TransactionListSummaryPage extends Component {
     }
     
     renderSmallImportTransaction = (filteredTransaction) => {
-        const {items, stockId} = this.props
+        const {stockId} = this.props
         return _.map(filteredTransaction, (item, index) => {
-            const isExportMode = item.type === "export"
-            var isItemValid = true
-            var {_id, itemName, itemAmount, formatTotal, discount, overcost, formatDiscount, formatOvercost, day, _item} = item
+            var {_id, itemName, itemAmount, formatTotal, discount, overcost, formatDiscount, formatOvercost, day} = item
             var itemDay = new Date(day)
-            var filterItem = items.filter(x => x._id === _item)
-            if(filterItem.length === 1){
-                itemName = filterItem[0].itemName
-            }
-            else{
-                isItemValid = false
-            }
-            var copiedItemDay = itemDay
+            
             if(index > 0){
                 var previousItemDay = new Date(filteredTransaction[index-1].day)
                 if(this.isSameDay(itemDay, previousItemDay)){
@@ -151,33 +142,17 @@ export class TransactionListSummaryPage extends Component {
                     <td>{itemAmount}</td>
                     {tooltipMessage !== null && <td className="tooltipped" data-tooltip={tooltipMessage}>{formatTotal}</td>}
                     {tooltipMessage === null && <td>{formatTotal}</td>}
-                    <td>
-                        <Link to={{ pathname: `/transactions/edit`, 
-                                state: { _id, itemDay: copiedItemDay, itemName, itemAmount, formatDiscount, formatOvercost, formatTotal, items, isExportMode, isValid: isItemValid }}}
-                                className="material-icons black-text">edit
-                        </Link>
-                    </td>
                 </tr>
             )
         })
     }
 
     renderSmallExportTransaction = (filteredTransaction) => {
-        const {items, stockId} = this.props
+        const {stockId} = this.props
         return _.map(filteredTransaction, (item, index) => {
-            const isExportMode = item.type === "export"
-            var isItemValid = true
-            var {_id, itemName, itemAmount, formatTotal, discount, overcost, formatDiscount, formatOvercost, day, isUsedInMusicGang, _item} = item
+            var {_id, itemName, itemAmount, formatTotal, discount, overcost, formatDiscount, formatOvercost, day} = item
             var itemDay = new Date(day)
 
-            var filterItem = items.filter(x => x._id === _item)
-            if(filterItem.length === 1){
-                itemName = filterItem[0].itemName
-            }
-            else{
-                isItemValid = false
-            }
-            var copiedItemDay = itemDay
             if(index > 0){
                 var previousItemDay = new Date(filteredTransaction[index-1].day)
                 if(this.isSameDay(itemDay, previousItemDay)){
@@ -203,12 +178,6 @@ export class TransactionListSummaryPage extends Component {
                     <td>{itemAmount}</td>
                     {tooltipMessage !== null && <td className="tooltipped" data-tooltip={tooltipMessage}>{formatTotal}</td>}
                     {tooltipMessage === null && <td>{formatTotal}</td>}
-                    <td>
-                        <Link to={{ pathname: `/transactions/edit`, 
-                                state: { _id, itemDay: copiedItemDay, itemName, itemAmount, formatDiscount, formatOvercost, isUsedInMusicGang, formatTotal, items, isExportMode, isValid: isItemValid  }}}
-                                className="material-icons black-text">edit
-                        </Link>
-                    </td>
                 </tr>
             )
         })

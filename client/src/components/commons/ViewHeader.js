@@ -34,7 +34,7 @@ export class ViewHeader extends Component {
                 <div id={"deleteModal"} className="modal">
                         <div className="modal-content">
                             <h4>ยืนยันการลบ</h4>
-                            <p>คุณต้องการจะลบรายการห้องซ้อมนี้ใช่หรือไม่ ?</p>
+                            <p>{this.props.deleteConfirmMessage}</p>
                         </div>
                         <div className="modal-footer">
                             <button className="green modal-close waves-effect waves-light btn" style={{position: "relative", right: "20px"}}  onClick={() => this.props.deleteRecordMethod(this.props.deletedId, this.props.historyInstance)}><i className="material-icons right">add_circle</i>ยืนยัน</button> 
@@ -51,6 +51,7 @@ ViewHeader.propTypes = {
     editDestination: PropTypes.string,
     editState: PropTypes.object,
     deletedId: PropTypes.string,
+    deleteConfirmMessage: PropTypes.string
 }
 
 export default (ViewHeader)

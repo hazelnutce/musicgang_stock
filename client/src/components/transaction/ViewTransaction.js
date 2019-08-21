@@ -3,7 +3,7 @@ import {connect} from 'react-redux'
 import moment from 'moment'
 import {PropagateLoader} from 'react-spinners'
 
-import {getTransaction} from '../../actions/transaction'
+import {getTransaction, refundTransaction} from '../../actions/transaction'
 import {fetchItems} from '../../actions/item'
 import {ViewHeader} from '../commons/ViewHeader'
 import {ViewGeneralBody} from '../commons/ViewGeneralBody'
@@ -57,8 +57,6 @@ export class ViewTransaction extends Component {
              let discountAndOvercostMessage = ""
              let discountMessage = `ส่วนลด ${formatDiscount} บาท`
              let overcostMessage = `ส่วนเกิน ${formatOvercost} บาท`
-             
-            // let newRoomSize = roomSize === "Small" ? "ห้องเล็ก" : "ห้องใหญ่"
 
             if(type === "import"){
                 formatCostPerUnit = `${formatCost} บาท`
@@ -119,7 +117,8 @@ export class ViewTransaction extends Component {
                         editState={{ _id, itemDay: new Date(day), itemName, itemAmount, formatDiscount, formatOvercost, formatTotal, items, isExportMode, isValid: isItemValid}}
                         deletedId={_id}
                         historyInstance={this.props.history}
-                        deleteRecordMethod={this.props.deleteMusicroomTransaction} >
+                        deleteRecordMethod={this.props.refundTransaction}
+                        deleteConfirmMessage={"คุณต้องการจะลบรายการสินค้านี้ใช่หรือไม่ ?"} >
                 </ViewHeader>
                 {this.renderLoader(this.state.isLoadingRecord)}
                  
@@ -132,4 +131,4 @@ function mapStateToProps(state){
     return {currentRecord : state.transaction.currentRecord, items: state.item.items}
 }
 
-export default connect(mapStateToProps, {getTransaction, fetchItems})(ViewTransaction)
+export default connect(mapStateToProps, {getTransaction, fetchItems, refundTransaction})(ViewTransaction)

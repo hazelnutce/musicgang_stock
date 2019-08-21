@@ -76,7 +76,8 @@ export class ViewMusicroomTransaction extends Component {
                         editState={{itemDay: new Date(day), roomSize, isStudentDiscount, isOverNight, startTime, endTime, _id, isSelectCustomPrice, formatPrice}}
                         deletedId={_id}
                         historyInstance={this.props.history}
-                        deleteRecordMethod={this.props.deleteMusicroomTransaction} >
+                        deleteRecordMethod={this.props.deleteMusicroomTransaction}
+                        deleteConfirmMessage={"คุณต้องการจะลบรายการห้องซ้อมนี้ใช่หรือไม่ ?"} >
                 </ViewHeader>
                 {this.renderLoader(this.state.isLoadingRecord)}
                  
