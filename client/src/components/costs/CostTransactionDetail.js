@@ -4,12 +4,14 @@ import M from 'materialize-css'
 import {connect} from 'react-redux'
 import {reduxForm} from 'redux-form'
 import _ from 'lodash'
+import moment from 'moment'
+import {Link} from 'react-router-dom'
+
 import './main.css'
 import NewCostTransactionForm from '../forms/newcosttransaction/NewCostTransactionForm';
 import DayPickerInput from 'react-day-picker/DayPickerInput'
 import {MonthPicker} from '../commons/MonthPicker'
 import {LoaderSpinner} from '../commons/LoaderSpinner'
-import {CostTransactionTableBody} from './CostTransactionTableBody'
 import ReactNotification from "react-notifications-component";
 import {CostMonthlySummaryPanel} from './CostMonthlySummaryPanel'
 
@@ -214,15 +216,140 @@ handleDayChange = (day) => {
     }
 }
 
+sortDayForTransaction = (a,b) => {
+    var newADay = new Date(a.day)
+    var newBDay = new Date(b.day)
+    var newATime = newADay.getTime()
+    var newBTime = newBDay.getTime()
+    if(newATime < newBTime)
+        return -1
+    if(newATime > newBTime)
+        return 1
+    return 0
+}
+
 isSameMonth = (d1, d2) => {
     return d1.getMonth() === d2.getMonth() &&
     d1.getFullYear() === d2.getFullYear();
+}
+isSameDay = (d1, d2) => {
+    return d1.getFullYear() === d2.getFullYear() &&
+      d1.getMonth() === d2.getMonth() &&
+      d1.getDate() === d2.getDate();
 }
 
 handleMonthFilter = (monthConst) => {
     var monthFilter = monthConst % 12
     var yearFilter = monthConst / 12
     return new Date(yearFilter, monthFilter, 1)
+}
+
+renderTableBody(costType, transactionList){
+    const {stockId} = this.props.location.state
+    let returnTableRow = []
+    let fontSize = ""
+
+    var filteredTransaction = transactionList.filter(x => x.costType === costType && x._stock === stockId &&
+        this.isSameMonth(new Date(x.day), this.handleMonthFilter(this.state.currentMonth)))
+
+    filteredTransaction = filteredTransaction.sort(this.sortDayForTransaction)
+
+    _.map(filteredTransaction, (item, index) => {
+        let {description, day, formatCost, _id, cost, costType} = item
+        var itemDay = new Date(day)
+        var preparedDescription = description
+
+        var copiedItemDay = itemDay
+        if(index > 0){
+            var previousItemDay = new Date(filteredTransaction[index-1].day)
+            if(this.isSameDay(itemDay, previousItemDay)){
+                itemDay = null
+            }
+        }
+
+        moment.locale('th')
+
+        if(preparedDescription.length > 25){
+            preparedDescription = preparedDescription.substring(0,22)
+            preparedDescription = preparedDescription + "..."
+        }
+        else{
+            fontSize = "15px"
+        }
+        
+        returnTableRow.push(
+            <React.Fragment key={_id}>
+            <tr>
+                <td>{itemDay !== null ? moment(itemDay).format('ll') : null}</td>
+                <td style={{fontSize}}>
+                    <Link to={{pathname: `/costs/view`,
+                            state: {_id, stockId}}}>
+                            {preparedDescription}
+                    </Link>
+                </td>
+                <td>{formatCost}</td>
+                {
+                    this.state.isDisplayEditingMenu && (
+                    <td>
+                        <div style={{display: "inline-block", marginRight: "10px", cursor: "pointer"}}>
+                            <Link to={{ pathname: `/costs/edit`,
+                                state: {itemDay: copiedItemDay, description, cost, _id, costType, stockId} }} 
+                                className="material-icons black-text">edit
+                            </Link>
+                        </div>
+                        <div style={{display: "inline-block", cursor: "pointer"}} data-target={item._id} className="modal-trigger"><i className="material-icons black-text">delete</i></div>
+                    </td>
+                    )
+                }
+                <td>
+                    <div id={item._id} className="modal forDeleteAction">
+                        <div className="modal-content">
+                            <h4>ยืนยันการลบ</h4>
+                            <p>คุณต้องการจะลบรายการค่าใช้จ่ายนี้ใช่หรือไม่ ?</p>
+                        </div>
+                        <div className="modal-footer">
+                            <button className="green modal-close waves-effect waves-light btn" onClick={() => deleteCostTransaction(item._id)} style={{position: "relative", right: "20px"}}><i className="material-icons right">add_circle</i>ยืนยัน</button> 
+                            <button className="red modal-close waves-effect waves-light btn"><i className="material-icons right">cancel</i>ยกเลิก</button>
+                        </div>
+                    </div> 
+                </td>
+            </tr>
+            </React.Fragment>
+        )
+
+    })
+
+    var additionalRow = 20 - filteredTransaction.length
+                                       
+    var loop = 0
+    for(loop = 0; loop < additionalRow; loop++){
+        if(this.state.isDisplayEditingMenu === false){
+            returnTableRow.push(
+                <tr key={loop}>
+                    <td style={{lineHeight: "22px"}}>&nbsp;</td>
+                    <td style={{lineHeight: "22px"}}>&nbsp;</td>
+                    <td style={{lineHeight: "22px"}}>&nbsp;</td>
+                    <td style={{lineHeight: "22px"}}>&nbsp;</td>
+                </tr>
+            )
+        }
+        else{
+            returnTableRow.push(
+                <tr key={loop}>
+                    <td style={{lineHeight: "29.5px"}}>&nbsp;</td>
+                    <td style={{lineHeight: "29.5px"}}>&nbsp;</td>
+                    <td style={{lineHeight: "29.5px"}}>&nbsp;</td>
+                    <td style={{lineHeight: "29.5px"}}>&nbsp;</td>
+                    <td style={{lineHeight: "29.5px"}}>&nbsp;</td>
+                </tr>
+            )
+        }
+        
+
+    }
+
+    return returnTableRow
+
 }
 
 setCurrentPage(page, type, canClick){
@@ -380,14 +507,7 @@ renderPagination(filteredTransaction, type){
                                                 </tr>
                                                 </thead>
                                                 <tbody>
-                                                    <CostTransactionTableBody 
-                                                        costType="Cost" 
-                                                        transactions={costTransactions} 
-                                                        state={this.state}
-                                                        stockId={stockId}
-                                                        deleteCostTransaction={this.props.deleteCostTransaction}
-                                                        editCostTransaction={this.props.editCostTransaction}
-                                                    />
+                                                    {this.renderTableBody("Cost", costTransactions)}
                                                 </tbody>
                                             </table>
                                         </div>
@@ -413,14 +533,7 @@ renderPagination(filteredTransaction, type){
                                     </thead>
                         
                                     <tbody>
-                                        <CostTransactionTableBody 
-                                            costType="Revenue" 
-                                            transactions={costTransactions} 
-                                            state={this.state}
-                                            stockId={stockId}
-                                            deleteCostTransaction={this.props.deleteCostTransaction}
-                                            editCostTransaction={this.props.editCostTransaction}
-                                        />
+                                        {this.renderTableBody("Revenue", costTransactions)}
                                     </tbody>
                                     </table>
                                 </div>
@@ -457,14 +570,7 @@ renderPagination(filteredTransaction, type){
                                     </tr>
                                     </thead>
                                     <tbody>
-                                        <CostTransactionTableBody 
-                                            costType="Cost" 
-                                            transactions={costTransactions} 
-                                            state={this.state}
-                                            stockId={stockId}
-                                            deleteCostTransaction={this.props.deleteCostTransaction}
-                                            editCostTransaction={this.props.editCostTransaction}
-                                        />
+                                        {this.renderTableBody("Cost", costTransactions)}
                                     </tbody>
                                 </table>
                             </div>
@@ -500,14 +606,7 @@ renderPagination(filteredTransaction, type){
                             </thead>
                 
                             <tbody>
-                                <CostTransactionTableBody 
-                                    costType="Revenue" 
-                                    transactions={costTransactions} 
-                                    state={this.state}
-                                    stockId={stockId}
-                                    deleteCostTransaction={this.props.deleteCostTransaction}
-                                    editCostTransaction={this.props.editCostTransaction}
-                                />
+                                {this.renderTableBody("Revenue", costTransactions)}
                             </tbody>
                             </table>
                         </div>

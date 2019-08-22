@@ -7,6 +7,19 @@ module.exports = (app, Db, Cost) => {
         res.send(result)
     })
 
+    app.post('/api/cost/get', requireLogin, (req, res) => {
+        var {recordId} = req.body
+
+        var result = Cost.find({_user: req.user.id.toString(), _id: recordId.toString()})
+
+        if(result.length == 1){
+            res.send(result[0])
+        }
+        else{
+            res.status(500).send("ข้อมูลผิดพลาด กรุณารีเฟรชหน้าหรือลองใหม่อีกครั้ง")
+        }
+    })
+
     app.post('/api/cost/add', requireLogin, async (req,res) => {
         
         var allItem = req.body

@@ -30,3 +30,4 @@ export const GET_MUSICROOM_TRANSACTION = "get_musicroom_transaction"
 
 export const COST_TRANSACTION_ERROR = "cost_transaction_error"
 export const FETCH_COST_TRANSACTION = "fetch_cost_transaction"
+export const GET_COST_TRANSACTION = "get_cost_transaction"

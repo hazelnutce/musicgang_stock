@@ -18,6 +18,7 @@ export class ViewMusicroomTransaction extends Component {
 
     componentDidMount(){
         let {_id} = this.props.location.state
+        console.log(this.props)
         this.props.getMusicroomTransaction(_id)
     }
 

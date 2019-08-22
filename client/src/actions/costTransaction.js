@@ -1,5 +1,6 @@
 import {COST_TRANSACTION_ERROR,
-    FETCH_COST_TRANSACTION} from './types'
+    FETCH_COST_TRANSACTION,
+    GET_COST_TRANSACTION} from './types'
 import { app } from './axiosConfig';
 
 export const fetchTransaction = () => async dispatch => {
@@ -30,6 +31,16 @@ export const deleteCostTransaction = (id) => async dispatch => {
 export const editCostTransaction = (values, history) => async dispatch => {
     app.post(`/api/cost/edit`,values).then(async res => {
         history.goBack()
+    }).catch(error => {
+        if (error.response) {
+            dispatch({type: COST_TRANSACTION_ERROR, payload: error.response.data})
+        }
+    })
+}
+
+export const getCostTransaction = (recordId) => async dispatch => {
+    app.post(`/api/cost/get`,{recordId}).then(async res => {
+        dispatch({type: GET_COST_TRANSACTION, payload: res.data})
     }).catch(error => {
         if (error.response) {
             dispatch({type: COST_TRANSACTION_ERROR, payload: error.response.data})

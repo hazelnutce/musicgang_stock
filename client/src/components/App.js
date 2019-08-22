@@ -41,6 +41,7 @@ import ViewMusicroomTransaction from './musicrooms/ViewMusicroomTransaction'
 import CostTransactionPage from './costs/CostTransactionPage'
 import CostTransactionDetailPage from './costs/CostTransactionDetail'
 import EditCostTransaction from './costs/EditCostTransaction'
+import ViewCostTransaction from './costs/ViewCostTransaction'
 import ErrorNoticePage from './commons/ErrorProcessNotice'
 
 library.add([faTag, faGhost, faDollarSign, faHandHoldingUsd, faExclamation, faTags, faBoxes, faBoxes,
@@ -77,6 +78,7 @@ class App extends Component {
                 <Route exact path="/musicrooms/view" component={ViewMusicroomTransaction}></Route>
                 <Route exact path="/musicrooms/edit" component={EditMusicroomTransaction}></Route>
                 <Route exact path="/costs" component={CostTransactionPage}></Route>
+                <Route exact path="/costs/view" component={ViewCostTransaction}></Route>
                 <Route exact path="/costs/detail" component={CostTransactionDetailPage}></Route>
                 <Route exact path="/costs/edit" component={EditCostTransaction}></Route>
                 <Route component={ErrorNoticePage} />
