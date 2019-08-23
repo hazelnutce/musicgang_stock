@@ -26,6 +26,7 @@ import CategoryPage from './categories/CategoryPage'
 import ItemPage from './items/ItemPage'
 import AddNewItemPage from './items/AddNewItemPage'
 import EditItemPage from './items/EditItemPage'
+import ViewItemPage from './items/ViewItemPage'
 import MainMenu from './MainMenu';
 import AddNewCategoryPage from './categories/AddNewCategoryPage'
 import TransactionPage from './transaction/TransctionPage'
@@ -64,6 +65,7 @@ class App extends Component {
                 <Route path="/stocks/new" component={AddNewStockPage}></Route>
                 <Route exact path="/categories/new" component={AddNewCategoryPage}></Route>
                 <Route exact path="/categories" component={CategoryPage}></Route>
+                <Route exact path="/items/view" component={ViewItemPage}></Route>
                 <Route exact path="/items/:stockId" component={ItemPage}></Route>
                 <Route path="/items/add/new/:stockId" component={AddNewItemPage}></Route>
                 <Route path="/items/edit/:itemId" component={EditItemPage}></Route>

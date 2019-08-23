@@ -2,12 +2,11 @@ import React, { Component } from 'react'
 import {PropagateLoader} from 'react-spinners'
 import {ViewHeader} from '../commons/ViewHeader'
 import {ViewGeneralBody} from '../commons/ViewGeneralBody'
-import {getMusicroomTransaction, deleteMusicroomTransaction} from '../../actions/musicroomTransaction'
 import {connect} from 'react-redux'
 import moment from 'moment'
+import {getItem, deleteItem} from '../../actions/item'
 
-export class ViewMusicroomTransaction extends Component {
-
+export class ViewItemPage extends Component {
     constructor(props){
         super(props)
 
@@ -18,7 +17,7 @@ export class ViewMusicroomTransaction extends Component {
 
     componentDidMount(){
         let {_id} = this.props.location.state
-        this.props.getMusicroomTransaction(_id)
+        this.props.getItem(_id)
     }
 
     componentDidUpdate(prevProps){
@@ -45,15 +44,15 @@ export class ViewMusicroomTransaction extends Component {
             
         }
         else{
-            let {day, formatStartTime, formatEndTime, formatDiff, formatPrice, roomSize} = this.props.currentRecord
-            let formatStartAndEndTime = formatStartTime + "-" + formatEndTime
-            let newFormatPrice = formatPrice + " บาท"
-            let newRoomSize = roomSize === "Small" ? "ห้องเล็ก" : "ห้องใหญ่"
+            let {itemName, formatCost, formatRevenue, itemRemaining, itemWarning, _category: {categoryNameTh, stockName}} = this.props.currentRecord
+            let newFormatCost = `${formatCost} บาท`
+            let newโormatRevenue = `${formatRevenue} บาท`
+            
             return(
                 <div>
                     <ViewGeneralBody 
-                        arraySubTopicHeader={["วันที่", "เวลาซ้อม", "เวลารวม", "ราคารวม", "ห้องซ้อม"]} 
-                        arraySubTopicData={[moment(day).format('ll'), formatStartAndEndTime, formatDiff, newFormatPrice, newRoomSize]}
+                        arraySubTopicHeader={["ชื่อสินค้า", "หมวดหมู่", "ราคาต้นทุน", "ราคาขาย", "จำนวนคงเหลือปัจจุบัน", "จำนวนสินค้าแจ้งเตือน", "คลังสินค้า"]} 
+                        arraySubTopicData={[itemName, categoryNameTh, newFormatCost, newโormatRevenue, itemRemaining, itemWarning, stockName]}
                     />
                 </div>
                 
@@ -63,31 +62,31 @@ export class ViewMusicroomTransaction extends Component {
     }
 
     render() {
+        let {_id} = this.props.location.state
         moment.locale('th')
         if(this.props.currentRecord !== null){
-            var {day, formatPrice, roomSize, isStudentDiscount, isOverNight, startTime, endTime, _id, isSelectCustomPrice} = this.props.currentRecord
+            var {_stock: stockId, itemName, cost, revenue, itemRemaining, itemWarning, _category: {categoryNameTh, stockName}} = this.props.currentRecord
         }
         
         return (
             <div className="container" style={{top: "5px", position: "relative"}}>
                 <ViewHeader 
-                        headerTopic={"รายละเอียดห้องซ้อม"} 
-                        editDestination={"/musicrooms/edit"} 
-                        editState={{itemDay: new Date(day), roomSize, isStudentDiscount, isOverNight, startTime, endTime, _id, isSelectCustomPrice, formatPrice}}
+                        headerTopic={"รายละเอียดสินค้า"} 
+                        editDestination={`/items/edit/${_id}`} 
+                        editState={{stockId, stockName, itemName, category: `${categoryNameTh}`, cost, revenue, itemWarning, itemRemaining}}
                         deletedId={_id}
                         historyInstance={this.props.history}
-                        deleteRecordMethod={this.props.deleteMusicroomTransaction}
-                        deleteConfirmMessage={"คุณต้องการจะลบรายการห้องซ้อมนี้ใช่หรือไม่ ?"} >
+                        deleteRecordMethod={this.props.deleteItem}
+                        deleteConfirmMessage={"คุณต้องการจะลบสินค้านี้ใช่หรือไม่ ?"} >
                 </ViewHeader>
                 {this.renderLoader(this.state.isLoadingRecord)}
-                 
             </div>
         )
     }
 }
 
 function mapStateToProps(state){
-    return {currentRecord : state.musicroom.currentMusicroomTransaction}
+    return {currentRecord : state.item.currentRecord}
 }
 
-export default connect(mapStateToProps, {getMusicroomTransaction, deleteMusicroomTransaction})(ViewMusicroomTransaction)
+export default connect(mapStateToProps, {getItem, deleteItem})(ViewItemPage)

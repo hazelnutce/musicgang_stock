@@ -89,15 +89,20 @@ export class ItemPage extends Component {
             this.initModal()
         }, 500);
         
-        return _.map(allItems, (item, itemIndex, items) => {
+        return _.map(allItems, (item) => {
             if(this.props.allCategory.categories != null){
                 item._category = this.props.allCategory.categories.filter(x => (x._id === item._category._id))[0]
             }
 
-            const {itemName, _category : {categoryNameTh, labelColor, textColor}, cost, revenue, formatCost, formatRevenue, itemWarning, itemRemaining} = item
+            const {itemName, _category : {categoryNameTh, labelColor, textColor}, cost, revenue, formatCost, formatRevenue, itemWarning, itemRemaining, _id} = item
             return(
                     <tr key={item._id}>
-                        <td>{itemName}</td>
+                        <td>
+                            <Link to={{pathname: `/items/view`,
+                                    state: {_id} }}>
+                                {itemName}
+                            </Link>
+                        </td>
                         <td>
                             <span style={{backgroundColor : labelColor, color: textColor, fontWeight: "bold"}} className="new badge " data-badge-caption={categoryNameTh}></span>
                         </td>

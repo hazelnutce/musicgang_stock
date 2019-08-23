@@ -16,6 +16,19 @@ module.exports = (app, Db, Item, Category, Transaction) => {
         res.send(result)
     })
 
+    app.post('/api/item/get', requireLogin, (req,res) => {
+        var {recordId} = req.body
+
+        var result = Item.find({_user: req.user.id.toString(), _id: recordId.toString()})
+
+        if(result.length == 1){
+            res.send(result[0])
+        }
+        else{
+            res.status(500).send("ข้อมูลผิดพลาด กรุณารีเฟรชหน้าหรือลองใหม่อีกครั้ง")
+        }
+    })
+
     app.post('/api/item/add', requireLogin, async (req,res) => {
         const {itemName, initialItem, itemWarning, cost, income, category, stockId} = req.body
         const item = await Item.findOne({itemName: itemName, _user: req.user.id.toString()})
