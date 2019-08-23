@@ -31,6 +31,8 @@ export const addNewItems = (values, stockId, stockName, history) => async dispat
 }
 
 export const editItem = (values, itemId, stockId, stockName, history) => async dispatch => {
+    values.stockId = stockId
+    values.currentDay = new Date(new Date().setHours(0,0,0,0))
     app.post(`/api/item/edit/${itemId}`,values).then(async res => {
         history.push({
             pathname: `/items/${stockId}`,

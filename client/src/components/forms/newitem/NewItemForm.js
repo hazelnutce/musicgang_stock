@@ -116,6 +116,7 @@ export class NewItemForm extends Component {
             keyLabel={"จำนวนสินค้าที่ต้องแจ้งเตือน"}
             faRequire={true}
           />
+
         </div>
           
         <div className="row" style={{position: "relative", top: "-20px"}}>

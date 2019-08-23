@@ -5,6 +5,8 @@ import _ from 'lodash'
 import NewItemField from './NewItemField';
 import {LoaderSpinner} from '../../commons/LoaderSpinner'
 import {NewItemCheckbox} from './NewItemCheckbox'
+import {NewItemCheckboxBoolean} from './NewItemCheckboxBoolean'
+import {Link} from 'react-router-dom'
 
 export class EditItemForm extends Component {
     constructor(props){
@@ -53,44 +55,72 @@ export class EditItemForm extends Component {
             <h6>- รายละเอียดสินค้า</h6>
         </div>
         <div className="row" style={{position: "relative", top: "-20px"}}> 
-            <Field 
-                component={NewItemField} 
-                name={"itemName"}
-                type={"text"}
-                icon={"assignment"}
-                keyLabel={"ชื่อสินค้า"}
-                faRequire={false}
-            />
-            <Field 
-                component={NewItemField}
-                name="cost"
-                type={"number"}
-                icon={"dollar-sign"}
-                keyLabel={"ราคาต้นทุน"}
-                faRequire={true}
-            />
+          <Field 
+            component={NewItemField} 
+            name={"itemName"}
+            type={"text"}
+            icon={"assignment"}
+            keyLabel={"ชื่อสินค้า"}
+            faRequire={false}
+          />
+          <Field 
+            component={NewItemField}
+            name="initialItem"
+            type={"number"}
+            icon={"assignment_turned_in"}
+            keyLabel={"จำนวนสินค้าเริ่มต้น"}
+            faRequire={false}
+          />
         </div>
         <div className="row" style={{position: "relative", top: "-20px"}}>
-            <Field 
-                component={NewItemField}
-                name="income"
-                type={"number"}
-                icon={"hand-holding-usd"}
-                keyLabel={"ราคาขาย"}
-                faRequire={true}
-            />
+          <Field 
+              component={NewItemField}
+              name="cost"
+              type={"number"}
+              icon={"dollar-sign"}
+              keyLabel={"ราคาต้นทุน"}
+              faRequire={true}
+          />
+          <Field 
+              component={NewItemField}
+              name="income"
+              type={"number"}
+              icon={"hand-holding-usd"}
+              keyLabel={"ราคาขาย"}
+              faRequire={true}
+          />
+        </div>
+        <div className="row" style={{position: "relative", top: "-20px"}}>
+          <Field 
+            component={NewItemField}
+            name="itemWarning"
+            type={"number"}
+            icon={"exclamation"}
+            keyLabel={"จำนวนสินค้าที่ต้องแจ้งเตือน"}
+            faRequire={true}
+          />
+          <Field 
+            component={NewItemCheckboxBoolean}
+            name="isCreateTransaction"
+            checkBoxLabel={"สร้างรายการนำเข้า-นำออกสินค้าเมื่อเปลี่ยนจำนวนสินค้าเริ่มต้น"}
+          />
 
-            <Field 
-                component={NewItemField}
-                name="itemWarning"
-                type={"number"}
-                icon={"exclamation"}
-                keyLabel={"จำนวนสินค้าที่ต้องแจ้งเตือน"}
-                faRequire={true}
-            />
         </div>
         <div className="row" style={{position: "relative", top: "-20px"}}>
-            <h6>- หมวดหมู่สินค้า</h6>
+          <h6>
+            - หมวดหมู่สินค้า   
+            <span style={{position: "relative", left: "20px", fontSize: "12px"}}>
+              <Link 
+                to={{ pathname: "/categories/new", 
+                state: {
+                  stockName : this.props.stockName, 
+                  mode: "create", 
+                  currentStock: this.props.stockName} }} >
+                  <i className="material-icons right">add</i>เพิ่มหมวดหมู่สินค้า
+              </Link>
+            </span>
+          </h6>
+
         </div>
         <div className="row" style={{position: "relative", top: "-20px"}}>
             {!this.state.loadingCategory && (

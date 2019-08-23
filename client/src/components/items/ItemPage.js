@@ -37,7 +37,7 @@ export class ItemPage extends Component {
         var currentLocation = this.props.location.pathname.toString()
         var stockId = currentLocation.replace("/items/", "")
         const buttonInLine = <span className="right">
-            <Link to={{ pathname: `/items/add/new/${stockId}`, state: {stockName : this.props.history.location.state.stockName}}}  className="waves-effect waves-light btn-small amber darken-3"><i className="material-icons right">add</i>เพิ่มสินค้า</Link>
+            <Link to={{ pathname: `/items/add/new/${stockId}`, state: {stockName : this.props.history.location.state.stockName}}}  className="waves-effect waves-light btn-small amber darken-3"><i className="material-icons right">add</i>สร้างสินค้า</Link>
         </span>
 
         return buttonInLine
@@ -106,7 +106,7 @@ export class ItemPage extends Component {
                         <td>{itemRemaining}</td>
                         <td>
                             <Link to={{ pathname: `/items/edit/${item._id}`, 
-                                state: { stockId, stockName, itemName, category: `${categoryNameTh}`, cost, revenue, itemWarning} }} 
+                                state: { stockId, stockName, itemName, category: `${categoryNameTh}`, cost, revenue, itemWarning, itemRemaining} }} 
                                 className="material-icons black-text">edit
                             </Link>
                             <a className="modal-trigger" href={"#"+item._id}><i className="material-icons black-text">delete</i></a>

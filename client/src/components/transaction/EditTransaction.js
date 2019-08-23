@@ -276,9 +276,6 @@ export class EditTransaction extends Component {
                         }}
                         value={this.state.selectedDay}
                         />
-                      <div className="col xl6 l4 m4 s12">
-                        <button onClick={() => this.props.refundTransaction(_id, history)} className={`waves-effect waves-light btn-small amber darken-4 white-text right`} style={{marginRight: "20px"}}>{isExportMode ? "คืนสินค้าสู่คลัง" : "คืนสินค้าสู่ผู้จำหน่าย"}</button>
-                      </div>
                       <div className="col xl12 l12 m12 s12">
                             รายละเอียดสินค้า
                         </div>
