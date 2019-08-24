@@ -29,7 +29,9 @@ export class ItemPage extends Component {
               direction: "ASC",
               sortColumn: "itemName",
               sortIcon: "arrow_drop_up"
-          }
+          },
+          currentItemNameSelected: null,
+          currentModeForTransaction: null
         }
     }
 
@@ -72,29 +74,62 @@ export class ItemPage extends Component {
 
     initModal = () => {
         var elems = document.querySelectorAll('.modal');
-              M.Modal.init(elems, {
-             opacity: 0.6
+        M.Modal.init(elems, 
+        {
+            opacity: 0.6
         });
     }
 
-    renderItem = (stockId, stockName) => {
+    setValueForQuickAction = (mode) => {
+        if(mode === "import"){
+            this.setState({currentModeForTransaction: "import"})
+        }
+        else if(mode === "export"){
+            this.setState({currentModeForTransaction: "export"})
+        }
+    }
+
+    renderModal = () => {
+        let currentMenuOnModal = ""
+        if(this.state.currentModeForTransaction === "import") currentMenuOnModal = "นำเข้าสินค้า (เร่งด่วน)"
+        else if(this.state.currentModeForTransaction === "export") currentMenuOnModal = "นำออกสินค้า (เร่งด่วน)"
+        return (
+            <div id={"quickAction"} className="modal">
+                <div className="modal-content">
+                    <h5>{currentMenuOnModal}</h5>
+                    <div className="container-fluid">
+                        <div className="row">
+                            <div className="col xl6 l6 m6 s12">
+                                test field 1
+                            </div>
+                            <div className="col xl6 l6 m6 s12">
+                                test field 2
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div className="modal-footer">
+                    <button className="green modal-close waves-effect waves-light btn" style={{position: "relative", right: "20px"}}><i className="material-icons right">add_circle</i>ยืนยัน</button> 
+                    <button className="red modal-close waves-effect waves-light btn"><i className="material-icons right">cancel</i>ยกเลิก</button>
+                </div>
+            </div>
+        )
+    }
+
+    renderItem = () => {
         var allItems = this.props.item.items
         if(allItems != null){
             var sortingColumn = this.state.currentSorting.sortColumn
             var direction = this.state.currentSorting.direction
             this.handleSorting(allItems, sortingColumn, direction)
         }
-
-        setTimeout(() => {
-            this.initModal()
-        }, 500);
         
         return _.map(allItems, (item) => {
             if(this.props.allCategory.categories != null){
                 item._category = this.props.allCategory.categories.filter(x => (x._id === item._category._id))[0]
             }
 
-            const {itemName, _category : {categoryNameTh, labelColor, textColor}, cost, revenue, formatCost, formatRevenue, itemWarning, itemRemaining, _id} = item
+            const {itemName, _category : {categoryNameTh, labelColor, textColor}, formatCost, formatRevenue, itemRemaining, _id} = item
             return(
                     <tr key={item._id}>
                         <td>
@@ -110,29 +145,20 @@ export class ItemPage extends Component {
                         <td>{formatRevenue}</td>
                         <td>{itemRemaining}</td>
                         <td>
-                            <Link to={{ pathname: `/items/edit/${item._id}`, 
-                                state: { stockId, stockName, itemName, category: `${categoryNameTh}`, cost, revenue, itemWarning, itemRemaining} }} 
-                                className="material-icons black-text">edit
-                            </Link>
-                            <a className="modal-trigger" href={"#"+item._id}><i className="material-icons black-text">delete</i></a>
+                            <div className="modal-trigger" data-target={"quickAction"} 
+                            onClick={() => this.setValueForQuickAction("import")} 
+                            style={{cursor: "pointer"}}><FontAwesomeIcon className="fas fa-sm" icon="arrow-up"/></div>
                         </td>
                         <td>
-                            <div id={item._id} className="modal">
-                                <div className="modal-content">
-                                    <h4>ยืนยันการลบ</h4>
-                                    <p>คุณต้องการจะลบสินค้า <b>{item.itemName}</b> ใช่หรือไม่ ?</p>
-                                </div>
-                                <div className="modal-footer">
-                                    <button onClick={() => this.props.deleteItem(item._id, stockId)} className="green modal-close waves-effect waves-light btn" style={{position: "relative", right: "20px"}}><i className="material-icons right">add_circle</i>ยืนยัน</button> 
-                                    <button className="red modal-close waves-effect waves-light btn"><i className="material-icons right">cancel</i>ยกเลิก</button>
-                                </div>
-                            </div> 
+                            <div className="modal-trigger" data-target={"quickAction"} 
+                            onClick={() => this.setValueForQuickAction("export")} 
+                            style={{cursor: "pointer"}}><FontAwesomeIcon className="fas fa-sm" icon="arrow-down"/></div>
                         </td>
-                         
                     </tr>          
             )
         })
     }
+
 
     handleSortClick(sortColumn){
         if(sortColumn === this.state.currentSorting.sortColumn){
@@ -165,18 +191,19 @@ export class ItemPage extends Component {
         })
     }
 
-    renderItemTable = (stockId, stockName) => {
+    renderItemTable = () => {
         return (   
             <table className="highlight reponsive-table centered">
                 <thead>
                 <tr>
                     {this.renderColumnHeader()}
                     <th></th>
+                    <th></th>
                 </tr>
                 </thead>
 
                 <tbody>
-                    {this.renderItem(stockId, stockName)}
+                    {this.renderItem()}
                 </tbody>
             </table>  
     
@@ -194,7 +221,11 @@ export class ItemPage extends Component {
     componentDidUpdate = (prevProps) => {
         if (prevProps.item.items !== this.props.item.items) {
           if(this.props.item !== "" || this.props.item !== null){
-            this.setState({loadingItem: true}) 
+            this.setState({loadingItem: true}, () => {
+                setTimeout(() => {
+                    this.initModal()
+                }, 1000);
+            }) 
           }
         }
     }
@@ -214,8 +245,9 @@ export class ItemPage extends Component {
                     <h5 className="col s12"><i><FontAwesomeIcon icon="boxes"/></i><span style={{marginLeft: "20px"}}>สินค้า / คลัง : {stockName}</span> {this.renderButtonForAddItem()}</h5>
                 </div>
                 <div className="row">
-                    {this.renderItemTable(stockId, stockName)}
+                    {this.renderItemTable()}
                 </div>
+                {this.renderModal()}
             </div>
         )
     }

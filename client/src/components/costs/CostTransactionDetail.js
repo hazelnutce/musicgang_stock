@@ -50,7 +50,6 @@ export class CostTransactionDetail extends Component {
       isSelectAllRecord : true,
       isSelectCostRecord : true,
       isSelectRevenueRecord : true,
-      isDisplayEditingMenu : false,
       selectedDay: new Date(new Date().setHours(0,0,0,0)),
       isLoadingTransaction : true,
       currentMonth :  y * 12 + n,
@@ -159,9 +158,6 @@ export class CostTransactionDetail extends Component {
             isSelectCostRecord : false,
             isSelectRevenueRecord : true,
         })
-    }
-    else if(buttonString === "4"){
-        this.setState({isDisplayEditingMenu: !this.state.isDisplayEditingMenu})
     }
 }
 
@@ -288,31 +284,6 @@ renderTableBody(costType, transactionList){
                     </Link>
                 </td>
                 <td>{formatCost}</td>
-                {
-                    this.state.isDisplayEditingMenu && (
-                    <td>
-                        <div style={{display: "inline-block", marginRight: "10px", cursor: "pointer"}}>
-                            <Link to={{ pathname: `/costs/edit`,
-                                state: {itemDay: copiedItemDay, description, cost, _id, costType, stockId} }} 
-                                className="material-icons black-text">edit
-                            </Link>
-                        </div>
-                        <div style={{display: "inline-block", cursor: "pointer"}} data-target={item._id} className="modal-trigger"><i className="material-icons black-text">delete</i></div>
-                    </td>
-                    )
-                }
-                <td>
-                    <div id={item._id} className="modal forDeleteAction">
-                        <div className="modal-content">
-                            <h4>ยืนยันการลบ</h4>
-                            <p>คุณต้องการจะลบรายการค่าใช้จ่ายนี้ใช่หรือไม่ ?</p>
-                        </div>
-                        <div className="modal-footer">
-                            <button className="green modal-close waves-effect waves-light btn" onClick={() => deleteCostTransaction(item._id)} style={{position: "relative", right: "20px"}}><i className="material-icons right">add_circle</i>ยืนยัน</button> 
-                            <button className="red modal-close waves-effect waves-light btn"><i className="material-icons right">cancel</i>ยกเลิก</button>
-                        </div>
-                    </div> 
-                </td>
             </tr>
             </React.Fragment>
         )
@@ -323,29 +294,13 @@ renderTableBody(costType, transactionList){
                                        
     var loop = 0
     for(loop = 0; loop < additionalRow; loop++){
-        if(this.state.isDisplayEditingMenu === false){
-            returnTableRow.push(
-                <tr key={loop}>
-                    <td style={{lineHeight: "22px"}}>&nbsp;</td>
-                    <td style={{lineHeight: "22px"}}>&nbsp;</td>
-                    <td style={{lineHeight: "22px"}}>&nbsp;</td>
-                    <td style={{lineHeight: "22px"}}>&nbsp;</td>
-                </tr>
-            )
-        }
-        else{
-            returnTableRow.push(
-                <tr key={loop}>
-                    <td style={{lineHeight: "29.5px"}}>&nbsp;</td>
-                    <td style={{lineHeight: "29.5px"}}>&nbsp;</td>
-                    <td style={{lineHeight: "29.5px"}}>&nbsp;</td>
-                    <td style={{lineHeight: "29.5px"}}>&nbsp;</td>
-                    <td style={{lineHeight: "29.5px"}}>&nbsp;</td>
-                </tr>
-            )
-        }
-        
-
+        returnTableRow.push(
+            <tr key={loop}>
+                <td style={{lineHeight: "22px"}}>&nbsp;</td>
+                <td style={{lineHeight: "22px"}}>&nbsp;</td>
+                <td style={{lineHeight: "22px"}}>&nbsp;</td>
+            </tr>
+        )
     }
 
     return returnTableRow
@@ -458,12 +413,6 @@ renderPagination(filteredTransaction, type){
                             <span>รายรับ</span>
                         </label>
                     </div>
-                    <div className="row" style={{marginTop:"-10px"}}>
-                        <label className="col xl4 l4 m5 s6">
-                            <input type="checkbox" className="filled-in" onChange={() => this.handleCheckboxes("4")} checked={this.state.isDisplayEditingMenu} />
-                            <span>แสดงเมนูแก้ไขรายการ</span>
-                        </label>
-                    </div>
                 </div>
             </div>
             <div className="col xl3 l3 m4 s12" >
@@ -503,7 +452,7 @@ renderPagination(filteredTransaction, type){
                                             <table className="highlight centered">
                                                 <thead>
                                                 <tr>
-                                                    <CostTransactionTableHeader isDisplayEditingMenu={this.state.isDisplayEditingMenu} />
+                                                    <CostTransactionTableHeader />
                                                 </tr>
                                                 </thead>
                                                 <tbody>
@@ -528,7 +477,7 @@ renderPagination(filteredTransaction, type){
                                     <table className="highlight centered">
                                     <thead>
                                     <tr>
-                                        <CostTransactionTableHeader isDisplayEditingMenu={this.state.isDisplayEditingMenu} />
+                                        <CostTransactionTableHeader />
                                     </tr>
                                     </thead>
                         
@@ -566,7 +515,7 @@ renderPagination(filteredTransaction, type){
                                 <table className="highlight centered">
                                     <thead>
                                     <tr>
-                                        <CostTransactionTableHeader isDisplayEditingMenu={this.state.isDisplayEditingMenu} />
+                                        <CostTransactionTableHeader />
                                     </tr>
                                     </thead>
                                     <tbody>
@@ -601,7 +550,7 @@ renderPagination(filteredTransaction, type){
                             <table className="highlight centered">
                             <thead>
                             <tr>
-                                <CostTransactionTableHeader isDisplayEditingMenu={this.state.isDisplayEditingMenu} />
+                                <CostTransactionTableHeader />
                             </tr>
                             </thead>
                 
