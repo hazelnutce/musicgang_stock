@@ -1,7 +1,7 @@
 const requireLogin = require('../middleware/requireLogin')
 const guid = require('../services/guid')
 
-module.exports = (app, Db, Item, Category) => {
+module.exports = (app, Db, Item, Category, Transaction) => {
     app.get('/api/itemdetail/:itemId', requireLogin, (req,res) => {
         const itemId = req.params.itemId
 
@@ -14,6 +14,19 @@ module.exports = (app, Db, Item, Category) => {
 
         var result = Item.find({_stock: stockId.toString(), _user: req.user.id.toString()})
         res.send(result)
+    })
+
+    app.post('/api/item/get', requireLogin, (req,res) => {
+        var {recordId} = req.body
+
+        var result = Item.find({_user: req.user.id.toString(), _id: recordId.toString()})
+
+        if(result.length == 1){
+            res.send(result[0])
+        }
+        else{
+            res.status(500).send("ข้อมูลผิดพลาด กรุณารีเฟรชหน้าหรือลองใหม่อีกครั้ง")
+        }
     })
 
     app.post('/api/item/add', requireLogin, async (req,res) => {
@@ -29,7 +42,6 @@ module.exports = (app, Db, Item, Category) => {
             res.status(500).send("หมวดหมู่สินค้าไม่ถูกต้อง กรุณาลองใหม่อีกครั้ง")
             return
         }
-        var a = parseFloat(parseFloat(cost).toFixed(2)).toFixed(2)
         var newItem = {
             itemName: itemName,
             itemRemaining: parseInt(initialItem),
@@ -60,8 +72,84 @@ module.exports = (app, Db, Item, Category) => {
         res.status(200).send("Created item successfully")
     })
 
+    app.post('/api/item/quickImport', requireLogin, async (req,res) => {
+        try{
+            Transaction.insert(req.body)
+        }
+        catch(e){
+            console.log(e)
+            res.status(500).send("พบบางอย่างผิดพลาดที่ระบบข้อมูล", e)
+        }
+        finally{
+            await Db.saveDatabase();
+        }
+
+        let isValidItemName = true
+        var result = Item.findOne({itemName: req.body.itemName})
+        if(result !== null){
+            result.itemRemaining = result.itemRemaining + req.body.itemAmount
+            try{
+                Item.update(result)
+            }
+            catch(e){
+                res.status(500).send("พบบางอย่างผิดพลาดที่ระบบข้อมูล", e)
+                return
+            }
+
+            var result2 = Item.find({_stock: req.body._stock.toString(), _user: req.user.id.toString()})
+            res.status(200).send(result2)
+        }
+        else{
+            isValidItemName = false
+        }
+
+        if(isValidItemName === false){
+            res.status(500).send("สินค้าไม่ถูกต้องหรือถูกลบไปจากคลังสินค้าไปแล้ว")
+            return
+        }
+    })
+
+    app.post('/api/item/quickExport', requireLogin, async (req,res) => {
+        try{
+            Transaction.insert(req.body)
+        }
+        catch(e){
+            console.log(e)
+            res.status(500).send("พบบางอย่างผิดพลาดที่ระบบข้อมูล", e)
+        }
+        finally{
+            await Db.saveDatabase();
+        }
+
+        let isValidItemName = true
+        var result = Item.findOne({itemName: req.body.itemName})
+        if(result !== null){
+            result.itemRemaining = result.itemRemaining - req.body.itemAmount
+            try{
+                Item.update(result)
+            }
+            catch(e){
+                res.status(500).send("พบบางอย่างผิดพลาดที่ระบบข้อมูล", e)
+                return
+            }
+            finally{
+                await Db.saveDatabase();
+            }
+            var result2 = Item.find({_stock: req.body._stock.toString(), _user: req.user.id.toString()})
+            res.status(200).send(result2)
+        }
+        else{
+            isValidItemName = false
+        }
+
+        if(isValidItemName === false){
+            res.status(500).send("สินค้าไม่ถูกต้องหรือถูกลบไปจากคลังสินค้าไปแล้ว")
+            return
+        }
+    })
+
     app.post('/api/item/edit/:itemId', requireLogin, async (req,res) => {
-        const {itemName, itemWarning, cost, income, category} = req.body
+        const {itemName, itemWarning, initialItem: itemRemaining, cost, income, category, isCreateTransaction, stockId, currentDay} = req.body
         const itemId = req.params.itemId
         var arr = category.split("(");
         const existCategory = await Category.findOne({categoryNameTh: arr[0], _user: req.user.id.toString()})
@@ -76,9 +164,11 @@ module.exports = (app, Db, Item, Category) => {
         }
         var result = Item.findOne({_id: itemId.toString()})
         if(result){
+            let diff = itemRemaining - result.itemRemaining
             try{
                 result.itemName = itemName
                 result.itemWarning = parseInt(itemWarning)
+                result.itemRemaining = parseInt(itemRemaining)
                 result.cost = parseFloat(parseFloat(cost).toFixed(2))
                 result.revenue = parseFloat(parseFloat(income).toFixed(2))
                 result.formatCost = parseFloat(cost).toFixed(2)
@@ -86,6 +176,58 @@ module.exports = (app, Db, Item, Category) => {
                 result.category = category
                 result._category = existCategory
                 Item.update(result)
+
+                if(isCreateTransaction === true){
+                    if(diff > 0){
+                        //import
+                        let newTotal = result.cost * Math.abs(diff)
+                        let newTransaction = {
+                            _user: req.user.id.toString(),
+                            _item: itemId,
+                            _stock: stockId,
+                            discount: 0,
+                            formatDiscount: '0.00',
+                            overcost: 0,
+                            formatOvercost: '0.00',
+                            itemName,
+                            itemAmount: Math.abs(diff),
+                            isUsedInMusicGang: false,
+                            cost: parseFloat(parseFloat(result.cost).toFixed(2)),
+                            formatCost: parseFloat(result.cost).toFixed(2),
+                            total: newTotal,
+                            formatTotal: parseFloat(newTotal).toFixed(2),
+                            type: 'import',
+                            _id : guid(),
+                            day: currentDay,
+                        }
+                        Transaction.insert(newTransaction)
+                    }
+                    else if(diff < 0){
+                        //export
+                        let newTotal = result.revenue * Math.abs(diff)
+                        let newTransaction = {
+                            _user: req.user.id.toString(),
+                            _item: result._id,
+                            _stock: stockId,
+                            discount: 0,
+                            formatDiscount: '0.00',
+                            overcost: 0,
+                            formatOvercost: '0.00',
+                            itemName,
+                            itemAmount: Math.abs(diff),
+                            isUsedInMusicGang: false,
+                            revenue: parseFloat(parseFloat(result.revenue).toFixed(2)),
+                            formatRevenue: parseFloat(result.revenue).toFixed(2),
+                            total: newTotal,
+                            formatTotal: parseFloat(newTotal).toFixed(2),
+                            type: 'export',
+                            _id : guid(),
+                            day: currentDay,
+                        }
+                        console.log(newTransaction)
+                        Transaction.insert(newTransaction)
+                    }
+                }
             }
             catch(e){
                 console.log(e)

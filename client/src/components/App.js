@@ -26,6 +26,7 @@ import CategoryPage from './categories/CategoryPage'
 import ItemPage from './items/ItemPage'
 import AddNewItemPage from './items/AddNewItemPage'
 import EditItemPage from './items/EditItemPage'
+import ViewItemPage from './items/ViewItemPage'
 import MainMenu from './MainMenu';
 import AddNewCategoryPage from './categories/AddNewCategoryPage'
 import TransactionPage from './transaction/TransctionPage'
@@ -41,6 +42,7 @@ import ViewMusicroomTransaction from './musicrooms/ViewMusicroomTransaction'
 import CostTransactionPage from './costs/CostTransactionPage'
 import CostTransactionDetailPage from './costs/CostTransactionDetail'
 import EditCostTransaction from './costs/EditCostTransaction'
+import ViewCostTransaction from './costs/ViewCostTransaction'
 import ErrorNoticePage from './commons/ErrorProcessNotice'
 
 library.add([faTag, faGhost, faDollarSign, faHandHoldingUsd, faExclamation, faTags, faBoxes, faBoxes,
@@ -63,6 +65,7 @@ class App extends Component {
                 <Route path="/stocks/new" component={AddNewStockPage}></Route>
                 <Route exact path="/categories/new" component={AddNewCategoryPage}></Route>
                 <Route exact path="/categories" component={CategoryPage}></Route>
+                <Route exact path="/items/view" component={ViewItemPage}></Route>
                 <Route exact path="/items/:stockId" component={ItemPage}></Route>
                 <Route path="/items/add/new/:stockId" component={AddNewItemPage}></Route>
                 <Route path="/items/edit/:itemId" component={EditItemPage}></Route>
@@ -77,6 +80,7 @@ class App extends Component {
                 <Route exact path="/musicrooms/view" component={ViewMusicroomTransaction}></Route>
                 <Route exact path="/musicrooms/edit" component={EditMusicroomTransaction}></Route>
                 <Route exact path="/costs" component={CostTransactionPage}></Route>
+                <Route exact path="/costs/view" component={ViewCostTransaction}></Route>
                 <Route exact path="/costs/detail" component={CostTransactionDetailPage}></Route>
                 <Route exact path="/costs/edit" component={EditCostTransaction}></Route>
                 <Route component={ErrorNoticePage} />

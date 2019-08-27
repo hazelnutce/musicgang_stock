@@ -2,18 +2,34 @@ import React, { Component } from 'react'
 import {PropagateLoader} from 'react-spinners'
 import {ViewHeader} from '../commons/ViewHeader'
 import {ViewGeneralBody} from '../commons/ViewGeneralBody'
-import {getMusicroomTransaction, deleteMusicroomTransaction} from '../../actions/musicroomTransaction'
+import {getMusicroomTransaction, deleteMusicroomTransaction, resetMusicroomTransactionError} from '../../actions/musicroomTransaction'
 import {connect} from 'react-redux'
 import moment from 'moment'
+import ReactNotification from "react-notifications-component";
 
 export class ViewMusicroomTransaction extends Component {
 
     constructor(props){
         super(props)
 
+        this.notificationDOMRef = React.createRef();
         this.state = {
             isLoadingRecord : true
         }
+    }
+
+    addNotification = (message) => {
+        this.notificationDOMRef.current.addNotification({
+          title: "ข้อผิดพลาด",
+          message: message,
+          type: "danger",
+          insert: "buttom",
+          container: "top-right",
+          animationIn: ["animated", "fadeIn"],
+          animationOut: ["animated", "fadeOut"],
+          dismiss: { duration: 2000 },
+          dismissable: { click: true }
+        });
     }
 
     componentDidMount(){
@@ -24,6 +40,12 @@ export class ViewMusicroomTransaction extends Component {
     componentDidUpdate(prevProps){
         if(this.props.currentRecord !== prevProps.currentRecord){
             this.setState({isLoadingRecord: false})
+        }
+        if(this.props.musicroom.musicroomTransactionError !== prevProps.musicroom.musicroomTransactionError)
+        {
+          if(this.props.musicroom.musicroomTransactionError != null){
+            this.addNotification(this.props.musicroom.musicroomTransactionError)
+          }
         }
     }
 
@@ -80,14 +102,18 @@ export class ViewMusicroomTransaction extends Component {
                         deleteConfirmMessage={"คุณต้องการจะลบรายการห้องซ้อมนี้ใช่หรือไม่ ?"} >
                 </ViewHeader>
                 {this.renderLoader(this.state.isLoadingRecord)}
-                 
+                <div>
+                  <ReactNotification ref={this.notificationDOMRef} onNotificationRemoval={() => {
+                    this.props.resetMusicroomTransactionError()
+                  }} />
+                </div>
             </div>
         )
     }
 }
 
 function mapStateToProps(state){
-    return {currentRecord : state.musicroom.currentMusicroomTransaction}
+    return {currentRecord : state.musicroom.currentMusicroomTransaction, musicroom: state.musicroom}
 }
 
-export default connect(mapStateToProps, {getMusicroomTransaction, deleteMusicroomTransaction})(ViewMusicroomTransaction)
+export default connect(mapStateToProps, {getMusicroomTransaction, deleteMusicroomTransaction, resetMusicroomTransactionError})(ViewMusicroomTransaction)

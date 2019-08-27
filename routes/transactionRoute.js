@@ -40,6 +40,7 @@ module.exports = (app, Db, Transaction, Stock, Item) => {
 
     app.post('/api/transaction/add', requireLogin, async (req,res) => {
         var allItem = req.body
+        console.log(allItem)
 
         var isValidItemName = true
         allItem.forEach((e) => {
