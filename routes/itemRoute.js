@@ -132,6 +132,9 @@ module.exports = (app, Db, Item, Category, Transaction) => {
                 res.status(500).send("พบบางอย่างผิดพลาดที่ระบบข้อมูล", e)
                 return
             }
+            finally{
+                await Db.saveDatabase();
+            }
             var result2 = Item.find({_stock: req.body._stock.toString(), _user: req.user.id.toString()})
             res.status(200).send(result2)
         }
