@@ -42,7 +42,6 @@ module.exports = (app, Db, Item, Category, Transaction) => {
             res.status(500).send("หมวดหมู่สินค้าไม่ถูกต้อง กรุณาลองใหม่อีกครั้ง")
             return
         }
-        var a = parseFloat(parseFloat(cost).toFixed(2)).toFixed(2)
         var newItem = {
             itemName: itemName,
             itemRemaining: parseInt(initialItem),
@@ -71,6 +70,79 @@ module.exports = (app, Db, Item, Category, Transaction) => {
         }
 
         res.status(200).send("Created item successfully")
+    })
+
+    app.post('/api/item/quickImport', requireLogin, async (req,res) => {
+        try{
+            Transaction.insert(req.body)
+        }
+        catch(e){
+            console.log(e)
+            res.status(500).send("พบบางอย่างผิดพลาดที่ระบบข้อมูล", e)
+        }
+        finally{
+            await Db.saveDatabase();
+        }
+
+        let isValidItemName = true
+        var result = Item.findOne({itemName: req.body.itemName})
+        if(result !== null){
+            result.itemRemaining = result.itemRemaining + req.body.itemAmount
+            try{
+                Item.update(result)
+            }
+            catch(e){
+                res.status(500).send("พบบางอย่างผิดพลาดที่ระบบข้อมูล", e)
+                return
+            }
+
+            var result2 = Item.find({_stock: req.body._stock.toString(), _user: req.user.id.toString()})
+            res.status(200).send(result2)
+        }
+        else{
+            isValidItemName = false
+        }
+
+        if(isValidItemName === false){
+            res.status(500).send("สินค้าไม่ถูกต้องหรือถูกลบไปจากคลังสินค้าไปแล้ว")
+            return
+        }
+    })
+
+    app.post('/api/item/quickExport', requireLogin, async (req,res) => {
+        try{
+            Transaction.insert(req.body)
+        }
+        catch(e){
+            console.log(e)
+            res.status(500).send("พบบางอย่างผิดพลาดที่ระบบข้อมูล", e)
+        }
+        finally{
+            await Db.saveDatabase();
+        }
+
+        let isValidItemName = true
+        var result = Item.findOne({itemName: req.body.itemName})
+        if(result !== null){
+            result.itemRemaining = result.itemRemaining - req.body.itemAmount
+            try{
+                Item.update(result)
+            }
+            catch(e){
+                res.status(500).send("พบบางอย่างผิดพลาดที่ระบบข้อมูล", e)
+                return
+            }
+            var result2 = Item.find({_stock: req.body._stock.toString(), _user: req.user.id.toString()})
+            res.status(200).send(result2)
+        }
+        else{
+            isValidItemName = false
+        }
+
+        if(isValidItemName === false){
+            res.status(500).send("สินค้าไม่ถูกต้องหรือถูกลบไปจากคลังสินค้าไปแล้ว")
+            return
+        }
     })
 
     app.post('/api/item/edit/:itemId', requireLogin, async (req,res) => {
@@ -125,7 +197,6 @@ module.exports = (app, Db, Item, Category, Transaction) => {
                             _id : guid(),
                             day: currentDay,
                         }
-                        console.log(newTransaction)
                         Transaction.insert(newTransaction)
                     }
                     else if(diff < 0){

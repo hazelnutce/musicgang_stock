@@ -251,11 +251,10 @@ renderTableBody(costType, transactionList){
     filteredTransaction = filteredTransaction.sort(this.sortDayForTransaction)
 
     _.map(filteredTransaction, (item, index) => {
-        let {description, day, formatCost, _id, cost, costType} = item
+        let {description, day, formatCost, _id} = item
         var itemDay = new Date(day)
         var preparedDescription = description
 
-        var copiedItemDay = itemDay
         if(index > 0){
             var previousItemDay = new Date(filteredTransaction[index-1].day)
             if(this.isSameDay(itemDay, previousItemDay)){

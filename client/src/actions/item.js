@@ -1,5 +1,5 @@
 import {app} from './axiosConfig'
-import {FETCH_CATEGORY, FETCH_ITEMS, FETCH_ITEM, ERROR_CREATE_ITEM, ERROR_EDIT_ITEM, GET_ITEM} from './types'
+import {FETCH_CATEGORY, FETCH_ITEMS, FETCH_ITEM, ERROR_CREATE_ITEM, ERROR_EDIT_ITEM, GET_ITEM, ERROR_QUICKACTION} from './types'
 
 export const fetchItems = (stockId) => async dispatch => {
     const res = await app.get(`/api/item/${stockId}`);
@@ -48,6 +48,26 @@ export const editItem = (values, itemId, stockId, stockName, history) => async d
     }).catch(error => {
         if (error.response) {
             dispatch({type: ERROR_EDIT_ITEM, payload: error.response.data})
+        }
+    })
+}
+
+export const doQuickImport = (values) => async dispatch => {
+    app.post(`/api/item/quickImport`,values).then(async res => {
+        dispatch({type: FETCH_ITEMS, payload: res.data})
+    }).catch(error => {
+        if (error.response) {
+            dispatch({type: ERROR_QUICKACTION, payload: error.response.data})
+        }
+    })
+}
+
+export const doQuickExport = (values) => async dispatch => {
+    app.post(`/api/item/quickExport`,values).then(async res => {
+        dispatch({type: FETCH_ITEMS, payload: res.data})
+    }).catch(error => {
+        if (error.response) {
+            dispatch({type: ERROR_QUICKACTION, payload: error.response.data})
         }
     })
 }

@@ -4,9 +4,10 @@ import {connect} from 'react-redux'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import M from 'materialize-css'
 import _ from 'lodash'
+import DayPickerInput from 'react-day-picker/DayPickerInput'
 
 import {LoaderSpinner} from '../commons/LoaderSpinner'
-import {fetchItems ,deleteItem, fetchCategory} from '../../actions/item'
+import {fetchItems ,deleteItem, fetchCategory, doQuickImport, doQuickExport} from '../../actions/item'
 import '../commons/linkButton.css'
 import {sortItemNameASC,
     sortCategoryASC,
@@ -18,6 +19,10 @@ import {sortItemNameASC,
     sortCostDESC, 
     sortRevenueDESC, 
     sortItemRemainingDESC} from './sortItemFunctions'
+import MomentLocaleUtils, {
+    formatDate,
+    parseDate,
+} from 'react-day-picker/moment';
 
 export class ItemPage extends Component {
     constructor(props){
@@ -30,8 +35,10 @@ export class ItemPage extends Component {
               sortColumn: "itemName",
               sortIcon: "arrow_drop_up"
           },
-          currentItemNameSelected: null,
-          currentModeForTransaction: null
+          currentItemSelected: null,
+          currentModeForTransaction: null,
+          currentSelectedDay: new Date(new Date().setHours(0,0,0,0)),
+          currentItemAmount: 1,
         }
     }
 
@@ -76,16 +83,152 @@ export class ItemPage extends Component {
         var elems = document.querySelectorAll('.modal');
         M.Modal.init(elems, 
         {
-            opacity: 0.6
+            opacity: 0.6,
+            onCloseStart: () => {
+                setTimeout(() => {
+                    this.setState({currentItemAmount: 1})
+                }, 200);
+            }
         });
     }
 
-    setValueForQuickAction = (mode) => {
+    setValueForQuickAction = (mode, item) => {
         if(mode === "import"){
-            this.setState({currentModeForTransaction: "import"})
+            this.setState({currentModeForTransaction: "import", currentItemSelected: item})
         }
         else if(mode === "export"){
-            this.setState({currentModeForTransaction: "export"})
+            this.setState({currentModeForTransaction: "export", currentItemSelected: item})
+        }
+    }
+
+    handleAmountItemWithButton = (value) => {
+        if(this.state.currentItemAmount + value < 1){
+            this.setState({currentItemAmount: 1})
+        }
+        else if(this.state.currentItemAmount + value > this.state.currentItemSelected.itemRemaining && this.state.currentModeForTransaction === "export"){
+            this.setState({currentItemAmount: this.state.currentItemSelected.itemRemaining})
+        }
+        else{
+            this.setState({currentItemAmount: this.state.currentItemAmount + value})
+        }
+        
+    }
+
+    renderButtonInQuickAction = (...numberList) => {
+        return _.map(numberList, (number, index) => {
+            if(number < 0){
+                return(
+                    <div key={index} className="col xl2 l2 m4 s4">
+                        <button onClick={() => this.handleAmountItemWithButton(number)} className="waves-effect waves-light btn-small red">{number.toString()}</button>
+                    </div>
+                )
+            }
+            else{
+                return(
+                    <div key={index} className="col xl2 l2 m4 s4">
+                        <button onClick={() => this.handleAmountItemWithButton(number)} className="waves-effect waves-light btn-small">{`+${number.toString()}`}</button>
+                    </div>
+                )
+            }
+            
+        })
+    }
+
+    renderItemDetailParagraphInQuickAction = () => {
+        const {currentModeForTransaction, currentItemSelected, currentItemAmount} = this.state
+        const spanStyle = {top: "-7px", position: "relative"}
+        if(currentModeForTransaction === "import" && currentItemSelected !== null){
+            return (
+                <p>
+                    {`ชื่อสินค้า : ${currentItemSelected.itemName}`}<br/>
+                    {`ราคาต้นทุน : ${parseFloat(currentItemSelected.cost).toFixed(2)} บาท`}<br/> 
+                    {`ราคารวม : ${parseFloat(currentItemSelected.cost * currentItemAmount).toFixed(2)} บาท`}<br/> 
+                    <span style={spanStyle}>{`จำนวนสินค้าคงเหลือ : ${currentItemSelected.itemRemaining}`}</span><i className="material-icons">arrow_right</i><span style={spanStyle}>{`${currentItemSelected.itemRemaining + currentItemAmount}`}</span><br/> 
+                </p>
+            )
+        }
+        else if(currentModeForTransaction === "export" && currentItemSelected !== null){
+            return (
+                <p>
+                    {`ชื่อสินค้า : ${currentItemSelected.itemName}`}<br/>
+                    {`ราคาขาย : ${parseFloat(currentItemSelected.revenue).toFixed(2)} บาท`}<br/> 
+                    {`ราคารวม : ${parseFloat(currentItemSelected.revenue * currentItemAmount).toFixed(2)} บาท`}<br/> 
+                    <span style={spanStyle}>{`จำนวนสินค้าคงเหลือ : ${currentItemSelected.itemRemaining}`}</span><i className="material-icons">arrow_right</i><span style={spanStyle}>{`${currentItemSelected.itemRemaining - currentItemAmount}`}</span><br/> 
+                </p>
+            )
+        }
+        else{
+            return <p></p>
+        }
+    }
+
+    guid() {
+        function s4() {
+          return Math.floor((1 + Math.random()) * 0x10000)
+            .toString(16)
+            .substring(1);
+        }
+        return s4() + s4() + '-' + s4() + '-' + s4() + '-' + s4() + '-' + s4() + s4() + s4();
+    }
+
+    doQuickAction = () => {
+        const {currentModeForTransaction, currentItemSelected, currentItemAmount, currentSelectedDay} = this.state
+        console.log(currentItemSelected)
+        if(currentModeForTransaction === "import"){
+            let total = currentItemSelected.cost * currentItemAmount
+            let currentDay = currentSelectedDay
+            let newTransaction = {
+                _user: currentItemSelected._user,
+                _item: currentItemSelected._id,
+                _stock: currentItemSelected._stock,
+                 discount: 0,
+                formatDiscount: '0.00',
+                overcost: 0,
+                formatOvercost: '0.00',
+                itemName : currentItemSelected.itemName,
+                itemAmount: currentItemAmount,
+                isUsedInMusicGang: false,
+                cost: parseFloat(parseFloat(currentItemSelected.cost).toFixed(2)),
+                formatCost: parseFloat(currentItemSelected.cost).toFixed(2),
+                total:  parseFloat(parseFloat(total).toFixed(2)),
+                formatTotal: parseFloat(total).toFixed(2),
+                type: 'import',
+                _id : this.guid(),
+                day: currentDay,
+            }
+
+            this.props.doQuickImport(newTransaction)
+        }
+        else if(currentModeForTransaction === "export"){
+            let total = currentItemSelected.revenue * currentItemAmount
+            let currentDay = currentSelectedDay
+            let newTransaction = {
+                _user: currentItemSelected._user,
+                _item: currentItemSelected._id,
+                _stock: currentItemSelected._stock,
+                 discount: 0,
+                formatDiscount: '0.00',
+                overcost: 0,
+                formatOvercost: '0.00',
+                itemName : currentItemSelected.itemName,
+                itemAmount: currentItemAmount,
+                isUsedInMusicGang: false,
+                revenue: parseFloat(parseFloat(currentItemSelected.revenue).toFixed(2)),
+                formatRevenue: parseFloat(currentItemSelected.revenue).toFixed(2),
+                total:  parseFloat(parseFloat(total).toFixed(2)),
+                formatTotal: parseFloat(total).toFixed(2),
+                type: 'export',
+                _id : this.guid(),
+                day: currentDay,
+            }
+
+            this.props.doQuickExport(newTransaction)
+        }
+    }
+
+    handleDayChange = (day) => {
+        if((day instanceof Date)){
+            this.setState({ selectedDay: day })
         }
     }
 
@@ -94,27 +237,54 @@ export class ItemPage extends Component {
         if(this.state.currentModeForTransaction === "import") currentMenuOnModal = "นำเข้าสินค้า (เร่งด่วน)"
         else if(this.state.currentModeForTransaction === "export") currentMenuOnModal = "นำออกสินค้า (เร่งด่วน)"
         return (
-            <div id={"quickAction"} className="modal">
+            <div id={"quickAction"} className="modal modal-fixed-footer">
                 <div className="modal-content">
                     <h5>{currentMenuOnModal}</h5>
                     <div className="container-fluid">
                         <div className="row">
                             <div className="col xl6 l6 m6 s12">
-                                test field 1
+                                <label style={{left: "10px", top:"15px", position: "relative"}}>วันที่บันทึก</label>
+                                <DayPickerInput 
+                                    classNames={{
+                                    container: "input-field col xl12 12 m12 s12",
+                                    overlayWrapper: "DayPickerInput-OverlayWrapper",
+                                    overlay: "DayPickerInput-Overlay"
+                                    }}
+                                    onDayChange={this.handleDayChange} 
+                                    formatDate={formatDate}
+                                    parseDate={parseDate}
+                                    format={"LL"}
+                                    placeholder={`${formatDate(new Date(), 'LL', 'th')}`}
+                                    dayPickerProps={{
+                                    locale: 'th',
+                                    localeUtils: MomentLocaleUtils,
+                                    }}
+                                    value={this.state.currentSelectedDay}
+                                />
+                                {this.renderItemDetailParagraphInQuickAction()}
                             </div>
-                            <div className="col xl6 l6 m6 s12">
-                                test field 2
+                            
+                            <div className="col xl6 l6 m6 s12" style={{top: "16px", position: "relative"}}>
+                                <div className="row">
+                                    <label style={{left: "10px", position: "relative"}}>จำนวนสินค้า</label>
+                                    <input readOnly value={this.state.currentItemAmount} className="input-field col xl12 l12 m12 s12"></input>
+                                </div>
+                                <div className="row">
+                                    {this.renderButtonInQuickAction(-10,-5,-1,+1,+5,+10)}
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
                 <div className="modal-footer">
-                    <button className="green modal-close waves-effect waves-light btn" style={{position: "relative", right: "20px"}}><i className="material-icons right">add_circle</i>ยืนยัน</button> 
+                    <button onClick={() => this.doQuickAction()} className="green modal-close waves-effect waves-light btn" style={{position: "relative", right: "20px"}}><i className="material-icons right">add_circle</i>ยืนยัน</button> 
                     <button className="red modal-close waves-effect waves-light btn"><i className="material-icons right">cancel</i>ยกเลิก</button>
                 </div>
             </div>
         )
     }
+
+
 
     renderItem = () => {
         var allItems = this.props.item.items
@@ -130,6 +300,7 @@ export class ItemPage extends Component {
             }
 
             const {itemName, _category : {categoryNameTh, labelColor, textColor}, formatCost, formatRevenue, itemRemaining, _id} = item
+
             return(
                     <tr key={item._id}>
                         <td>
@@ -146,14 +317,20 @@ export class ItemPage extends Component {
                         <td>{itemRemaining}</td>
                         <td>
                             <div className="modal-trigger" data-target={"quickAction"} 
-                            onClick={() => this.setValueForQuickAction("import")} 
+                            onClick={() => this.setValueForQuickAction("import", item)} 
                             style={{cursor: "pointer"}}><FontAwesomeIcon className="fas fa-sm" icon="arrow-up"/></div>
                         </td>
-                        <td>
-                            <div className="modal-trigger" data-target={"quickAction"} 
-                            onClick={() => this.setValueForQuickAction("export")} 
-                            style={{cursor: "pointer"}}><FontAwesomeIcon className="fas fa-sm" icon="arrow-down"/></div>
-                        </td>
+                        {itemRemaining !== 0 && (
+                            <td>
+                                <div className="modal-trigger" data-target={"quickAction"} 
+                                onClick={() => this.setValueForQuickAction("export", item)} 
+                                style={{cursor: "pointer"}}><FontAwesomeIcon className="fas fa-sm" icon="arrow-down"/></div>
+                            </td>
+                        )}
+                        {itemRemaining === 0 && (
+                            <td>
+                            </td>
+                        )}
                     </tr>          
             )
         })
@@ -221,18 +398,16 @@ export class ItemPage extends Component {
     componentDidUpdate = (prevProps) => {
         if (prevProps.item.items !== this.props.item.items) {
           if(this.props.item !== "" || this.props.item !== null){
-            this.setState({loadingItem: true}, () => {
+            this.setState({loadingItem: true, currentItemSelected: this.props.item.items[0]}, () => {
                 setTimeout(() => {
                     this.initModal()
-                }, 1000);
+                }, 500);
             }) 
           }
         }
     }
 
     render() {
-        var currentLocation = this.props.location.pathname.toString()
-        var stockId = currentLocation.replace("/items/", "")
         const {stockName} = this.props.location.state
         if(!this.state.loadingItem){
             return (
@@ -257,4 +432,4 @@ function mapStateToProps(state){
     return { item: state.item, allCategory: state.category}
 }
 
-export default connect(mapStateToProps, {fetchItems, deleteItem, fetchCategory})(ItemPage)
+export default connect(mapStateToProps, {fetchItems, deleteItem, fetchCategory, doQuickImport, doQuickExport})(ItemPage)
