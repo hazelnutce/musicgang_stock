@@ -3,20 +3,36 @@ import {connect} from 'react-redux'
 import moment from 'moment'
 import {PropagateLoader} from 'react-spinners'
 
-import {getTransaction, refundTransaction} from '../../actions/transaction'
+import {getTransaction, refundTransaction, resetEditTransactionError} from '../../actions/transaction'
 import {fetchItems} from '../../actions/item'
 import {ViewHeader} from '../commons/ViewHeader'
 import {ViewGeneralBody} from '../commons/ViewGeneralBody'
+import ReactNotification from "react-notifications-component";
 
 export class ViewTransaction extends Component {
 
     constructor(props){
         super(props)
 
+        this.notificationDOMRef = React.createRef();
         this.state = {
             isLoadingRecord : true,
             isLoadingItem : true
         }
+    }
+
+    addNotification = (message) => {
+        this.notificationDOMRef.current.addNotification({
+          title: "ข้อผิดพลาด",
+          message: message,
+          type: "danger",
+          insert: "buttom",
+          container: "top-right",
+          animationIn: ["animated", "fadeIn"],
+          animationOut: ["animated", "fadeOut"],
+          dismiss: { duration: 2000 },
+          dismissable: { click: true }
+        });
     }
 
     componentDidMount(){
@@ -31,6 +47,12 @@ export class ViewTransaction extends Component {
         }
         if(this.props.items !== prevProps.items){
             this.setState({isLoadingItem: false})
+        }
+        if(this.props.transaction.transactionEditError !== prevProps.transaction.transactionEditError)
+        {
+            if(this.props.transaction.transactionEditError != null){
+            this.addNotification(this.props.transaction.transactionEditError)
+            }
         }
     }
 
@@ -121,14 +143,18 @@ export class ViewTransaction extends Component {
                         deleteConfirmMessage={"คุณต้องการจะลบรายการสินค้านี้ใช่หรือไม่ ?"} >
                 </ViewHeader>
                 {this.renderLoader(this.state.isLoadingRecord)}
-                 
+                <div>
+                  <ReactNotification ref={this.notificationDOMRef} onNotificationRemoval={() => {
+                    this.props.resetEditTransactionError()
+                  }} />
+                </div>
             </div>
         )
     }
 }
 
 function mapStateToProps(state){
-    return {currentRecord : state.transaction.currentRecord, items: state.item.items}
+    return {currentRecord : state.transaction.currentRecord, items: state.item.items, transaction : state.transaction}
 }
 
-export default connect(mapStateToProps, {getTransaction, fetchItems, refundTransaction})(ViewTransaction)
+export default connect(mapStateToProps, {getTransaction, fetchItems, refundTransaction, resetEditTransactionError})(ViewTransaction)
