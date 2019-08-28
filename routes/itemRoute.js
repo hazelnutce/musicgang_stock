@@ -36,9 +36,8 @@ module.exports = (app, Db, Item, Category, Transaction) => {
             res.status(500).send("สินค้าชื่อนี้มีอยู่ในระบบแล้ว กรุณาลองใหม่อีกครั้ง")
             return 
         }
-        var arr = category.split("(");
-        const existCategory = await Category.findOne({categoryNameTh: arr[0]})
-        if(!existCategory){
+        const existCategory = Category.findOne({categoryNameTh: category})
+        if(existCategory === null){
             res.status(500).send("หมวดหมู่สินค้าไม่ถูกต้อง กรุณาลองใหม่อีกครั้ง")
             return
         }

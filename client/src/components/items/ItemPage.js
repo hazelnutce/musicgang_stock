@@ -296,11 +296,20 @@ export class ItemPage extends Component {
         
         return _.map(allItems, (item) => {
             if(this.props.allCategory.categories != null){
-                item._category = this.props.allCategory.categories.filter(x => (x._id === item._category._id))[0]
+                item._category = this.props.allCategory.categories.filter(x => (x.categoryNameTh === item.category))[0]
             }
+            const {itemName, formatCost, formatRevenue, itemRemaining, _id} = item
 
-            const {itemName, _category : {categoryNameTh, labelColor, textColor}, formatCost, formatRevenue, itemRemaining, _id} = item
+            var categoryNameTh = "ทั่วไป"
+            var labelColor = "#000000"
+            var textColor = "#ffffff"
 
+            if(item._category !== null && item._category !== undefined){
+                categoryNameTh = item._category.categoryNameTh
+                labelColor = item._category.labelColor
+                textColor = item._category.textColor
+            }
+            
             return(
                     <tr key={item._id}>
                         <td>
