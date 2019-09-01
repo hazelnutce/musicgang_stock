@@ -17,7 +17,7 @@ export const fetchCategory = () => async dispatch => {
 }
 
 export const addNewItems = (values, stockId, stockName, history) => async dispatch => {
-    values = {...values, stockId}
+    values = {...values, stockId, stockName}
     app.post('/api/item/add',values).then(async res => {
         history.push({
             pathname: `/items/${stockId}`,

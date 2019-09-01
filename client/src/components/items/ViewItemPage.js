@@ -47,6 +47,7 @@ export class ViewItemPage extends Component {
             let {itemName, formatCost, formatRevenue, itemRemaining, itemWarning, _category: {categoryNameTh, stockName}} = this.props.currentRecord
             let newFormatCost = `${formatCost} บาท`
             let newโormatRevenue = `${formatRevenue} บาท`
+            console.log(this.props.currentRecord)
             
             return(
                 <div>
