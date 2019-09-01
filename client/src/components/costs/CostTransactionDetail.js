@@ -420,14 +420,7 @@ renderPagination(filteredTransaction, type){
                   </div>
               </div>
           </div>
-          {
-              this.state.isLoadingTransaction === false && (
-                <div className="row">
-                    <CostMonthlySummaryPanel color={"red lighten-1"} message={"รายจ่ายจากการนำเข้าสินค้า"} currentMonth={this.state.currentMonth} cost={this.state.currentImportTotal}/>
-                    <CostMonthlySummaryPanel color={"green lighten-1"} message={"รายรับจากการนำออกสินค้า"} currentMonth={this.state.currentMonth} cost={this.state.currentExportTotal}/>
-                </div>
-              )
-          }
+          
           {this.state.isSelectAllRecord === true && this.state.isLoadingTransaction === false && (
                     <div className="row" style={{marginTop: "-20px"}}>
                         <div className="col x12 l12 m12 s12 center">
@@ -439,6 +432,14 @@ renderPagination(filteredTransaction, type){
                                 disabled={this.state.isLoadingImportExportCost} 
                             />
                         </div>
+                        {
+                            this.state.isLoadingTransaction === false && (
+                                <div>
+                                    <CostMonthlySummaryPanel color={"red lighten-1"} message={"รายจ่ายจากการนำเข้าสินค้า"} currentMonth={this.state.currentMonth} cost={this.state.currentImportTotal}/>
+                                    <CostMonthlySummaryPanel color={"green lighten-1"} message={"รายรับจากการนำออกสินค้า"} currentMonth={this.state.currentMonth} cost={this.state.currentExportTotal}/>
+                                </div>
+                            )
+                        }
                         <div className="col xl6 l6 m12 s12">
                                 <div className="col xl12 l12 m12 s12" style={{right: "5px", position: "relative"}}>
                                     <h6>รายจ่าย</h6>

@@ -4,7 +4,9 @@ import {FETCH_STOCK_IN_TRANSACTION,
     EXPORT_TRANSACTION_ERROR,
     FETCH_TRANSACTIONS,
     EDIT_TRANSACTION_ERROR,
-    GET_TRANSACTION} from './types'
+    GET_TRANSACTION,
+    FETCH_TRANSACTION_BYMONTH,
+    FETCH_TRANSACTION_BYMONTH_LOADING} from './types'
 import { app } from './axiosConfig';
 
 export const fetchStockInTransaction = () => async dispatch => {
@@ -78,6 +80,14 @@ export const refundTransaction = (id, history) => async dispatch => {
         if(error.response) {
             dispatch({type: EDIT_TRANSACTION_ERROR, payload: error.response.data})
         }
+    })
+}
+
+export const findSummaryTransaction = (month) => async dispatch => {
+    dispatch({type: FETCH_TRANSACTION_BYMONTH_LOADING, payload: true})
+    app.post('/api/summary/fetchTransactionByMonth', {month}).then(async (res) => {
+        dispatch({type: FETCH_TRANSACTION_BYMONTH, payload: res.data})
+        dispatch({type: FETCH_TRANSACTION_BYMONTH_LOADING, payload: false})
     })
 }
 

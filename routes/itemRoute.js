@@ -30,7 +30,6 @@ module.exports = (app, Db, Item, Category, Transaction) => {
     })
 
     app.post('/api/item/add', requireLogin, async (req,res) => {
-        console.log(req.body)
         const {itemName, initialItem, itemWarning, cost, income, category, stockId, stockName} = req.body
         const item = await Item.findOne({itemName: itemName, _user: req.user.id.toString()})
         if(item){
