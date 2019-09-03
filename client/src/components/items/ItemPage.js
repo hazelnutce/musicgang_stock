@@ -228,7 +228,7 @@ export class ItemPage extends Component {
 
     handleDayChange = (day) => {
         if((day instanceof Date)){
-            this.setState({ selectedDay: day })
+            this.setState({ currentSelectedDay: day })
         }
     }
 
