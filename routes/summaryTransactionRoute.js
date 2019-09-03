@@ -7,7 +7,6 @@ function checkNameAndYear(d1, d2) {
 
 module.exports = (app, Db, Transaction, Cost, Musicroom) => {
     app.post('/api/summary/fetchTransactionByMonth', requireLogin, async (req,res) => {
-        console.log(req.body)
         let {month} = req.body
         let allTransaction = {}
 

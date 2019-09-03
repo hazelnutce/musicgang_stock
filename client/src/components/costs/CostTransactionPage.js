@@ -105,13 +105,20 @@ export class CostTransactionPage extends Component {
     let {currentAllTransaction} = this.props.summary
     return _.map(stockList, (stock) => {
       let {stockName, _id} = stock
-      console.log(currentAllTransaction)
       let {cost, transaction} = currentAllTransaction
       let totalOtherCost = cost.filter(x => x.costType === "Cost" && x._stock === _id).reduce(function(prev, cur) {
-        return prev + parseFloat(cur.formatCost);
+        return prev + parseFloat(cur.formatCost.replace(',', ''));
       }, 0)
       let totalOtherRevenue = cost.filter(x => x.costType === "Revenue" && x._stock === _id).reduce(function(prev, cur) {
-        return prev + parseFloat(cur.formatCost);
+        return prev + parseFloat(cur.formatCost.replace(',', ''));
+      }, 0)
+
+      let totalImportTransaction = transaction.filter(x => x.type === "import" && x._stock === _id).reduce(function(prev, cur) {
+        return prev + parseFloat(cur.formatTotal.replace(',', ''));
+      }, 0)
+
+      let totalExportTransaction = transaction.filter(x => x.type === "export" && x._stock === _id).reduce(function(prev, cur) {
+        return prev + parseFloat(cur.formatTotal.replace(',', ''));
       }, 0)
 
       return (
@@ -119,8 +126,8 @@ export class CostTransactionPage extends Component {
           <div className="col xl12 l12 m12 s12">
           <h6>{`คลังสินค้า : ${stockName}`}</h6>
           </div>
-          <CostMonthlySummaryPanel color={"red lighten-1"} message={"รายจ่ายจากการนำเข้าสินค้า"} currentMonth={this.state.currentMonth} cost={"0.00"}/>
-          <CostMonthlySummaryPanel color={"green lighten-1"} message={"รายรับจากการนำออกสินค้า"} currentMonth={this.state.currentMonth} cost={"0.00"}/>
+          <CostMonthlySummaryPanel color={"red lighten-1"} message={"รายจ่ายจากการนำเข้าสินค้า"} currentMonth={this.state.currentMonth} cost={totalImportTransaction}/>
+          <CostMonthlySummaryPanel color={"green lighten-1"} message={"รายรับจากการนำออกสินค้า"} currentMonth={this.state.currentMonth} cost={totalExportTransaction}/>
           <CostMonthlySummaryPanel color={"red lighten-1"} message={"ค่าใช้จ่ายอื่นๆ"} currentMonth={this.state.currentMonth} cost={totalOtherCost}/>
           <CostMonthlySummaryPanel color={"green lighten-1"} message={"รายรับอื่นๆ"} currentMonth={this.state.currentMonth} cost={totalOtherRevenue}/>
         </div>
@@ -161,28 +168,32 @@ export class CostTransactionPage extends Component {
                   {this.renderTransactionStock(this.props.transaction.stockList)}
                   <div className="divider"></div>
               </div>
-              {!isCurrentAllTransactionLoading && (
-                <div>
-                    <div className="col xl12 l12 m12 s12 center">
-                    <MonthPicker 
-                        handleAddMonth={this.handleAddMonth} 
-                        handleMinusMonth={this.handleMinusMonth} 
-                        handleSetMonth={this.handleSetMonth}
-                        currentMonth={this.state.currentMonth}
-                        disabled={this.state.isLoadingImportExportCost} 
-                    />
-                  </div>
-                  <div className="col xl12 l12 m12 s12">
-                    <h6>ค่าห้องซ้อมรวม</h6>
-                  </div>
-                  <CostMonthlySummaryPanel color={"green lighten-1"} message={"รายรับรวมห้องซ้อมดนตรี"} currentMonth={this.state.currentMonth} cost={resultTotal}/>
-                  {this.renderAllTransactionForAllStock()}
-                </div>
-              )}
-              {isCurrentAllTransactionLoading && (
-                <div className="row">
-                  <LoaderSpinner loading={!isCurrentAllTransactionLoading} color={'#123abc'}/>
-                </div>
+              {this.state.isShowAllTransaction && (
+                 <>
+                 {!isCurrentAllTransactionLoading && (
+                   <div>
+                       <div className="col xl12 l12 m12 s12 center">
+                       <MonthPicker 
+                           handleAddMonth={this.handleAddMonth} 
+                           handleMinusMonth={this.handleMinusMonth} 
+                           handleSetMonth={this.handleSetMonth}
+                           currentMonth={this.state.currentMonth}
+                           disabled={this.state.isLoadingImportExportCost} 
+                       />
+                     </div>
+                     <div className="col xl12 l12 m12 s12">
+                       <h6>ค่าห้องซ้อมรวม</h6>
+                     </div>
+                     <CostMonthlySummaryPanel color={"green lighten-1"} message={"รายรับรวมห้องซ้อมดนตรี"} currentMonth={this.state.currentMonth} cost={resultTotal}/>
+                     {this.renderAllTransactionForAllStock()}
+                   </div>
+                 )}
+                 {isCurrentAllTransactionLoading && (
+                   <div className="row">
+                     <LoaderSpinner loading={!isCurrentAllTransactionLoading} color={'#123abc'}/>
+                   </div>
+                 )}
+                 </>
               )}
           </div>
           
