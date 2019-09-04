@@ -27,8 +27,8 @@ module.exports = (app, Db, Category, Item) => {
             return
         }
         const newCategory = {
-            categoryNameTh,
-            categoryNameEn,
+            categoryNameTh : categoryNameTh.trim(),
+            categoryNameEn : categoryNameEn.trim(),
             labelColor,
             textColor,
             _user: req.user.id.toString(),
@@ -74,8 +74,8 @@ module.exports = (app, Db, Category, Item) => {
         var result = Category.findOne({_id: _id.toString()})
         if(result){
             try{
-                result.categoryNameTh = categoryNameTh
-                result.categoryNameEn = categoryNameEn
+                result.categoryNameTh = categoryNameTh.trim()
+                result.categoryNameEn = categoryNameEn.trim()
                 result.labelColor = labelColor
                 result.textColor = textColor
                 Category.update(result)

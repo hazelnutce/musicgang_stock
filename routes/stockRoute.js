@@ -29,7 +29,7 @@ module.exports = (app, Db, Stock, Item, Category) => {
         }
         //new data
         var newStock = {
-            stockName: stockName,
+            stockName: stockName.trim(),
             description: description,
             tag: [],
             _user: req.user.id.toString(),

@@ -42,14 +42,14 @@ module.exports = (app, Db, Item, Category, Transaction) => {
             return
         }
         var newItem = {
-            itemName: itemName,
+            itemName: itemName.trim(),
             itemRemaining: parseInt(initialItem),
             itemWarning: parseInt(itemWarning),
             cost: parseFloat(parseFloat(cost).toFixed(2)),
             revenue: parseFloat(parseFloat(income).toFixed(2)),
             formatCost: parseFloat(cost).toFixed(2),
             formatRevenue: parseFloat(income).toFixed(2),
-            category: category,
+            category: category.trim(),
             _user: req.user.id.toString(),
             _category: existCategory,
             _stock: stockId,
