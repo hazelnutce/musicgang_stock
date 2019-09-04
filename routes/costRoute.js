@@ -1,4 +1,5 @@
 const requireLogin = require('../middleware/requireLogin')
+const handleString = require('../middleware/handleStringOnRequestBody')
 const guid = require('../services/guid')
 
 module.exports = (app, Db, Cost) => {
@@ -20,7 +21,7 @@ module.exports = (app, Db, Cost) => {
         }
     })
 
-    app.post('/api/cost/add', requireLogin, async (req,res) => {
+    app.post('/api/cost/add', requireLogin, handleString, async (req,res) => {
         
         var allItem = req.body
 
@@ -73,7 +74,7 @@ module.exports = (app, Db, Cost) => {
         res.status(200).send(result)
     })
 
-    app.post('/api/cost/edit', requireLogin, async (req,res) => {
+    app.post('/api/cost/edit', requireLogin, handleString, async (req,res) => {
         const {_id, cost, formatCost, 
             description, costType, _stock, day} = req.body
         var result = Cost.findOne({_id})

@@ -1,4 +1,5 @@
 const requireLogin = require('../middleware/requireLogin')
+const handleString = require('../middleware/handleStringOnRequestBody')
 const guid = require('../services/guid')
 
 function checkNameAndYear(d1, d2) {
@@ -12,7 +13,7 @@ module.exports = (app, Db, Musicroom) => {
         res.send(result)
     })
 
-    app.post('/api/musicroom/add', requireLogin, async (req,res) => {
+    app.post('/api/musicroom/add', requireLogin, handleString, async (req,res) => {
         var allItem = req.body
 
         allItem.forEach((e) => {
@@ -71,7 +72,7 @@ module.exports = (app, Db, Musicroom) => {
         res.status(200).send(result)
     })
 
-    app.post('/api/musicroom/edit', requireLogin, async (req,res) => {
+    app.post('/api/musicroom/edit', requireLogin, handleString, async (req,res) => {
         const {_id, day, endTime, 
             formatDiff, formatEndTime, formatPrice, formatRoomsize, 
             formatStartTime, isOverNight, isStudentDiscount, roomSize,

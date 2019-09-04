@@ -1,4 +1,5 @@
 const requireLogin = require('../middleware/requireLogin')
+const handleString = require('../middleware/handleStringOnRequestBody')
 const guid = require('../services/guid')
 
 module.exports = (app, Db, Item, Category, Transaction) => {
@@ -29,7 +30,7 @@ module.exports = (app, Db, Item, Category, Transaction) => {
         }
     })
 
-    app.post('/api/item/add', requireLogin, async (req,res) => {
+    app.post('/api/item/add', requireLogin, handleString, async (req,res) => {
         const {itemName, initialItem, itemWarning, cost, income, category, stockId, stockName} = req.body
         const item = await Item.findOne({itemName: itemName, _user: req.user.id.toString()})
         if(item){
@@ -42,14 +43,14 @@ module.exports = (app, Db, Item, Category, Transaction) => {
             return
         }
         var newItem = {
-            itemName: itemName.trim(),
+            itemName: itemName,
             itemRemaining: parseInt(initialItem),
             itemWarning: parseInt(itemWarning),
             cost: parseFloat(parseFloat(cost).toFixed(2)),
             revenue: parseFloat(parseFloat(income).toFixed(2)),
             formatCost: parseFloat(cost).toFixed(2),
             formatRevenue: parseFloat(income).toFixed(2),
-            category: category.trim(),
+            category: category,
             _user: req.user.id.toString(),
             _category: existCategory,
             _stock: stockId,
@@ -71,7 +72,7 @@ module.exports = (app, Db, Item, Category, Transaction) => {
         res.status(200).send("Created item successfully")
     })
 
-    app.post('/api/item/quickImport', requireLogin, async (req,res) => {
+    app.post('/api/item/quickImport', requireLogin, handleString, async (req,res) => {
         try{
             Transaction.insert(req.body)
         }
@@ -108,7 +109,7 @@ module.exports = (app, Db, Item, Category, Transaction) => {
         }
     })
 
-    app.post('/api/item/quickExport', requireLogin, async (req,res) => {
+    app.post('/api/item/quickExport', requireLogin, handleString, async (req,res) => {
         try{
             Transaction.insert(req.body)
         }
@@ -147,7 +148,7 @@ module.exports = (app, Db, Item, Category, Transaction) => {
         }
     })
 
-    app.post('/api/item/edit/:itemId', requireLogin, async (req,res) => {
+    app.post('/api/item/edit/:itemId', requireLogin, handleString, async (req,res) => {
         const {itemName, itemWarning, initialItem: itemRemaining, cost, income, category, isCreateTransaction, stockId, currentDay} = req.body
         const itemId = req.params.itemId
         var arr = category.split("(");
