@@ -226,11 +226,12 @@ export class TransactionListSummaryPage extends Component {
         var numberOfPage = 0
         var loop = 0
         var arrayOfPage = []
+        
         if(filteredTransaction.length === 0){
             numberOfPage = 1
         }
         else{
-            numberOfPage = ((filteredTransaction.length - 1) / 20) + 1
+            numberOfPage = parseInt(((filteredTransaction.length - 1) / 20) + 1)
         }
 
         if(numberOfPage < 5){

@@ -353,7 +353,7 @@ renderPagination(filteredTransaction, type){
         numberOfPage = 1
     }
     else{
-        numberOfPage = ((filteredTransaction.length - 1) / 20) + 1
+        numberOfPage = parseInt(((filteredTransaction.length - 1) / 20) + 1)
     }
     
 
