@@ -1,4 +1,5 @@
 const requireLogin = require('../middleware/requireLogin');
+const handleString = require('../middleware/handleStringOnRequestBody')
 const guid = require('../services/guid')
 
 module.exports = (app, Db, Stock, Item, Category) => {
@@ -20,7 +21,7 @@ module.exports = (app, Db, Stock, Item, Category) => {
         res.send(result)
     })
 
-    app.post('/api/stock/add',requireLogin,async (req,res) => {
+    app.post('/api/stock/add',requireLogin, handleString, async (req,res) => {
         const {stockName, description} = req.body
         const stock = await Stock.findOne({stockName: stockName})
         if(stock){

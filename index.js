@@ -82,6 +82,7 @@ var coreApp = db.loadDatabase({}, function(err) {
         require('./routes/transactionRoute')(app, db, Transaction, Stock, Item)
         require('./routes/musicroomRoute')(app, db, MusicRoomTransaction)
         require('./routes/costRoute')(app, db, CostTransaction)
+        require('./routes/summaryTransactionRoute')(app, db, Transaction, CostTransaction, MusicRoomTransaction)
 
         if(!(process.env.NODE_ENV && process.env.NODE_ENV.trim() === 'development')){
             console.log("calling react component from react")

@@ -72,7 +72,7 @@ export class AddNewTransactionOut extends Component {
 
   calculateSummaryRow = (itemProperties) => {
     if(itemProperties.itemName != null){
-      const filteredItem = this.props.location.state.items.filter(item => item.itemName === itemProperties.itemName)
+      const filteredItem = this.filterItem(itemProperties.itemName)
       if(filteredItem.length !== 1){
         return(
           <h6>ชื่อสินค้าไม่ถูกต้อง</h6>

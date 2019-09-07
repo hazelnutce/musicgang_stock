@@ -1,4 +1,5 @@
 const requireLogin = require('../middleware/requireLogin')
+const handleString = require('../middleware/handleStringOnRequestBody')
 const guid = require('../services/guid')
 
 function checkNameAndYear(d1, d2) {
@@ -38,9 +39,8 @@ module.exports = (app, Db, Transaction, Stock, Item) => {
         }
     })
 
-    app.post('/api/transaction/add', requireLogin, async (req,res) => {
+    app.post('/api/transaction/add', requireLogin, handleString, async (req,res) => {
         var allItem = req.body
-        console.log(allItem)
 
         var isValidItemName = true
         allItem.forEach((e) => {
@@ -94,7 +94,7 @@ module.exports = (app, Db, Transaction, Stock, Item) => {
         res.status(200).send("Created transaction successfully")
     }), 
 
-    app.post('/api/transaction/edit', requireLogin, async (req,res) => {
+    app.post('/api/transaction/edit', requireLogin, handleString, async (req,res) => {
         var allItem = req.body
 
         allItem._user = req.user.id.toString()

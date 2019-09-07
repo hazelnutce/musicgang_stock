@@ -1,6 +1,6 @@
 const requireLogin = require('../middleware/requireLogin')
+const handleString = require('../middleware/handleStringOnRequestBody')
 const guid = require('../services/guid')
-//const Category = mongoose.model('categories')
 
 module.exports = (app, Db, Category, Item) => {
     app.get('/api/category',requireLogin,(req,res) => {
@@ -8,7 +8,7 @@ module.exports = (app, Db, Category, Item) => {
         res.send(result)
     })
 
-    app.post('/api/category/new',requireLogin, async (req,res) => {
+    app.post('/api/category/new',requireLogin, handleString, async (req,res) => {
         console.log("category new")
         const {categoryNameTh, categoryNameEn, labelColor, textColor, stockName} = req.body
         const stock = await Category.findOne({
@@ -27,8 +27,8 @@ module.exports = (app, Db, Category, Item) => {
             return
         }
         const newCategory = {
-            categoryNameTh,
-            categoryNameEn,
+            categoryNameTh : categoryNameTh,
+            categoryNameEn : categoryNameEn,
             labelColor,
             textColor,
             _user: req.user.id.toString(),
@@ -53,7 +53,7 @@ module.exports = (app, Db, Category, Item) => {
         res.status(200).send(result)
     })
 
-    app.post('/api/category/edit', requireLogin, async (req,res) => {
+    app.post('/api/category/edit', requireLogin, handleString, async (req,res) => {
         const {categoryNameTh, categoryNameEn, labelColor, textColor, _id, stockName} = req.body
 
         const category = await Category.find({
