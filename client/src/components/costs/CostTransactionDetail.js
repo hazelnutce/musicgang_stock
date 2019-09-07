@@ -346,19 +346,14 @@ renderPaginationBody(arrayOfPage, type){
 }
 
 renderPagination(filteredTransaction, type){
-    var numberOfPage = 0
+    var numberOfPage = type === "Cost" ? this.state.currentCostPage : this.state.currentRevenuePage
     var loop = 0
     var arrayOfPage = []
-    if(filteredTransaction.length === 0){
-        numberOfPage = 1
-    }
-    else{
-        numberOfPage = parseInt(((filteredTransaction.length - 1) / 20) + 1)
-    }
-    
-
+   
     if(numberOfPage < 5){
-        for(loop = 1; loop <= numberOfPage; loop++){
+        let maximumPage = parseInt(((filteredTransaction.length - 1) / 20) + 1) 
+        let limitPage = maximumPage > 5 ? 5 : maximumPage !== 0 ? maximumPage : 1
+        for(loop = 1; loop <= limitPage; loop++){
             arrayOfPage.push(loop)
         }
     }

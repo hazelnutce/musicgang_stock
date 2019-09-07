@@ -319,19 +319,13 @@ export class MusicroomTransactionPage extends Component {
     }
 
     renderPagination(filteredTransaction, type){
-        var numberOfPage = 0
+        var numberOfPage = type === "Small" ? this.state.currentSmallRoomPage : this.state.currentLargeRoomPage
         var loop = 0
         var arrayOfPage = []
-        if(filteredTransaction.length === 0){
-            numberOfPage = 1
-        }
-        else{
-            numberOfPage = parseInt(((filteredTransaction.length - 1) / 20) + 1)
-        }
-        
-
         if(numberOfPage < 5){
-            for(loop = 1; loop <= numberOfPage; loop++){
+            let maximumPage = parseInt(((filteredTransaction.length - 1) / 20) + 1) 
+            let limitPage = maximumPage > 5 ? 5 : maximumPage !== 0 ? maximumPage : 1
+            for(loop = 1; loop <= limitPage; loop++){
                 arrayOfPage.push(loop)
             }
         }
@@ -340,7 +334,7 @@ export class MusicroomTransactionPage extends Component {
                 arrayOfPage.push(loop)
             }
         }
-        
+
         return(
             <ul className="col xl12 l12 m12 s12 pagination center">
                 {this.renderPaginationBody(arrayOfPage, type)}
