@@ -23,6 +23,7 @@ import MomentLocaleUtils, {
     formatDate,
     parseDate,
 } from 'react-day-picker/moment';
+import './main.css'
 
 export class ItemPage extends Component {
     constructor(props){
@@ -298,7 +299,7 @@ export class ItemPage extends Component {
             if(this.props.allCategory.categories != null){
                 item._category = this.props.allCategory.categories.filter(x => (x.categoryNameTh === item.category))[0]
             }
-            const {itemName, formatCost, formatRevenue, itemRemaining, _id} = item
+            const {itemName, formatCost, formatRevenue, itemRemaining, itemWarning, _id} = item
 
             var categoryNameTh = "ทั่วไป"
             var labelColor = "#000000"
@@ -309,9 +310,14 @@ export class ItemPage extends Component {
                 labelColor = item._category.labelColor
                 textColor = item._category.textColor
             }
+
+            let className = ""
+            if(itemWarning >= itemRemaining){
+                className = "warning_row"
+            }
             
             return(
-                    <tr key={item._id}>
+                    <tr key={item._id} className={className}>
                         <td>
                             <Link to={{pathname: `/items/view`,
                                     state: {_id} }}>
