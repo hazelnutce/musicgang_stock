@@ -351,14 +351,14 @@ export class AddNewTransactionOut extends Component {
         )
     }
     return (
-      <div className="container" style={{position: "relative", top: "5px"}}>
-        <div className="row">
-          <h6>นำออกสินค้า / คลัง : {stockName}</h6>
+      <div className="container undernav">
+        <div className="row" style={{position: "relative", top: "20px"}}>
+          <div style={{fontSize: "18px"}}>นำออกสินค้า / คลัง : {stockName}</div>
         </div>
-        <div className="row">
+        <div className="row" style={{position: "relative", top: "35px"}}>
           <label className="left">วันที่นำออก</label>
         </div>
-        <div className="row" style={{bottom: "35px", position: "relative"}}>
+        <div className="row">
               <DayPickerInput 
                 classNames={{
                   container: "input-field col xl6 l8 m8 s12",
@@ -376,7 +376,10 @@ export class AddNewTransactionOut extends Component {
                 }}
               />
         </div>
-        <div className="row" style={{bottom: "35px", position: "relative"}}>
+        <div className="row">
+          <div className="col xl12 l12 m12 s12">
+            รายการสินค้า
+          </div>
           <div className="col xl12 l12 m12 s12">
             {this.state.allRecordedItem.length === 0 ? 
             <div className="card-panel yellow darken-1">
@@ -397,8 +400,8 @@ export class AddNewTransactionOut extends Component {
             </div>
           </div>
         </div> {/*row*/}
-        <div className="divider"></div>
-        <div className="col xl12 l12 m12 s12" style={{marginTop: "10px"}}>
+        <div className="divider" style={{position: "relative", top: "15px"}}></div>
+        <div className="col xl12 l12 m12 s12" style={{marginTop: "20px"}}>
           <div onClick={() => history.goBack()} className="waves-effect waves-light btn-small right red">
               ยกเลิก  
           </div>

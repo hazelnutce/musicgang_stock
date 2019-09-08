@@ -4,9 +4,9 @@ import {RingLoader} from 'react-spinners'
 export class LoaderSpinner extends Component {
   
   render() {
-    let style={position: "relative", top: "50px"}
+    let style={position: "relative", top: "115px"}
     if(this.props.doNotShift === true){
-      style = {}
+      style = {position: "relative", top: "65px"}
     }
     return (
         <div className="container" style={style}>

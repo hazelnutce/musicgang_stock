@@ -90,7 +90,7 @@ export class ViewCostTransaction extends Component {
         }
         
         return (
-            <div className="container" style={{top: "5px", position: "relative"}}>
+            <div className="container undernav">
                 <ViewHeader 
                         headerTopic={"รายละเอียดค่าใช้จ่าย"} 
                         editDestination={"/costs/edit"} 

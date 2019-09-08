@@ -474,19 +474,17 @@ export class AddMusicroomTransaction extends Component {
     const {handleSubmit, itemProperties, invalid, history} = this.props
     var submitButtonClassName = invalid ? "disabled" : ""
     return (
-        <div className="container" style={{position: "relative", top: "5px"}}>
-            <div className="row">
-                <h6>
-                    <i>
-                        <FontAwesomeIcon className="fas fa-sm" icon="music"/>
-                    </i>
-                    <span style={shiftLeft10}>เพิ่มรายการห้องซ้อม</span>
-                </h6>
+        <div className="container undernav">
+            <div className="row" style={{position: "relative", top: "20px"}}>
+                <i>
+                    <FontAwesomeIcon className="fas fa-sm" icon="music"/>
+                </i>
+                <span style={{...shiftLeft10, fontSize: "18px"}}>เพิ่มรายการห้องซ้อม</span>
             </div>
-            <div className="row">
+            <div className="row" style={{position: "relative", top: "35px"}}>
                 <label className="left">วันที่บันทึก</label>
             </div>
-            <div className="row" style={{bottom: "35px", position: "relative"}}>
+            <div className="row">
               <DayPickerInput 
                 classNames={{
                   container: "input-field col xl6 l8 m8 s12",
@@ -505,7 +503,7 @@ export class AddMusicroomTransaction extends Component {
                 value={this.state.selectedDay}
               />
             </div>
-            <div className="row" style={{bottom: "35px", position: "relative"}}>
+            <div className="row">
                 <div className="col xl12 l12 m12 s12">
                     รายการห้องซ้อม
                 </div>
@@ -526,8 +524,8 @@ export class AddMusicroomTransaction extends Component {
                     </div>
                 </div>
             </div>
-            <div className="divider"></div>
-                <div className="col xl12 l12 m12 s12" style={{marginTop: "10px"}}>
+            <div className="divider" style={{position: "relative", top: "15px"}}></div>
+                <div className="col xl12 l12 m12 s12" style={{marginTop: "20px"}}>
                 <div onClick={() => history.goBack()} className="waves-effect waves-light btn-small right red">
                     ยกเลิก  
                 </div>

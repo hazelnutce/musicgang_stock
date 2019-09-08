@@ -424,7 +424,7 @@ export class ItemPage extends Component {
             )
         }
         return (
-            <div className="container" style={{position: "relative", top: "5px"}}>
+            <div className="container undernav">
                 <div className="row">
                     <h5 className="col s12"><i><FontAwesomeIcon icon="boxes"/></i><span style={{marginLeft: "20px"}}>สินค้า / คลัง : {stockName}</span> {this.renderButtonForAddItem()}</h5>
                 </div>

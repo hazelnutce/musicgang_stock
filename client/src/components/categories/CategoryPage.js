@@ -293,7 +293,7 @@ export class CategoryPage extends Component {
             }
             else{
                 return (
-                    <div className="container" style={{top: "5px", position: "relative"}}>
+                    <div className="container undernav">
                         <div className="row">
                             <h5 className="col s12"><i><FontAwesomeIcon icon="tags"/></i><span style={{marginLeft: "20px"}}>หมวดหมู่สินค้า</span></h5>
                         </div>

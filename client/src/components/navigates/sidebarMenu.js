@@ -17,9 +17,10 @@ export class SidebarMenu extends Component {
     }
 
   render() {
+    let style = {position: "fixed", zIndex: 5}
     return (
         <div>
-            <nav >
+            <nav style={style}>
                 <div className="nav-wrapper amber darken-1">
                     <ul className="left">
                         <li><Link to="" data-target="slide-out" className="button-collapse sidenav-trigger"><i className="material-icons medium">menu</i></Link></li>

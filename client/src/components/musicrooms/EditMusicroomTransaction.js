@@ -309,14 +309,12 @@ export class EditMusicroomTransaction extends Component {
     render() {
         const {history, handleSubmit, itemProperties} = this.props
         return (
-            <div className="container" style={{position: "relative", top: "5px"}}>
-                <div className="row">
-                    <h6>
-                        <i>
-                            <FontAwesomeIcon className="fas fa-sm" icon="music"/>
-                        </i>
-                        <span style={shiftLeft10}>แก้ไขรายการห้องซ้อม</span>
-                    </h6>
+            <div className="container undernav">
+                <div className="row" style={{position: "relative", top: "10px"}}>
+                    <i>
+                        <FontAwesomeIcon className="fas fa-sm" icon="music"/>
+                    </i>
+                    <span style={{...shiftLeft10, fontSize: "18px"}}>แก้ไขรายการห้องซ้อม</span>
                 </div>
                 <div className="row">
                     <label className="left">วันที่บันทึก</label>

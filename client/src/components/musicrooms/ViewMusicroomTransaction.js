@@ -91,7 +91,7 @@ export class ViewMusicroomTransaction extends Component {
         }
         
         return (
-            <div className="container" style={{top: "5px", position: "relative"}}>
+            <div className="container undernav">
                 <ViewHeader 
                         headerTopic={"รายละเอียดห้องซ้อม"} 
                         editDestination={"/musicrooms/edit"} 

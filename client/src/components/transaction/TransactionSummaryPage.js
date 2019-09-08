@@ -76,7 +76,7 @@ export class TransactionSummaryPage extends Component {
         }
 
         return (
-        <div className="container" style={{position: "relative", top: "5px"}}>
+        <div className="container undernav">
             <div className="row">
                 <div className="col xl9 l9 m8 s12">
                     <h5 className="col s12 m12 l12 xl12">

@@ -68,7 +68,7 @@ export class StockPage extends Component {
     }
     return (
 
-      <div className="container" style={{position: "relative", top: "5px"}}>
+      <div className="container undernav">
         <div className="row">
           <h5 className="col s12"><i className="material-icons">storage</i>  คลังสินค้า {buttonInLine}</h5>
         </div>

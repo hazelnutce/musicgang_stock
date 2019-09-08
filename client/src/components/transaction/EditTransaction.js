@@ -251,9 +251,9 @@ export class EditTransaction extends Component {
           )
         }
         return (
-            <div className="container" style={{position: "relative", top: "5px"}}>
-                <div className="row">
-                    <h6>เปลี่ยนแปลงรายการสินค้า</h6>
+            <div className="container undernav">
+                <div className="row" style={{position: "relative", top: "10px"}}>
+                    <div style={{fontSize: "18px"}}>เปลี่ยนแปลงรายการสินค้า</div>
                 </div>
                 <div className="row">
                     <label className="left">{isExportMode ? "วันที่นำออก" : "วันที่นำเข้า"}</label>

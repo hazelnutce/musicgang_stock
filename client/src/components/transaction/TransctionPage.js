@@ -58,7 +58,7 @@ export class TransctionPage extends Component {
     }
     else{
       return (
-        <div className="container" style={{position: "relative", top: "5px"}}>
+        <div className="container undernav">
           <div className="row">
             <h5 className="col s12"><i><FontAwesomeIcon className="fas fa-sm" icon="arrow-up"/></i><i style={shiftLeftMinus45}><FontAwesomeIcon className="fas fa-sm" icon="arrow-down"/></i> นำเข้า - นำออก</h5>
           </div>
