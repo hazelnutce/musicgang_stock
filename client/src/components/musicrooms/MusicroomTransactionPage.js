@@ -322,16 +322,41 @@ export class MusicroomTransactionPage extends Component {
         var numberOfPage = type === "Small" ? this.state.currentSmallRoomPage : this.state.currentLargeRoomPage
         var loop = 0
         var arrayOfPage = []
-        if(numberOfPage < 5){
-            let maximumPage = parseInt(((filteredTransaction.length - 1) / 20) + 1) 
-            let limitPage = maximumPage > 5 ? 5 : maximumPage !== 0 ? maximumPage : 1
-            for(loop = 1; loop <= limitPage; loop++){
+        
+        // case 1 - space between current and maximum more than or equal 2
+        // case 1.1 maximum page less than 5 -> show all
+        // case 1.2 maximum page more 5 or equal and current >= 3 -> make current into be a middle page
+        // case 1.3 same in 1.2 but current less than 3 -> show page from 1 to 5
+        // case 2 - space between current and maximum less than 2
+        // case 2.1 maximum page less than 5 -> show all
+        // case 2.2 maximum page more than 5 or equal -> show with 5 page from (maximum - 4) to (maximum)
+
+        let maximumPage = parseInt(((filteredTransaction.length - 1) / 20) + 1)
+        maximumPage = maximumPage === 0 ? 1 : maximumPage 
+        
+        if(maximumPage < 5){
+            for(loop = 1; loop <= maximumPage; loop++){
                 arrayOfPage.push(loop)
             }
         }
         else{
-            for(loop = numberOfPage - 4; loop <= numberOfPage; loop++){
-                arrayOfPage.push(loop)
+            if(maximumPage - numberOfPage >= 2){
+                if(numberOfPage > 2){
+                    for(loop = numberOfPage - 2; loop <= numberOfPage + 2; loop++){
+                        arrayOfPage.push(loop)
+                    }
+                }
+                else{
+                    for(loop = 1; loop <= 5; loop++){
+                        arrayOfPage.push(loop)
+                    }
+                }
+                
+            }
+            else{
+                for(loop = maximumPage - 4; loop <= maximumPage; loop++){
+                    arrayOfPage.push(loop)
+                }
             }
         }
 
