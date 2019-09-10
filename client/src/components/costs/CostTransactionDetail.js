@@ -36,13 +36,19 @@ const shiftLeft10 = {
   position: "relative"
 }
 
+const sessionEnums = {
+    currentPageTrackerCost_1: 'currentPageTrackerCost_1',
+    currentPageTrackerCost_2: 'currentPageTrackerCost_2',
+    currentPageTrackerCost_month: 'currentPageTrackerCost_month'
+}
+
 export class CostTransactionDetail extends Component {
   constructor(props){
     super(props)
 
-    var d = new Date()
-    var n = d.getMonth()
-    var y = d.getFullYear()
+    var costPage = sessionStorage.getItem(sessionEnums.currentPageTrackerCost_1)
+    var revenuePage = sessionStorage.getItem(sessionEnums.currentPageTrackerCost_2)
+    var month = sessionStorage.getItem(sessionEnums.currentPageTrackerCost_month)
 
     this.notificationDOMRef = React.createRef();
 
@@ -52,9 +58,9 @@ export class CostTransactionDetail extends Component {
       isSelectRevenueRecord : true,
       selectedDay: new Date(new Date().setHours(0,0,0,0)),
       isLoadingTransaction : true,
-      currentMonth :  y * 12 + n,
-      currentCostPage : 1,
-      currentRevenuePage : 1,
+      currentMonth :  parseInt(month),
+      currentCostPage : parseInt(costPage),
+      currentRevenuePage : parseInt(revenuePage),
       currentImportTotal: 0,
       currentExportTotal: 0,
       currentMusicroomTotal: 0,
@@ -171,11 +177,14 @@ numberWithCommas(x) {
   }
 
 handleAddMonth = () => {
+    //need to handle changed page between month
+    var newMonth = this.state.currentMonth + 1
+    sessionStorage.setItem(sessionEnums.currentPageTrackerCost_month, newMonth.toString())
     this.setState({isLoadingImportExportCost: true})
-    let promiseImport = this.props.getTotalImport(this.state.currentMonth + 1, this.props.location.state.stockId)
-    let promiseExport = this.props.getTotalExport(this.state.currentMonth + 1, this.props.location.state.stockId)
+    let promiseImport = this.props.getTotalImport(newMonth, this.props.location.state.stockId)
+    let promiseExport = this.props.getTotalExport(newMonth, this.props.location.state.stockId)
     Promise.all([promiseImport, promiseExport]).then(values => {
-        this.setState({currentMonth: this.state.currentMonth + 1, 
+        this.setState({currentMonth: newMonth, 
             currentImportTotal: values[0].data,
             currentExportTotal: values[1].data,
             isLoadingImportExportCost: false})
@@ -183,11 +192,14 @@ handleAddMonth = () => {
 }
 
 handleMinusMonth = () => {
+    //need to handle changed page between month
+    var newMonth = this.state.currentMonth - 1
+    sessionStorage.setItem(sessionEnums.currentPageTrackerCost_month, newMonth.toString())
     this.setState({isLoadingImportExportCost: true})
-    let promiseImport = this.props.getTotalImport(this.state.currentMonth - 1, this.props.location.state.stockId)
-    let promiseExport = this.props.getTotalExport(this.state.currentMonth - 1, this.props.location.state.stockId)
+    let promiseImport = this.props.getTotalImport(newMonth, this.props.location.state.stockId)
+    let promiseExport = this.props.getTotalExport(newMonth, this.props.location.state.stockId)
     Promise.all([promiseImport, promiseExport]).then(values => {
-        this.setState({currentMonth: this.state.currentMonth - 1, 
+        this.setState({currentMonth: newMonth, 
             currentImportTotal: values[0].data,
             currentExportTotal: values[1].data,
             isLoadingImportExportCost: false})
@@ -195,6 +207,9 @@ handleMinusMonth = () => {
 }
 
 handleSetMonth = (integerMonth) => {
+    //need to handle changed page between month
+    var newMonth = integerMonth
+    sessionStorage.setItem(sessionEnums.currentPageTrackerCost_month, newMonth.toString())
     this.setState({isLoadingImportExportCost: true})
     let promiseImport = this.props.getTotalImport(integerMonth, this.props.location.state.stockId)
     let promiseExport = this.props.getTotalExport(integerMonth, this.props.location.state.stockId)
@@ -245,18 +260,13 @@ renderTableBody(costType, transactionList){
     let returnTableRow = []
     let fontSize = ""
 
-    var filteredTransaction = transactionList.filter(x => x.costType === costType && x._stock === stockId &&
-        this.isSameMonth(new Date(x.day), this.handleMonthFilter(this.state.currentMonth)))
-
-    filteredTransaction = filteredTransaction.sort(this.sortDayForTransaction)
-
-    _.map(filteredTransaction, (item, index) => {
+    _.map(transactionList, (item, index) => {
         let {description, day, formatCost, _id} = item
         var itemDay = new Date(day)
         var preparedDescription = description
 
         if(index > 0){
-            var previousItemDay = new Date(filteredTransaction[index-1].day)
+            var previousItemDay = new Date(transactionList[index-1].day)
             if(this.isSameDay(itemDay, previousItemDay)){
                 itemDay = null
             }
@@ -289,7 +299,7 @@ renderTableBody(costType, transactionList){
 
     })
 
-    var additionalRow = 20 - filteredTransaction.length
+    var additionalRow = 20 - transactionList.length
                                        
     var loop = 0
     for(loop = 0; loop < additionalRow; loop++){
@@ -308,9 +318,11 @@ renderTableBody(costType, transactionList){
 
 setCurrentPage(page, type, canClick){
     if(type === "Cost" && canClick){
+        sessionStorage.setItem(sessionEnums.currentPageTrackerCost_1, page.toString())
         this.setState({currentCostPage: page})
     }
     else if(type === "Revenue" && canClick){
+        sessionStorage.setItem(sessionEnums.currentPageTrackerCost_2, page.toString())
         this.setState({currentRevenuePage: page})
     }
 }
@@ -378,7 +390,6 @@ renderPagination(filteredTransaction, type){
                     arrayOfPage.push(loop)
                 }
             }
-            
         }
         else{
             for(loop = maximumPage - 4; loop <= maximumPage; loop++){
@@ -401,9 +412,11 @@ renderPagination(filteredTransaction, type){
     if(costTransactions != null){
         var costFilteredTransaction = costTransactions.filter(x => x.costType === "Cost" && x._stock === stockId && this.isSameMonth(new Date(x.day), this.handleMonthFilter(this.state.currentMonth)))
         costFilteredTransaction = costFilteredTransaction.sort(this.sortDayForTransaction)
+        var slicedCostFilteredTransaction = costFilteredTransaction.slice((this.state.currentCostPage - 1) * 20, this.state.currentCostPage * 20)
 
         var revenueFilteredTransaction = costTransactions.filter(x => x.costType === "Revenue" && x._stock === stockId && this.isSameMonth(new Date(x.day), this.handleMonthFilter(this.state.currentMonth)))
         revenueFilteredTransaction = revenueFilteredTransaction.sort(this.sortDayForTransaction)
+        var slicedRevenueFilteredTransaction = revenueFilteredTransaction.slice((this.state.currentRevenuePage - 1) * 20, this.state.currentRevenuePage * 20)
     }
 
     return (
@@ -475,7 +488,7 @@ renderPagination(filteredTransaction, type){
                                                 </tr>
                                                 </thead>
                                                 <tbody>
-                                                    {this.renderTableBody("Cost", costTransactions)}
+                                                    {this.renderTableBody("Cost", slicedCostFilteredTransaction)}
                                                 </tbody>
                                             </table>
                                         </div>
@@ -501,7 +514,7 @@ renderPagination(filteredTransaction, type){
                                     </thead>
                         
                                     <tbody>
-                                        {this.renderTableBody("Revenue", costTransactions)}
+                                        {this.renderTableBody("Revenue", slicedRevenueFilteredTransaction)}
                                     </tbody>
                                     </table>
                                 </div>
@@ -538,7 +551,7 @@ renderPagination(filteredTransaction, type){
                                     </tr>
                                     </thead>
                                     <tbody>
-                                        {this.renderTableBody("Cost", costTransactions)}
+                                        {this.renderTableBody("Cost", slicedCostFilteredTransaction)}
                                     </tbody>
                                 </table>
                             </div>
@@ -574,7 +587,7 @@ renderPagination(filteredTransaction, type){
                             </thead>
                 
                             <tbody>
-                                {this.renderTableBody("Revenue", costTransactions)}
+                                {this.renderTableBody("Revenue", slicedRevenueFilteredTransaction)}
                             </tbody>
                             </table>
                         </div>

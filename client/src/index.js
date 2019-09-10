@@ -12,6 +12,29 @@ import reducers from './reducers'
 
 const store = createStore(reducers,{},applyMiddleware(reduxThunk))
 
+var d = new Date()
+var n = d.getMonth()
+var y = d.getFullYear()
+
+var month = y * 12 + n
+var monthString = month.toString()
+
+var sessionStorageObject = {
+    currentPageTrackerTransaction_1 : "1",
+    currentPageTrackerTransaction_2 : "1",
+    currentPageTrackerTransaction_month : monthString,
+    currentPageTrackerMusicroom_1 : "1",
+    currentPageTrackerMusicroom_2 : "1",
+    currentPageTrackerMusicroom_month : monthString,
+    currentPageTrackerCost_1 : "1",
+    currentPageTrackerCost_2 : "1",
+    currentPageTrackerCost_month : monthString,
+}
+
+for(var p in sessionStorageObject){
+    sessionStorage.setItem(p.toString(), sessionStorageObject[p])
+}
+
 ReactDOM.render(
     <Provider store={store}>
         <App />
