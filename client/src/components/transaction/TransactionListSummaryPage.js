@@ -10,36 +10,53 @@ import {fetchTransaction} from '../../actions/transaction'
 import {LoaderSpinner} from '../commons/LoaderSpinner'
 import {EmptyTransactionNotice} from '../commons/EmptyTransactionNotice'
 
+const sessionEnums = {
+    currentPageTrackerTransaction_1: 'currentPageTrackerTransaction_1',
+    currentPageTrackerTransaction_2: 'currentPageTrackerTransaction_2',
+    currentPageTrackerTransaction_month: 'currentPageTrackerTransaction_month'
+}
+
 export class TransactionListSummaryPage extends Component {
     constructor(props){
         super(props)
 
-        var d = new Date()
-        var n = d.getMonth()
-        var y = d.getFullYear()
+        var importPage = sessionStorage.getItem(sessionEnums.currentPageTrackerTransaction_1)
+        var exportPage = sessionStorage.getItem(sessionEnums.currentPageTrackerTransaction_2)
+        var month = sessionStorage.getItem(sessionEnums.currentPageTrackerTransaction_month)
 
         this.state = {
-            currentMonth :  y * 12 + n,
+            currentMonth :  parseInt(month),
             loadingTransaction : false,
-            currentImportPage: 1,
-            currentExportPage: 1
+            currentImportPage: parseInt(importPage),
+            currentExportPage: parseInt(exportPage)
         }
     }
 
     handleAddMonth = () => {
-        this.setState({currentMonth: this.state.currentMonth + 1}, () => {
+        let newMonth = this.state.currentMonth + 1
+        sessionStorage.setItem(sessionEnums.currentPageTrackerTransaction_1, "1")
+        sessionStorage.setItem(sessionEnums.currentPageTrackerTransaction_2, "1")
+        sessionStorage.setItem(sessionEnums.currentPageTrackerTransaction_month, newMonth.toString())
+        this.setState({currentMonth: newMonth, currentImportPage: 1, currentExportPage: 1}, () => {
             this.initToolTip()
         })
     }
 
     handleMinusMonth = () => {
-        this.setState({currentMonth: this.state.currentMonth - 1}, () => {
+        let newMonth = this.state.currentMonth - 1
+        sessionStorage.setItem(sessionEnums.currentPageTrackerTransaction_1, "1")
+        sessionStorage.setItem(sessionEnums.currentPageTrackerTransaction_2, "1")
+        sessionStorage.setItem(sessionEnums.currentPageTrackerTransaction_month, newMonth.toString())
+        this.setState({currentMonth: newMonth, currentImportPage: 1, currentExportPage: 1}, () => {
             this.initToolTip()
         })
     }
 
     handleSetMonth = (integerMonth) => {
-        this.setState({currentMonth: integerMonth}, () => {
+        sessionStorage.setItem(sessionEnums.currentPageTrackerTransaction_1, "1")
+        sessionStorage.setItem(sessionEnums.currentPageTrackerTransaction_2, "1")
+        sessionStorage.setItem(sessionEnums.currentPageTrackerTransaction_month, integerMonth.toString())
+        this.setState({currentMonth: integerMonth, currentImportPage: 1, currentExportPage: 1}, () => {
             this.initToolTip()
         })
     }
@@ -185,9 +202,11 @@ export class TransactionListSummaryPage extends Component {
 
     setCurrentPage(page, type, canClick){
         if(type === "import" && canClick){
+            sessionStorage.setItem(sessionEnums.currentPageTrackerTransaction_1, page.toString())
             this.setState({currentImportPage: page})
         }
         else if(type === "export" && canClick){
+            sessionStorage.setItem(sessionEnums.currentPageTrackerTransaction_2, page.toString())
             this.setState({currentExportPage: page})
         }
     }

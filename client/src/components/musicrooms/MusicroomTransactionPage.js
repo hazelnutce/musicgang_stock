@@ -21,13 +21,19 @@ const shiftLeft10 = {
     position: "relative"
 }
 
+const sessionEnums = {
+    currentPageTrackerMusicroom_1: 'currentPageTrackerMusicroom_1',
+    currentPageTrackerMusicroom_2: 'currentPageTrackerMusicroom_2',
+    currentPageTrackerMusicroom_month: 'currentPageTrackerMusicroom_month'
+}
+
 export class MusicroomTransactionPage extends Component {
     constructor(props){
         super(props)
 
-        var d = new Date()
-        var n = d.getMonth()
-        var y = d.getFullYear()
+        var smallPage = sessionStorage.getItem(sessionEnums.currentPageTrackerMusicroom_1)
+        var largePage = sessionStorage.getItem(sessionEnums.currentPageTrackerMusicroom_2)
+        var month = sessionStorage.getItem(sessionEnums.currentPageTrackerMusicroom_month)
 
         this.notificationDOMRef = React.createRef();
 
@@ -36,10 +42,10 @@ export class MusicroomTransactionPage extends Component {
             isSelectSmallRoomRecord : true,
             isSelectLargeRoomRecord : true,
             isLoadingItem: false,
-            currentMonth :  y * 12 + n,
+            currentMonth :  parseInt(month),
             loadingMusicroomRecord : false,
-            currentSmallRoomPage : 1,
-            currentLargeRoomPage : 1,
+            currentSmallRoomPage : parseInt(smallPage),
+            currentLargeRoomPage : parseInt(largePage),
             currentMusicroomTotal : 0,
             isLoadingTotalRevenue : false,
         }
@@ -60,30 +66,42 @@ export class MusicroomTransactionPage extends Component {
       }
 
     handleAddMonth = () => {
-        this.setState({isLoadingTotalRevenue: true})
-        let promiseMusicroom = this.props.getTotalMusicroom(this.state.currentMonth + 1)
+        let newMonth = this.state.currentMonth + 1
+        sessionStorage.setItem(sessionEnums.currentPageTrackerMusicroom_1, "1")
+        sessionStorage.setItem(sessionEnums.currentPageTrackerMusicroom_2, "1")
+        sessionStorage.setItem(sessionEnums.currentPageTrackerMusicroom_month, newMonth.toString())
+        this.setState({isLoadingTotalRevenue: true, currentLargeRoomPage: 1, currentSmallRoomPage: 1})
+        let promiseMusicroom = this.props.getTotalMusicroom(newMonth)
         Promise.all([promiseMusicroom]).then(values => {
-            this.setState({currentMonth: this.state.currentMonth + 1, 
+            this.setState({currentMonth: newMonth, 
                 currentMusicroomTotal: values[0].data,
                 isLoadingTotalRevenue: false})
         })
     }
 
     handleMinusMonth = () => {
-        this.setState({isLoadingTotalRevenue: true})
-        let promiseMusicroom = this.props.getTotalMusicroom(this.state.currentMonth - 1)
+        let newMonth = this.state.currentMonth - 1
+        sessionStorage.setItem(sessionEnums.currentPageTrackerMusicroom_1, "1")
+        sessionStorage.setItem(sessionEnums.currentPageTrackerMusicroom_2, "1")
+        sessionStorage.setItem(sessionEnums.currentPageTrackerMusicroom_month, newMonth.toString())
+        this.setState({isLoadingTotalRevenue: true, currentLargeRoomPage: 1, currentSmallRoomPage: 1})
+        let promiseMusicroom = this.props.getTotalMusicroom(newMonth)
         Promise.all([promiseMusicroom]).then(values => {
-            this.setState({currentMonth: this.state.currentMonth - 1, 
+            this.setState({currentMonth: newMonth, 
                 currentMusicroomTotal: values[0].data,
                 isLoadingTotalRevenue: false})
         })
     }
 
     handleSetMonth = (integerMonth) => {
-        this.setState({isLoadingTotalRevenue: true})
-        let promiseMusicroom = this.props.getTotalMusicroom(integerMonth)
+        let newMonth = integerMonth
+        sessionStorage.setItem(sessionEnums.currentPageTrackerMusicroom_1, "1")
+        sessionStorage.setItem(sessionEnums.currentPageTrackerMusicroom_2, "1")
+        sessionStorage.setItem(sessionEnums.currentPageTrackerMusicroom_month, newMonth.toString())
+        this.setState({isLoadingTotalRevenue: true, currentLargeRoomPage: 1, currentSmallRoomPage: 1})
+        let promiseMusicroom = this.props.getTotalMusicroom(newMonth)
         Promise.all([promiseMusicroom]).then(values => {
-            this.setState({currentMonth: integerMonth, 
+            this.setState({currentMonth: newMonth, 
                 currentMusicroomTotal: values[0].data,
                 isLoadingTotalRevenue: false})
         })
@@ -281,9 +299,11 @@ export class MusicroomTransactionPage extends Component {
 
     setCurrentPage(page, type, canClick){
         if(type === "Small" && canClick){
+            sessionStorage.setItem(sessionEnums.currentPageTrackerMusicroom_1, page.toString())
             this.setState({currentSmallRoomPage: page})
         }
         else if(type === "Large" && canClick){
+            sessionStorage.setItem(sessionEnums.currentPageTrackerMusicroom_2, page.toString())
             this.setState({currentLargeRoomPage: page})
         }
     }

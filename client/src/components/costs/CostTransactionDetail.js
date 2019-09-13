@@ -180,7 +180,13 @@ handleAddMonth = () => {
     //need to handle changed page between month
     var newMonth = this.state.currentMonth + 1
     sessionStorage.setItem(sessionEnums.currentPageTrackerCost_month, newMonth.toString())
-    this.setState({isLoadingImportExportCost: true})
+    sessionStorage.setItem(sessionEnums.currentPageTrackerCost_1, "1")
+    sessionStorage.setItem(sessionEnums.currentPageTrackerCost_2, "1")
+    this.setState({
+        isLoadingImportExportCost: true,
+        currentCostPage: 1,
+        currentRevenuePage: 1
+    })
     let promiseImport = this.props.getTotalImport(newMonth, this.props.location.state.stockId)
     let promiseExport = this.props.getTotalExport(newMonth, this.props.location.state.stockId)
     Promise.all([promiseImport, promiseExport]).then(values => {
@@ -195,7 +201,13 @@ handleMinusMonth = () => {
     //need to handle changed page between month
     var newMonth = this.state.currentMonth - 1
     sessionStorage.setItem(sessionEnums.currentPageTrackerCost_month, newMonth.toString())
-    this.setState({isLoadingImportExportCost: true})
+    sessionStorage.setItem(sessionEnums.currentPageTrackerCost_1, "1")
+    sessionStorage.setItem(sessionEnums.currentPageTrackerCost_2, "1")
+    this.setState({
+        isLoadingImportExportCost: true,
+        currentCostPage: 1,
+        currentRevenuePage: 1
+    })
     let promiseImport = this.props.getTotalImport(newMonth, this.props.location.state.stockId)
     let promiseExport = this.props.getTotalExport(newMonth, this.props.location.state.stockId)
     Promise.all([promiseImport, promiseExport]).then(values => {
@@ -210,7 +222,13 @@ handleSetMonth = (integerMonth) => {
     //need to handle changed page between month
     var newMonth = integerMonth
     sessionStorage.setItem(sessionEnums.currentPageTrackerCost_month, newMonth.toString())
-    this.setState({isLoadingImportExportCost: true})
+    sessionStorage.setItem(sessionEnums.currentPageTrackerCost_1, "1")
+    sessionStorage.setItem(sessionEnums.currentPageTrackerCost_2, "1")
+    this.setState({
+        isLoadingImportExportCost: true,
+        currentCostPage: 1,
+        currentRevenuePage: 1
+    })
     let promiseImport = this.props.getTotalImport(integerMonth, this.props.location.state.stockId)
     let promiseExport = this.props.getTotalExport(integerMonth, this.props.location.state.stockId)
     Promise.all([promiseImport, promiseExport]).then(values => {
