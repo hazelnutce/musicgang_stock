@@ -40,7 +40,7 @@ export class AddNewStockPage extends Component {
     render() {
         const {history} = this.props
         return (
-        <div className="container" style={{position: "relative", top: "5px"}}>
+        <div className="container undernav">
             <div className="row">
                 <h5 className="header col s6">เพิ่มคลังสินค้า
                     <i className="material-icons" style={{marginLeft: "10px"}}>input</i>

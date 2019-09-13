@@ -98,14 +98,14 @@ export class EditCostTransaction extends Component {
         const {history, handleSubmit, invalid} = this.props
 
         return (
-            <div className="container" style={{top: "5px", position: "relative"}}>
+            <div className="container undernav">
                 <div className="row">
-                    <h5 className="col s12 m12 l12 xl12">
+                    <h6 className="col s12 m12 l12 xl12">
                         <i >
                             <FontAwesomeIcon className="fas fa-sm" icon="dollar-sign"/>
                         </i>
                         <span style={shiftLeft10}>แก้ไขค่าใช้จ่าย</span>
-                    </h5>
+                    </h6>
                 </div>
                 <div className="row">
                     <NewCostTransactionForm>

@@ -21,13 +21,19 @@ const shiftLeft10 = {
     position: "relative"
 }
 
+const sessionEnums = {
+    currentPageTrackerMusicroom_1: 'currentPageTrackerMusicroom_1',
+    currentPageTrackerMusicroom_2: 'currentPageTrackerMusicroom_2',
+    currentPageTrackerMusicroom_month: 'currentPageTrackerMusicroom_month'
+}
+
 export class MusicroomTransactionPage extends Component {
     constructor(props){
         super(props)
 
-        var d = new Date()
-        var n = d.getMonth()
-        var y = d.getFullYear()
+        var smallPage = sessionStorage.getItem(sessionEnums.currentPageTrackerMusicroom_1)
+        var largePage = sessionStorage.getItem(sessionEnums.currentPageTrackerMusicroom_2)
+        var month = sessionStorage.getItem(sessionEnums.currentPageTrackerMusicroom_month)
 
         this.notificationDOMRef = React.createRef();
 
@@ -36,10 +42,10 @@ export class MusicroomTransactionPage extends Component {
             isSelectSmallRoomRecord : true,
             isSelectLargeRoomRecord : true,
             isLoadingItem: false,
-            currentMonth :  y * 12 + n,
+            currentMonth :  parseInt(month),
             loadingMusicroomRecord : false,
-            currentSmallRoomPage : 1,
-            currentLargeRoomPage : 1,
+            currentSmallRoomPage : parseInt(smallPage),
+            currentLargeRoomPage : parseInt(largePage),
             currentMusicroomTotal : 0,
             isLoadingTotalRevenue : false,
         }
@@ -60,30 +66,42 @@ export class MusicroomTransactionPage extends Component {
       }
 
     handleAddMonth = () => {
-        this.setState({isLoadingTotalRevenue: true})
-        let promiseMusicroom = this.props.getTotalMusicroom(this.state.currentMonth + 1)
+        let newMonth = this.state.currentMonth + 1
+        sessionStorage.setItem(sessionEnums.currentPageTrackerMusicroom_1, "1")
+        sessionStorage.setItem(sessionEnums.currentPageTrackerMusicroom_2, "1")
+        sessionStorage.setItem(sessionEnums.currentPageTrackerMusicroom_month, newMonth.toString())
+        this.setState({isLoadingTotalRevenue: true, currentLargeRoomPage: 1, currentSmallRoomPage: 1})
+        let promiseMusicroom = this.props.getTotalMusicroom(newMonth)
         Promise.all([promiseMusicroom]).then(values => {
-            this.setState({currentMonth: this.state.currentMonth + 1, 
+            this.setState({currentMonth: newMonth, 
                 currentMusicroomTotal: values[0].data,
                 isLoadingTotalRevenue: false})
         })
     }
 
     handleMinusMonth = () => {
-        this.setState({isLoadingTotalRevenue: true})
-        let promiseMusicroom = this.props.getTotalMusicroom(this.state.currentMonth - 1)
+        let newMonth = this.state.currentMonth - 1
+        sessionStorage.setItem(sessionEnums.currentPageTrackerMusicroom_1, "1")
+        sessionStorage.setItem(sessionEnums.currentPageTrackerMusicroom_2, "1")
+        sessionStorage.setItem(sessionEnums.currentPageTrackerMusicroom_month, newMonth.toString())
+        this.setState({isLoadingTotalRevenue: true, currentLargeRoomPage: 1, currentSmallRoomPage: 1})
+        let promiseMusicroom = this.props.getTotalMusicroom(newMonth)
         Promise.all([promiseMusicroom]).then(values => {
-            this.setState({currentMonth: this.state.currentMonth - 1, 
+            this.setState({currentMonth: newMonth, 
                 currentMusicroomTotal: values[0].data,
                 isLoadingTotalRevenue: false})
         })
     }
 
     handleSetMonth = (integerMonth) => {
-        this.setState({isLoadingTotalRevenue: true})
-        let promiseMusicroom = this.props.getTotalMusicroom(integerMonth)
+        let newMonth = integerMonth
+        sessionStorage.setItem(sessionEnums.currentPageTrackerMusicroom_1, "1")
+        sessionStorage.setItem(sessionEnums.currentPageTrackerMusicroom_2, "1")
+        sessionStorage.setItem(sessionEnums.currentPageTrackerMusicroom_month, newMonth.toString())
+        this.setState({isLoadingTotalRevenue: true, currentLargeRoomPage: 1, currentSmallRoomPage: 1})
+        let promiseMusicroom = this.props.getTotalMusicroom(newMonth)
         Promise.all([promiseMusicroom]).then(values => {
-            this.setState({currentMonth: integerMonth, 
+            this.setState({currentMonth: newMonth, 
                 currentMusicroomTotal: values[0].data,
                 isLoadingTotalRevenue: false})
         })
@@ -281,9 +299,11 @@ export class MusicroomTransactionPage extends Component {
 
     setCurrentPage(page, type, canClick){
         if(type === "Small" && canClick){
+            sessionStorage.setItem(sessionEnums.currentPageTrackerMusicroom_1, page.toString())
             this.setState({currentSmallRoomPage: page})
         }
         else if(type === "Large" && canClick){
+            sessionStorage.setItem(sessionEnums.currentPageTrackerMusicroom_2, page.toString())
             this.setState({currentLargeRoomPage: page})
         }
     }
@@ -319,28 +339,47 @@ export class MusicroomTransactionPage extends Component {
     }
 
     renderPagination(filteredTransaction, type){
-        var numberOfPage = 0
+        var numberOfPage = type === "Small" ? this.state.currentSmallRoomPage : this.state.currentLargeRoomPage
         var loop = 0
         var arrayOfPage = []
-        if(filteredTransaction.length === 0){
-            numberOfPage = 1
-        }
-        else{
-            numberOfPage = ((filteredTransaction.length - 1) / 20) + 1
-        }
         
+        // case 1 - space between current and maximum more than or equal 2
+        // case 1.1 maximum page less than 5 -> show all
+        // case 1.2 maximum page more 5 or equal and current >= 3 -> make current into be a middle page
+        // case 1.3 same in 1.2 but current less than 3 -> show page from 1 to 5
+        // case 2 - space between current and maximum less than 2
+        // case 2.1 maximum page less than 5 -> show all
+        // case 2.2 maximum page more than 5 or equal -> show with 5 page from (maximum - 4) to (maximum)
 
-        if(numberOfPage < 5){
-            for(loop = 1; loop <= numberOfPage; loop++){
+        let maximumPage = parseInt(((filteredTransaction.length - 1) / 20) + 1)
+        maximumPage = maximumPage === 0 ? 1 : maximumPage 
+        
+        if(maximumPage < 5){
+            for(loop = 1; loop <= maximumPage; loop++){
                 arrayOfPage.push(loop)
             }
         }
         else{
-            for(loop = numberOfPage - 4; loop <= numberOfPage; loop++){
-                arrayOfPage.push(loop)
+            if(maximumPage - numberOfPage >= 2){
+                if(numberOfPage > 2){
+                    for(loop = numberOfPage - 2; loop <= numberOfPage + 2; loop++){
+                        arrayOfPage.push(loop)
+                    }
+                }
+                else{
+                    for(loop = 1; loop <= 5; loop++){
+                        arrayOfPage.push(loop)
+                    }
+                }
+                
+            }
+            else{
+                for(loop = maximumPage - 4; loop <= maximumPage; loop++){
+                    arrayOfPage.push(loop)
+                }
             }
         }
-        
+
         return(
             <ul className="col xl12 l12 m12 s12 pagination center">
                 {this.renderPaginationBody(arrayOfPage, type)}
@@ -397,7 +436,7 @@ export class MusicroomTransactionPage extends Component {
         }
 
         return (
-            <div className="container" style={{position: "relative", top: "5px"}}>
+            <div className="container undernav">
                 <div className="row">
                     <div className="col xl9 l9 m8 s12">
                         <h5 className="col s12 m12 l12 xl12">

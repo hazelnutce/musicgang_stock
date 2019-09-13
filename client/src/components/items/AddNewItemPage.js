@@ -52,14 +52,14 @@ export class AddNewItemPage extends Component {
     var stockId = currentLocation.replace("/items/add/new/", "")
     var stockName = this.props.history.location.state.stockName
     return (
-        <div className="container" style={{position: "relative", top: "5px"}}>
-          <div className="row">
-            <h5>เพิ่มสินค้า / คลัง : {stockName}</h5>
+        <div className="container undernav">
+          <div className="row" style={{position: "relative", top: "20px"}}>
+            <div style={{fontSize: "20px"}}>เพิ่มสินค้า / คลัง : {stockName}</div>
           </div>
-          <div className="row" style={{position: "relative", bottom: "10px"}}>
+          <div className="row" style={{position: "relative", top: "20px"}}>
             <NewItemForm category={category} stockName={stockName}/>
           </div>
-          <div className="row" style={{position: "relative", bottom: "50px"}}>
+          <div className="row" style={{position: "relative", bottom: "30px"}}>
             <button onClick={this.props.handleSubmit((values) => this.props.addNewItems(values, stockId, stockName, history))} className="col xl2 push-xl7 l2 push-l7 m3 push-m6 s5 push-s2 green modal-close waves-effect waves-light btn" style={{marginRight: "20px"}}><i className="material-icons right">add_circle</i>Confirm</button>
             <button onClick={() => this.props.history.goBack()} className="col xl2 push-xl7 l2 push-l7 m3 push-m6 s5 push-s2 red modal-close waves-effect waves-light btn"><i className="material-icons right">cancel</i>Cancel</button>
           </div>

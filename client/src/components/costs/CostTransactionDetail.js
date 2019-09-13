@@ -36,13 +36,19 @@ const shiftLeft10 = {
   position: "relative"
 }
 
+const sessionEnums = {
+    currentPageTrackerCost_1: 'currentPageTrackerCost_1',
+    currentPageTrackerCost_2: 'currentPageTrackerCost_2',
+    currentPageTrackerCost_month: 'currentPageTrackerCost_month'
+}
+
 export class CostTransactionDetail extends Component {
   constructor(props){
     super(props)
 
-    var d = new Date()
-    var n = d.getMonth()
-    var y = d.getFullYear()
+    var costPage = sessionStorage.getItem(sessionEnums.currentPageTrackerCost_1)
+    var revenuePage = sessionStorage.getItem(sessionEnums.currentPageTrackerCost_2)
+    var month = sessionStorage.getItem(sessionEnums.currentPageTrackerCost_month)
 
     this.notificationDOMRef = React.createRef();
 
@@ -52,9 +58,9 @@ export class CostTransactionDetail extends Component {
       isSelectRevenueRecord : true,
       selectedDay: new Date(new Date().setHours(0,0,0,0)),
       isLoadingTransaction : true,
-      currentMonth :  y * 12 + n,
-      currentCostPage : 1,
-      currentRevenuePage : 1,
+      currentMonth :  parseInt(month),
+      currentCostPage : parseInt(costPage),
+      currentRevenuePage : parseInt(revenuePage),
       currentImportTotal: 0,
       currentExportTotal: 0,
       currentMusicroomTotal: 0,
@@ -171,11 +177,20 @@ numberWithCommas(x) {
   }
 
 handleAddMonth = () => {
-    this.setState({isLoadingImportExportCost: true})
-    let promiseImport = this.props.getTotalImport(this.state.currentMonth + 1, this.props.location.state.stockId)
-    let promiseExport = this.props.getTotalExport(this.state.currentMonth + 1, this.props.location.state.stockId)
+    //need to handle changed page between month
+    var newMonth = this.state.currentMonth + 1
+    sessionStorage.setItem(sessionEnums.currentPageTrackerCost_month, newMonth.toString())
+    sessionStorage.setItem(sessionEnums.currentPageTrackerCost_1, "1")
+    sessionStorage.setItem(sessionEnums.currentPageTrackerCost_2, "1")
+    this.setState({
+        isLoadingImportExportCost: true,
+        currentCostPage: 1,
+        currentRevenuePage: 1
+    })
+    let promiseImport = this.props.getTotalImport(newMonth, this.props.location.state.stockId)
+    let promiseExport = this.props.getTotalExport(newMonth, this.props.location.state.stockId)
     Promise.all([promiseImport, promiseExport]).then(values => {
-        this.setState({currentMonth: this.state.currentMonth + 1, 
+        this.setState({currentMonth: newMonth, 
             currentImportTotal: values[0].data,
             currentExportTotal: values[1].data,
             isLoadingImportExportCost: false})
@@ -183,11 +198,20 @@ handleAddMonth = () => {
 }
 
 handleMinusMonth = () => {
-    this.setState({isLoadingImportExportCost: true})
-    let promiseImport = this.props.getTotalImport(this.state.currentMonth - 1, this.props.location.state.stockId)
-    let promiseExport = this.props.getTotalExport(this.state.currentMonth - 1, this.props.location.state.stockId)
+    //need to handle changed page between month
+    var newMonth = this.state.currentMonth - 1
+    sessionStorage.setItem(sessionEnums.currentPageTrackerCost_month, newMonth.toString())
+    sessionStorage.setItem(sessionEnums.currentPageTrackerCost_1, "1")
+    sessionStorage.setItem(sessionEnums.currentPageTrackerCost_2, "1")
+    this.setState({
+        isLoadingImportExportCost: true,
+        currentCostPage: 1,
+        currentRevenuePage: 1
+    })
+    let promiseImport = this.props.getTotalImport(newMonth, this.props.location.state.stockId)
+    let promiseExport = this.props.getTotalExport(newMonth, this.props.location.state.stockId)
     Promise.all([promiseImport, promiseExport]).then(values => {
-        this.setState({currentMonth: this.state.currentMonth - 1, 
+        this.setState({currentMonth: newMonth, 
             currentImportTotal: values[0].data,
             currentExportTotal: values[1].data,
             isLoadingImportExportCost: false})
@@ -195,7 +219,16 @@ handleMinusMonth = () => {
 }
 
 handleSetMonth = (integerMonth) => {
-    this.setState({isLoadingImportExportCost: true})
+    //need to handle changed page between month
+    var newMonth = integerMonth
+    sessionStorage.setItem(sessionEnums.currentPageTrackerCost_month, newMonth.toString())
+    sessionStorage.setItem(sessionEnums.currentPageTrackerCost_1, "1")
+    sessionStorage.setItem(sessionEnums.currentPageTrackerCost_2, "1")
+    this.setState({
+        isLoadingImportExportCost: true,
+        currentCostPage: 1,
+        currentRevenuePage: 1
+    })
     let promiseImport = this.props.getTotalImport(integerMonth, this.props.location.state.stockId)
     let promiseExport = this.props.getTotalExport(integerMonth, this.props.location.state.stockId)
     Promise.all([promiseImport, promiseExport]).then(values => {
@@ -245,18 +278,13 @@ renderTableBody(costType, transactionList){
     let returnTableRow = []
     let fontSize = ""
 
-    var filteredTransaction = transactionList.filter(x => x.costType === costType && x._stock === stockId &&
-        this.isSameMonth(new Date(x.day), this.handleMonthFilter(this.state.currentMonth)))
-
-    filteredTransaction = filteredTransaction.sort(this.sortDayForTransaction)
-
-    _.map(filteredTransaction, (item, index) => {
+    _.map(transactionList, (item, index) => {
         let {description, day, formatCost, _id} = item
         var itemDay = new Date(day)
         var preparedDescription = description
 
         if(index > 0){
-            var previousItemDay = new Date(filteredTransaction[index-1].day)
+            var previousItemDay = new Date(transactionList[index-1].day)
             if(this.isSameDay(itemDay, previousItemDay)){
                 itemDay = null
             }
@@ -289,7 +317,7 @@ renderTableBody(costType, transactionList){
 
     })
 
-    var additionalRow = 20 - filteredTransaction.length
+    var additionalRow = 20 - transactionList.length
                                        
     var loop = 0
     for(loop = 0; loop < additionalRow; loop++){
@@ -308,9 +336,11 @@ renderTableBody(costType, transactionList){
 
 setCurrentPage(page, type, canClick){
     if(type === "Cost" && canClick){
+        sessionStorage.setItem(sessionEnums.currentPageTrackerCost_1, page.toString())
         this.setState({currentCostPage: page})
     }
     else if(type === "Revenue" && canClick){
+        sessionStorage.setItem(sessionEnums.currentPageTrackerCost_2, page.toString())
         this.setState({currentRevenuePage: page})
     }
 }
@@ -346,25 +376,43 @@ renderPaginationBody(arrayOfPage, type){
 }
 
 renderPagination(filteredTransaction, type){
-    var numberOfPage = 0
+    var numberOfPage = type === "Cost" ? this.state.currentCostPage : this.state.currentRevenuePage
     var loop = 0
     var arrayOfPage = []
-    if(filteredTransaction.length === 0){
-        numberOfPage = 1
-    }
-    else{
-        numberOfPage = ((filteredTransaction.length - 1) / 20) + 1
-    }
     
+    // case 1 - space between current and maximum more than or equal 2
+    // case 1.1 maximum page less than 5 -> show all
+    // case 1.2 maximum page more 5 or equal and current >= 3 -> make current into be a middle page
+    // case 1.3 same in 1.2 but current less than 3 -> show page from 1 to 5
+    // case 2 - space between current and maximum less than 2
+    // case 2.1 maximum page less than 5 -> show all
+    // case 2.2 maximum page more than 5 or equal -> show with 5 page from (maximum - 4) to (maximum)
 
-    if(numberOfPage < 5){
-        for(loop = 1; loop <= numberOfPage; loop++){
+    let maximumPage = parseInt(((filteredTransaction.length - 1) / 20) + 1)
+    maximumPage = maximumPage === 0 ? 1 : maximumPage 
+    
+    if(maximumPage < 5){
+        for(loop = 1; loop <= maximumPage; loop++){
             arrayOfPage.push(loop)
         }
     }
     else{
-        for(loop = numberOfPage - 4; loop <= numberOfPage; loop++){
-            arrayOfPage.push(loop)
+        if(maximumPage - numberOfPage >= 2){
+            if(numberOfPage > 2){
+                for(loop = numberOfPage - 2; loop <= numberOfPage + 2; loop++){
+                    arrayOfPage.push(loop)
+                }
+            }
+            else{
+                for(loop = 1; loop <= 5; loop++){
+                    arrayOfPage.push(loop)
+                }
+            }
+        }
+        else{
+            for(loop = maximumPage - 4; loop <= maximumPage; loop++){
+                arrayOfPage.push(loop)
+            }
         }
     }
     
@@ -382,13 +430,15 @@ renderPagination(filteredTransaction, type){
     if(costTransactions != null){
         var costFilteredTransaction = costTransactions.filter(x => x.costType === "Cost" && x._stock === stockId && this.isSameMonth(new Date(x.day), this.handleMonthFilter(this.state.currentMonth)))
         costFilteredTransaction = costFilteredTransaction.sort(this.sortDayForTransaction)
+        var slicedCostFilteredTransaction = costFilteredTransaction.slice((this.state.currentCostPage - 1) * 20, this.state.currentCostPage * 20)
 
         var revenueFilteredTransaction = costTransactions.filter(x => x.costType === "Revenue" && x._stock === stockId && this.isSameMonth(new Date(x.day), this.handleMonthFilter(this.state.currentMonth)))
         revenueFilteredTransaction = revenueFilteredTransaction.sort(this.sortDayForTransaction)
+        var slicedRevenueFilteredTransaction = revenueFilteredTransaction.slice((this.state.currentRevenuePage - 1) * 20, this.state.currentRevenuePage * 20)
     }
 
     return (
-      <div className="container" style={{position: "relative", top: "5px"}}>
+      <div className="container undernav">
         <div className="row">
             <div className="col xl9 l9 m8 s12">
                 <h5 className="col s12 m12 l12 xl12">
@@ -456,7 +506,7 @@ renderPagination(filteredTransaction, type){
                                                 </tr>
                                                 </thead>
                                                 <tbody>
-                                                    {this.renderTableBody("Cost", costTransactions)}
+                                                    {this.renderTableBody("Cost", slicedCostFilteredTransaction)}
                                                 </tbody>
                                             </table>
                                         </div>
@@ -482,7 +532,7 @@ renderPagination(filteredTransaction, type){
                                     </thead>
                         
                                     <tbody>
-                                        {this.renderTableBody("Revenue", costTransactions)}
+                                        {this.renderTableBody("Revenue", slicedRevenueFilteredTransaction)}
                                     </tbody>
                                     </table>
                                 </div>
@@ -519,7 +569,7 @@ renderPagination(filteredTransaction, type){
                                     </tr>
                                     </thead>
                                     <tbody>
-                                        {this.renderTableBody("Cost", costTransactions)}
+                                        {this.renderTableBody("Cost", slicedCostFilteredTransaction)}
                                     </tbody>
                                 </table>
                             </div>
@@ -555,7 +605,7 @@ renderPagination(filteredTransaction, type){
                             </thead>
                 
                             <tbody>
-                                {this.renderTableBody("Revenue", costTransactions)}
+                                {this.renderTableBody("Revenue", slicedRevenueFilteredTransaction)}
                             </tbody>
                             </table>
                         </div>

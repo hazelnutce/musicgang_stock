@@ -1,0 +1,11 @@
+.warning_row{
+    background-color: #fffd7d;
+    border-top: 2px solid #fce530;
+    border-bottom: 2px solid #fce530;
+}
+
+.out_of_stock_row{
+    background-color: #ff957d;
+    border-top: 2px solid #ff3333;
+    border-bottom: 2px solid #ff3333;
+}

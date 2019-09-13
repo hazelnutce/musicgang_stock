@@ -150,7 +150,7 @@ export class CostTransactionPage extends Component {
       }, 0)
       
       return (
-        <div className="container" style={{position: "relative", top: "5px"}}>
+        <div className="container undernav">
           <div className="row">
             <h5 className="col xl12 l12 m12 s12"><i><FontAwesomeIcon className="fas fa-sm" icon="dollar-sign"/></i><span style={shiftLeft10}>ค่าใช้จ่ายคลังสินค้า</span></h5>
             <div className="col s12 m12 l12 xl12">

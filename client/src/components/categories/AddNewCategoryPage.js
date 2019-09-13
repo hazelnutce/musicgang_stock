@@ -107,14 +107,14 @@ export class AddNewCategoryPage extends Component {
             }
             return (
                 <div>
-                    <div className="container" style={{position: "relative", top: "5px"}}>
-                        <div className="row">
-                            <h5>เพิ่มหมวดหมู่สินค้า {stockDisplayer}</h5>
+                    <div className="container undernav">
+                        <div className="row" style={{position: "relative", top: "20px"}}>
+                            <div style={{fontSize: "20px"}}>เพิ่มหมวดหมู่สินค้า {stockDisplayer}</div>
                         </div>
-                        <div className="row" style={{position: "relative", bottom: "10px"}}>
+                        <div className="row">
                             <NewCategoryForm stockName={stockName} mode={this.props.location.state.mode}/>
                         </div>
-                        <div className="row" style={{position: "relative", bottom: "10px"}}>
+                        <div className="row">
                             {this.renderExampleTag(labelColor, textColor, categoryNameEn, categoryNameTh)}
                         </div>
                         <div className="row">

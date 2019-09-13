@@ -10,36 +10,53 @@ import {fetchTransaction} from '../../actions/transaction'
 import {LoaderSpinner} from '../commons/LoaderSpinner'
 import {EmptyTransactionNotice} from '../commons/EmptyTransactionNotice'
 
+const sessionEnums = {
+    currentPageTrackerTransaction_1: 'currentPageTrackerTransaction_1',
+    currentPageTrackerTransaction_2: 'currentPageTrackerTransaction_2',
+    currentPageTrackerTransaction_month: 'currentPageTrackerTransaction_month'
+}
+
 export class TransactionListSummaryPage extends Component {
     constructor(props){
         super(props)
 
-        var d = new Date()
-        var n = d.getMonth()
-        var y = d.getFullYear()
+        var importPage = sessionStorage.getItem(sessionEnums.currentPageTrackerTransaction_1)
+        var exportPage = sessionStorage.getItem(sessionEnums.currentPageTrackerTransaction_2)
+        var month = sessionStorage.getItem(sessionEnums.currentPageTrackerTransaction_month)
 
         this.state = {
-            currentMonth :  y * 12 + n,
+            currentMonth :  parseInt(month),
             loadingTransaction : false,
-            currentImportPage: 1,
-            currentExportPage: 1
+            currentImportPage: parseInt(importPage),
+            currentExportPage: parseInt(exportPage)
         }
     }
 
     handleAddMonth = () => {
-        this.setState({currentMonth: this.state.currentMonth + 1}, () => {
+        let newMonth = this.state.currentMonth + 1
+        sessionStorage.setItem(sessionEnums.currentPageTrackerTransaction_1, "1")
+        sessionStorage.setItem(sessionEnums.currentPageTrackerTransaction_2, "1")
+        sessionStorage.setItem(sessionEnums.currentPageTrackerTransaction_month, newMonth.toString())
+        this.setState({currentMonth: newMonth, currentImportPage: 1, currentExportPage: 1}, () => {
             this.initToolTip()
         })
     }
 
     handleMinusMonth = () => {
-        this.setState({currentMonth: this.state.currentMonth - 1}, () => {
+        let newMonth = this.state.currentMonth - 1
+        sessionStorage.setItem(sessionEnums.currentPageTrackerTransaction_1, "1")
+        sessionStorage.setItem(sessionEnums.currentPageTrackerTransaction_2, "1")
+        sessionStorage.setItem(sessionEnums.currentPageTrackerTransaction_month, newMonth.toString())
+        this.setState({currentMonth: newMonth, currentImportPage: 1, currentExportPage: 1}, () => {
             this.initToolTip()
         })
     }
 
     handleSetMonth = (integerMonth) => {
-        this.setState({currentMonth: integerMonth}, () => {
+        sessionStorage.setItem(sessionEnums.currentPageTrackerTransaction_1, "1")
+        sessionStorage.setItem(sessionEnums.currentPageTrackerTransaction_2, "1")
+        sessionStorage.setItem(sessionEnums.currentPageTrackerTransaction_month, integerMonth.toString())
+        this.setState({currentMonth: integerMonth, currentImportPage: 1, currentExportPage: 1}, () => {
             this.initToolTip()
         })
     }
@@ -185,9 +202,11 @@ export class TransactionListSummaryPage extends Component {
 
     setCurrentPage(page, type, canClick){
         if(type === "import" && canClick){
+            sessionStorage.setItem(sessionEnums.currentPageTrackerTransaction_1, page.toString())
             this.setState({currentImportPage: page})
         }
         else if(type === "export" && canClick){
+            sessionStorage.setItem(sessionEnums.currentPageTrackerTransaction_2, page.toString())
             this.setState({currentExportPage: page})
         }
     }
@@ -223,24 +242,44 @@ export class TransactionListSummaryPage extends Component {
     }
 
     renderPagination(filteredTransaction, type){
-        var numberOfPage = 0
+        var numberOfPage = type === "import" ? this.state.currentImportPage : this.state.currentExportPage
         var loop = 0
         var arrayOfPage = []
-        if(filteredTransaction.length === 0){
-            numberOfPage = 1
-        }
-        else{
-            numberOfPage = ((filteredTransaction.length - 1) / 20) + 1
-        }
+        
+        // case 1 - space between current and maximum more than or equal 2
+        // case 1.1 maximum page less than 5 -> show all
+        // case 1.2 maximum page more 5 or equal and current >= 3 -> make current into be a middle page
+        // case 1.3 same in 1.2 but current less than 3 -> show page from 1 to 5
+        // case 2 - space between current and maximum less than 2
+        // case 2.1 maximum page less than 5 -> show all
+        // case 2.2 maximum page more than 5 or equal -> show with 5 page from (maximum - 4) to (maximum)
 
-        if(numberOfPage < 5){
-            for(loop = 1; loop <= numberOfPage; loop++){
+        let maximumPage = parseInt(((filteredTransaction.length - 1) / 20) + 1)
+        maximumPage = maximumPage === 0 ? 1 : maximumPage 
+        
+        if(maximumPage < 5){
+            for(loop = 1; loop <= maximumPage; loop++){
                 arrayOfPage.push(loop)
             }
         }
         else{
-            for(loop = numberOfPage - 4; loop <= numberOfPage; loop++){
-                arrayOfPage.push(loop)
+            if(maximumPage - numberOfPage >= 2){
+                if(numberOfPage > 2){
+                    for(loop = numberOfPage - 2; loop <= numberOfPage + 2; loop++){
+                        arrayOfPage.push(loop)
+                    }
+                }
+                else{
+                    for(loop = 1; loop <= 5; loop++){
+                        arrayOfPage.push(loop)
+                    }
+                }
+                
+            }
+            else{
+                for(loop = maximumPage - 4; loop <= maximumPage; loop++){
+                    arrayOfPage.push(loop)
+                }
             }
         }
         

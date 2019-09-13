@@ -3,6 +3,7 @@ import {BrowserRouter,Route, Switch} from 'react-router-dom'
 import { fetchUser } from '../actions'
 import {connect} from 'react-redux'
 import { library } from '@fortawesome/fontawesome-svg-core'
+import './common.css'
 import { faGhost, 
   faTag, 
   faDollarSign, 
@@ -62,13 +63,13 @@ class App extends Component {
               <Switch>
                 <Route exact path="/" component={Landing}></Route>
                 <Route exact path="/stocks" component={StockPage}></Route>
-                <Route path="/stocks/new" component={AddNewStockPage}></Route>
+                <Route exact path="/stocks/new" component={AddNewStockPage}></Route>
                 <Route exact path="/categories/new" component={AddNewCategoryPage}></Route>
                 <Route exact path="/categories" component={CategoryPage}></Route>
                 <Route exact path="/items/view" component={ViewItemPage}></Route>
                 <Route exact path="/items/:stockId" component={ItemPage}></Route>
-                <Route path="/items/add/new/:stockId" component={AddNewItemPage}></Route>
-                <Route path="/items/edit/:itemId" component={EditItemPage}></Route>
+                <Route exact path="/items/add/new/:stockId" component={AddNewItemPage}></Route>
+                <Route exact path="/items/edit/:itemId" component={EditItemPage}></Route>
                 <Route exact path="/transactions" component={TransactionPage}></Route>
                 <Route exact path="/transactions/view" component={ViewTransaction}></Route>
                 <Route exact path="/transactions/new/import" component={TransactionImport}></Route>

@@ -55,7 +55,7 @@ export class EditItemPage extends Component {
     var currentLocation = this.props.location.pathname.toString()
     var itemId = currentLocation.replace("/items/edit/", "")
     return (
-        <div className="container" style={{position: "relative", top: "5px"}}>
+        <div className="container undernav">
             <div className="row">
                 <h5 className="col s12"><i className="material-icons">edit</i><span style={{marginLeft: "20px"}}>แก้ไขสินค้า / คลัง : {stockName}</span></h5>
             </div>
