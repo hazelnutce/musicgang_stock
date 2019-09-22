@@ -12,7 +12,6 @@ import {fetchTransaction, deleteMusicroomTransaction, resetMusicroomTransactionE
 import {getTotalMusicroom} from '../../actions/costTransaction'
 import {LoaderSpinner} from '../commons/LoaderSpinner'
 import './main.css'
-import MusicroomTransactionTableHeader from './MusicroomTransactionTableHeader';
 import EmptyTransactionNotice from '../commons/EmptyTransactionNotice';
 import {CostMonthlySummaryPanel} from '../costs/CostMonthlySummaryPanel'
 
@@ -38,9 +37,8 @@ export class MusicroomTransactionPage extends Component {
         this.notificationDOMRef = React.createRef();
 
         this.state = {
-            isSelectAllRecord : true,
             isSelectSmallRoomRecord : true,
-            isSelectLargeRoomRecord : true,
+            isSelectLargeRoomRecord : false,
             isLoadingItem: false,
             currentMonth :  parseInt(month),
             loadingMusicroomRecord : false,
@@ -109,24 +107,13 @@ export class MusicroomTransactionPage extends Component {
 
     handleCheckboxes = (buttonString) => {
         if(buttonString === "1"){
-            if(this.state.isSelectAllRecord === false){
-                this.setState({
-                    isSelectAllRecord : true,
-                    isSelectSmallRoomRecord : true,
-                    isSelectLargeRoomRecord : true,
-                })
-            }
-        }
-        else if(buttonString === "2"){
             this.setState({
-                isSelectAllRecord : false,
                 isSelectSmallRoomRecord : true,
                 isSelectLargeRoomRecord : false,
             })
         }
-        else if(buttonString === "3"){
+        else if(buttonString === "2"){
             this.setState({
-                isSelectAllRecord : false,
                 isSelectSmallRoomRecord : false,
                 isSelectLargeRoomRecord : true,
             })
@@ -351,7 +338,7 @@ export class MusicroomTransactionPage extends Component {
         // case 2.1 maximum page less than 5 -> show all
         // case 2.2 maximum page more than 5 or equal -> show with 5 page from (maximum - 4) to (maximum)
 
-        let maximumPage = parseInt(((filteredTransaction.length - 1) / 20) + 1)
+        let maximumPage = parseInt(((filteredTransaction.length - 1) / 50) + 1)
         maximumPage = maximumPage === 0 ? 1 : maximumPage 
         
         if(maximumPage < 5){
@@ -382,24 +369,24 @@ export class MusicroomTransactionPage extends Component {
 
         return(
             <ul className="col xl12 l12 m12 s12 pagination center">
+                <span style={{fontSize: "17px"}}>หน้า : </span>
                 {this.renderPaginationBody(arrayOfPage, type)}
             </ul>
         )
     }
 
     renderRemainingItem(filteredTransaction){
-        var additionalRow = 20 - filteredTransaction.length
+        var additionalRow = 50 - filteredTransaction.length
                                         
         var loop = 0
         var returnElement = []
         for(loop = 0; loop < additionalRow; loop++){
             returnElement.push(
                 <tr key={loop}>
-                    <td style={{lineHeight: "22px"}}>&nbsp;</td>
-                    <td style={{lineHeight: "22px"}}>&nbsp;</td>
-                    <td style={{lineHeight: "22px"}}>&nbsp;</td>
-                    <td style={{lineHeight: "22px"}}>&nbsp;</td>
-                    <td style={{lineHeight: "22px"}}>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
                 </tr>
             )
             
@@ -427,12 +414,12 @@ export class MusicroomTransactionPage extends Component {
             var smallRoomFilteredTransaction = musicroomTransactions.filter(x => x.roomSize === "Small" && this.isSameMonth(new Date(x.day), this.handleMonthFilter(this.state.currentMonth)))
             this.prepareOvernightItem(smallRoomFilteredTransaction)
             smallRoomFilteredTransaction = smallRoomFilteredTransaction.sort(this.sortDayForTransaction)
-            var slicedSmallRoomFilteredTransaction = smallRoomFilteredTransaction.slice((this.state.currentSmallRoomPage - 1) * 20, this.state.currentSmallRoomPage * 20)
+            var slicedSmallRoomFilteredTransaction = smallRoomFilteredTransaction.slice((this.state.currentSmallRoomPage - 1) * 50, this.state.currentSmallRoomPage * 50)
 
             var largeRoomFilteredTransaction = musicroomTransactions.filter(x => x.roomSize === "Large" && this.isSameMonth(new Date(x.day), this.handleMonthFilter(this.state.currentMonth)))
             this.prepareOvernightItem(largeRoomFilteredTransaction)
             largeRoomFilteredTransaction = largeRoomFilteredTransaction.sort(this.sortDayForTransaction)
-            var slicedLargeRoomFilteredTransaction = largeRoomFilteredTransaction.slice((this.state.currentLargeRoomPage - 1) * 20, this.state.currentLargeRoomPage * 20)
+            var slicedLargeRoomFilteredTransaction = largeRoomFilteredTransaction.slice((this.state.currentLargeRoomPage - 1) * 50, this.state.currentLargeRoomPage * 50)
         }
 
         return (
@@ -448,15 +435,11 @@ export class MusicroomTransactionPage extends Component {
                         <div className="col s12 m12 l12 xl12">
                             <div className="row">
                                 <label className="col xl4 l4 m5 s6">
-                                    <input type="checkbox" className="filled-in" onChange={() => this.handleCheckboxes("1")} checked={this.state.isSelectAllRecord} />
-                                    <span>แสดงรายการทั้งหมด</span>
-                                </label>
-                                <label className="col xl4 l4 m5 s6">
-                                    <input type="checkbox" className="filled-in" onChange={() => this.handleCheckboxes("2")} checked={this.state.isSelectSmallRoomRecord} />
+                                    <input type="checkbox" className="filled-in" onChange={() => this.handleCheckboxes("1")} checked={this.state.isSelectSmallRoomRecord} />
                                     <span>รายการห้องซ้อมเล็ก</span>
                                 </label>
                                 <label className="col xl4 l4 m5 s6">
-                                    <input type="checkbox" className="filled-in" onChange={() => this.handleCheckboxes("3")} checked={this.state.isSelectLargeRoomRecord} />
+                                    <input type="checkbox" className="filled-in" onChange={() => this.handleCheckboxes("2")} checked={this.state.isSelectLargeRoomRecord} />
                                     <span>รายการห้องซ้อมใหญ่</span>
                                 </label>
                             </div>
@@ -468,73 +451,7 @@ export class MusicroomTransactionPage extends Component {
                         </div>
                     </div>
                 </div>
-                {this.state.isSelectAllRecord === true && this.state.loadingMusicroomRecord === true && (
-                    <div className="row" style={{marginTop: "-20px"}}>
-                        <div className="col x12 l12 m12 s12 center">
-                            <MonthPicker 
-                                handleAddMonth={this.handleAddMonth} 
-                                handleMinusMonth={this.handleMinusMonth} 
-                                handleSetMonth={this.handleSetMonth}
-                                currentMonth={this.state.currentMonth}
-                                disabled={this.state.isLoadingTotalRevenue} 
-                            />
-                        </div>
-                        <div className="row">
-                            <CostMonthlySummaryPanel color={"green lighten-1"} message={"รายรับจากห้องซ้อมดนตรี"} currentMonth={this.state.currentMonth} cost={this.state.currentMusicroomTotal}/>
-                        </div>
-                        <div className="col xl6 l6 m12 s12">
-                                <div className="col xl12 l12 m12 s12" style={{right: "5px", position: "relative"}}>
-                                    <h6>ห้องซ้อมเล็ก</h6>
-                                </div>
-                                {slicedSmallRoomFilteredTransaction.length === 0 &&
-                                    <EmptyTransactionNotice message="ไม่มีรายการในขณะนี้"/>}
-                                {slicedSmallRoomFilteredTransaction.length !== 0 && (
-                                    <div className="col card small xl12 l12 m12 s12" style={{right: "5px", position: "relative", height: "auto"}}>
-                                        <table className="highlight centered">
-                                            <thead>
-                                            <tr>
-                                                <MusicroomTransactionTableHeader />
-                                            </tr>
-                                            </thead>
-                            
-                                            <tbody>
-                                                {this.renderSmallroomRecord(slicedSmallRoomFilteredTransaction)}
-                                                {this.renderRemainingItem(slicedSmallRoomFilteredTransaction)}
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                )}
-                                
-                            {this.renderPagination(smallRoomFilteredTransaction, "Small")}
-                        </div>
-                        <div className="col xl6 l6 m12 s12">
-                            <div className="col xl12 l12 m12 s12" style={{left: "5px", position: "relative"}}>
-                                <h6>ห้องซ้อมใหญ่</h6>
-                            </div>
-                            {slicedLargeRoomFilteredTransaction.length === 0 &&
-                                <EmptyTransactionNotice message="ไม่มีรายการในขณะนี้"/>}
-                            {slicedLargeRoomFilteredTransaction.length !== 0 && (
-                                <div className="col card small xl12 l12 m12 s12" style={{right: "5px", position: "relative", height: "auto"}}>
-                                    <table className="highlight centered">
-                                    <thead>
-                                    <tr>
-                                        <MusicroomTransactionTableHeader/>
-                                    </tr>
-                                    </thead>
-                        
-                                    <tbody>
-                                        {this.renderLargeroomRecord(slicedLargeRoomFilteredTransaction)}
-                                        {this.renderRemainingItem(slicedLargeRoomFilteredTransaction)}
-                                    </tbody>
-                                    </table>
-                                </div>
-                            )}
-                            
-                            {this.renderPagination(largeRoomFilteredTransaction, "Large")}
-                        </div>
-                    </div>
-                )}
-                {this.state.isSelectSmallRoomRecord === true && this.state.isSelectAllRecord === false && this.state.loadingMusicroomRecord === true && (
+                {this.state.isSelectSmallRoomRecord === true && this.state.loadingMusicroomRecord === true && (
                     <div className="row">
                             <div className="col x12 l12 m12 s12 center">
                             <MonthPicker 
@@ -545,17 +462,28 @@ export class MusicroomTransactionPage extends Component {
                                 disabled={this.state.isLoadingTotalRevenue} 
                             />
                         </div>
-                        <div className="col xl12 l12 m12 s12" style={{right: "5px", position: "relative"}}>
+                        <div className="row">
+                            <CostMonthlySummaryPanel color={"green lighten-1"} message={"รายรับจากห้องซ้อมดนตรี"} currentMonth={this.state.currentMonth} cost={this.state.currentMusicroomTotal}/>
+                        </div>
+                        <div className="col xl6 l6 m6 s6" style={{right: "5px", top: "10px", position: "relative"}}>
                             <h6>ห้องซ้อมเล็ก</h6>
+                        </div>
+                        <div className="col xl6 l6 m6 s6">
+                            <div className="right">
+                                {this.renderPagination(smallRoomFilteredTransaction, "Small")} 
+                            </div>
                         </div>
                         {slicedSmallRoomFilteredTransaction.length === 0 &&
                             <EmptyTransactionNotice message="ไม่มีรายการในขณะนี้"/>}
                         {slicedSmallRoomFilteredTransaction.length !== 0 && (
-                            <div className="col card small xl12 l12 m12 s12" style={{right: "5px", position: "relative", height: "auto"}}>
-                                <table className="highlight centered">
+                            <div className="col xl12 l12 m12 s12" style={{right: "5px", position: "relative", height: "auto"}}>
+                                <table className="highlight import-table">
                                     <thead>
                                     <tr>
-                                        <MusicroomTransactionTableHeader/>
+                                        <th>วันที่</th>
+                                        <th>เวลา</th>
+                                        <th>จำนวน ชม.</th>
+                                        <th>ราคา</th>
                                     </tr>
                                     </thead>
                     
@@ -569,7 +497,7 @@ export class MusicroomTransactionPage extends Component {
                         {this.renderPagination(smallRoomFilteredTransaction, "Small")}
                     </div>
                 )}
-                {this.state.isSelectLargeRoomRecord === true && this.state.isSelectAllRecord === false && this.state.loadingMusicroomRecord === true && (
+                {this.state.isSelectLargeRoomRecord === true && this.state.loadingMusicroomRecord === true && (
                     <div className="row">
                             <div className="col x12 l12 m12 s12 center">
                             <MonthPicker 
@@ -580,8 +508,16 @@ export class MusicroomTransactionPage extends Component {
                                 disabled={this.state.isLoadingTotalRevenue} 
                             />
                         </div>
-                        <div className="col xl12 l12 m12 s12" style={{right: "5px", position: "relative"}}>
+                        <div className="row">
+                            <CostMonthlySummaryPanel color={"green lighten-1"} message={"รายรับจากห้องซ้อมดนตรี"} currentMonth={this.state.currentMonth} cost={this.state.currentMusicroomTotal}/>
+                        </div>
+                        <div className="col xl6 l6 m6 s6" style={{right: "5px", top: "10px", position: "relative"}}>
                             <h6>ห้องซ้อมใหญ่</h6>
+                        </div>
+                        <div className="col xl6 l6 m6 s6">
+                            <div className="right">
+                                {this.renderPagination(largeRoomFilteredTransaction, "Export")} 
+                            </div>
                         </div>
                         {slicedLargeRoomFilteredTransaction.length === 0 &&
                                 <EmptyTransactionNotice message="ไม่มีรายการในขณะนี้"/>}
@@ -590,7 +526,10 @@ export class MusicroomTransactionPage extends Component {
                                 <table className="highlight centered">
                                 <thead>
                                 <tr>
-                                    <MusicroomTransactionTableHeader />
+                                    <th>วันที่</th>
+                                    <th>เวลา</th>
+                                    <th>จำนวน ชม.</th>
+                                    <th>ราคา</th>
                                 </tr>
                                 </thead>
                     

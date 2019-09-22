@@ -1,15 +1,3 @@
-@media (max-width: 600px) {
-    #addNewRecordButton {
-        margin-top: -20px
-    }
-}
-
-@media (min-width: 600px) {
-    #addNewRecordButton {
-        margin-top: 40px
-    }
-}
-
 th {
     height: 50px;
   }

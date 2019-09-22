@@ -17,31 +17,21 @@ export class TransactionSummaryPage extends Component {
         super(props)
 
         this.state = {
-            isSelectAllTransaction : true,
             isSelectTransactionIn : true,
-            isSelectTransactionOut : true,
+            isSelectTransactionOut : false,
             isLoadingItem: false
         }
     }
 
     handleCheckboxes = (buttonString) => {
         if(buttonString === "1"){
-            if(this.state.isSelectAllTransaction === false){
-                this.setState({
-                    isSelectAllTransaction : true,
-                    isSelectTransactionIn : true,
-                    isSelectTransactionOut : true,
-                })
-            }
-        }
-        else if(buttonString === "2"){
             this.setState({
                 isSelectAllTransaction : false,
                 isSelectTransactionIn : true,
                 isSelectTransactionOut : false,
             })
         }
-        else if(buttonString === "3"){
+        else if(buttonString === "2"){
             this.setState({
                 isSelectAllTransaction : false,
                 isSelectTransactionIn : false,
@@ -89,15 +79,11 @@ export class TransactionSummaryPage extends Component {
                     </h5>
                     <div className="col s12 m12 l12 xl12">
                         <label className="col xl4 l4 m5 s6">
-                            <input type="checkbox" className="filled-in" onChange={() => this.handleCheckboxes("1")} checked={this.state.isSelectAllTransaction} />
-                            <span>แสดงรายการทั้งหมด</span>
-                        </label>
-                        <label className="col xl4 l4 m5 s6">
-                            <input type="checkbox" className="filled-in" onChange={() => this.handleCheckboxes("2")} checked={this.state.isSelectTransactionIn} />
+                            <input type="checkbox" className="filled-in" onChange={() => this.handleCheckboxes("1")} checked={this.state.isSelectTransactionIn} />
                             <span>แสดงรายการนำเข้า</span>
                         </label>
                         <label className="col xl4 l4 m5 s6">
-                            <input type="checkbox" className="filled-in" onChange={() => this.handleCheckboxes("3")} checked={this.state.isSelectTransactionOut} />
+                            <input type="checkbox" className="filled-in" onChange={() => this.handleCheckboxes("2")} checked={this.state.isSelectTransactionOut} />
                             <span>แสดงรายการนำออก</span>
                         </label>
                     </div>
@@ -112,7 +98,6 @@ export class TransactionSummaryPage extends Component {
                 </div>
             </div>
             <TransactionListSummaryPage 
-                isSelectAllTransaction={this.state.isSelectAllTransaction} 
                 isSelectTransactionIn={this.state.isSelectTransactionIn} 
                 isSelectTransactionOut={this.state.isSelectTransactionOut}
                 items={this.props.allItemProperties.items}

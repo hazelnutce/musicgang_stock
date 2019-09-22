@@ -53,9 +53,8 @@ export class CostTransactionDetail extends Component {
     this.notificationDOMRef = React.createRef();
 
     this.state = {
-      isSelectAllRecord : true,
       isSelectCostRecord : true,
-      isSelectRevenueRecord : true,
+      isSelectRevenueRecord : false,
       selectedDay: new Date(new Date().setHours(0,0,0,0)),
       isLoadingTransaction : true,
       currentMonth :  parseInt(month),
@@ -143,24 +142,13 @@ export class CostTransactionDetail extends Component {
 
   handleCheckboxes = (buttonString) => {
     if(buttonString === "1"){
-        if(this.state.isSelectAllRecord === false){
-            this.setState({
-                isSelectAllRecord : true,
-                isSelectCostRecord : true,
-                isSelectRevenueRecord : true,
-            })
-        }
-    }
-    else if(buttonString === "2"){
         this.setState({
-            isSelectAllRecord : false,
             isSelectCostRecord : true,
             isSelectRevenueRecord : false,
         })
     }
-    else if(buttonString === "3"){
+    else if(buttonString === "2"){
         this.setState({
-            isSelectAllRecord : false,
             isSelectCostRecord : false,
             isSelectRevenueRecord : true,
         })
@@ -317,7 +305,7 @@ renderTableBody(costType, transactionList){
 
     })
 
-    var additionalRow = 20 - transactionList.length
+    var additionalRow = 50 - transactionList.length
                                        
     var loop = 0
     for(loop = 0; loop < additionalRow; loop++){
@@ -388,7 +376,7 @@ renderPagination(filteredTransaction, type){
     // case 2.1 maximum page less than 5 -> show all
     // case 2.2 maximum page more than 5 or equal -> show with 5 page from (maximum - 4) to (maximum)
 
-    let maximumPage = parseInt(((filteredTransaction.length - 1) / 20) + 1)
+    let maximumPage = parseInt(((filteredTransaction.length - 1) / 50) + 1)
     maximumPage = maximumPage === 0 ? 1 : maximumPage 
     
     if(maximumPage < 5){
@@ -418,6 +406,7 @@ renderPagination(filteredTransaction, type){
     
     return(
         <ul className="col xl12 l12 m12 s12 pagination center">
+            <span style={{fontSize: "17px"}}>หน้า : </span>
             {this.renderPaginationBody(arrayOfPage, type)}
         </ul>
     )
@@ -430,11 +419,11 @@ renderPagination(filteredTransaction, type){
     if(costTransactions != null){
         var costFilteredTransaction = costTransactions.filter(x => x.costType === "Cost" && x._stock === stockId && this.isSameMonth(new Date(x.day), this.handleMonthFilter(this.state.currentMonth)))
         costFilteredTransaction = costFilteredTransaction.sort(this.sortDayForTransaction)
-        var slicedCostFilteredTransaction = costFilteredTransaction.slice((this.state.currentCostPage - 1) * 20, this.state.currentCostPage * 20)
+        var slicedCostFilteredTransaction = costFilteredTransaction.slice((this.state.currentCostPage - 1) * 50, this.state.currentCostPage * 50)
 
         var revenueFilteredTransaction = costTransactions.filter(x => x.costType === "Revenue" && x._stock === stockId && this.isSameMonth(new Date(x.day), this.handleMonthFilter(this.state.currentMonth)))
         revenueFilteredTransaction = revenueFilteredTransaction.sort(this.sortDayForTransaction)
-        var slicedRevenueFilteredTransaction = revenueFilteredTransaction.slice((this.state.currentRevenuePage - 1) * 20, this.state.currentRevenuePage * 20)
+        var slicedRevenueFilteredTransaction = revenueFilteredTransaction.slice((this.state.currentRevenuePage - 1) * 50, this.state.currentRevenuePage * 50)
     }
 
     return (
@@ -450,15 +439,11 @@ renderPagination(filteredTransaction, type){
                 <div className="col s12 m12 l12 xl12">
                     <div className="row">
                         <label className="col xl4 l4 m5 s6">
-                            <input type="checkbox" className="filled-in" onChange={() => this.handleCheckboxes("1")} checked={this.state.isSelectAllRecord} />
-                            <span>รายการทั้งหมด</span>
-                        </label>
-                        <label className="col xl4 l4 m5 s6">
-                            <input type="checkbox" className="filled-in" onChange={() => this.handleCheckboxes("2")} checked={this.state.isSelectCostRecord} />
+                            <input type="checkbox" className="filled-in" onChange={() => this.handleCheckboxes("1")} checked={this.state.isSelectCostRecord} />
                             <span>รายจ่าย</span>
                         </label>
                         <label className="col xl4 l4 m5 s6">
-                            <input type="checkbox" className="filled-in" onChange={() => this.handleCheckboxes("3")} checked={this.state.isSelectRevenueRecord} />
+                            <input type="checkbox" className="filled-in" onChange={() => this.handleCheckboxes("2")} checked={this.state.isSelectRevenueRecord} />
                             <span>รายรับ</span>
                         </label>
                     </div>
@@ -471,79 +456,7 @@ renderPagination(filteredTransaction, type){
               </div>
           </div>
           
-          {this.state.isSelectAllRecord === true && this.state.isLoadingTransaction === false && (
-                    <div className="row" style={{marginTop: "-20px"}}>
-                        <div className="col x12 l12 m12 s12 center">
-                            <MonthPicker 
-                                handleAddMonth={this.handleAddMonth} 
-                                handleMinusMonth={this.handleMinusMonth} 
-                                handleSetMonth={this.handleSetMonth}
-                                currentMonth={this.state.currentMonth}
-                                disabled={this.state.isLoadingImportExportCost} 
-                            />
-                        </div>
-                        {
-                            this.state.isLoadingTransaction === false && (
-                                <div>
-                                    <CostMonthlySummaryPanel color={"red lighten-1"} message={"รายจ่ายจากการนำเข้าสินค้า"} currentMonth={this.state.currentMonth} cost={this.state.currentImportTotal}/>
-                                    <CostMonthlySummaryPanel color={"green lighten-1"} message={"รายรับจากการนำออกสินค้า"} currentMonth={this.state.currentMonth} cost={this.state.currentExportTotal}/>
-                                </div>
-                            )
-                        }
-                        <div className="col xl6 l6 m12 s12">
-                                <div className="col xl12 l12 m12 s12" style={{right: "5px", position: "relative"}}>
-                                    <h6>รายจ่าย</h6>
-                                </div>
-                                    {costTransactions.length === 0 && (
-                                        <EmptyTransactionNotice message="ไม่มีค่าใช้จ่ายขณะนี้"/>
-                                    )}
-                                    {costTransactions.length !== 0 && (
-                                        <div className="col card small xl12 l12 m12 s12" style={{ height: "auto"}}>
-                                            <table className="highlight centered">
-                                                <thead>
-                                                <tr>
-                                                    <CostTransactionTableHeader />
-                                                </tr>
-                                                </thead>
-                                                <tbody>
-                                                    {this.renderTableBody("Cost", slicedCostFilteredTransaction)}
-                                                </tbody>
-                                            </table>
-                                        </div>
-                                    )}
-                                    
-                            {this.renderPagination(costFilteredTransaction, "Cost")}
-                        </div>
-                        
-                        <div className="col xl6 l6 m12 s12">
-                            <div className="col xl12 l12 m12 s12" style={{left: "5px", position: "relative"}}>
-                                <h6>รายรับ</h6>
-                            </div>
-                            {costTransactions.length === 0 && (
-                                        <EmptyTransactionNotice message="ไม่มีค่าใช้จ่ายขณะนี้"/>
-                             )}
-                             {costTransactions.length !== 0 && (
-                                <div className="col card small xl12 l12 m12 s12" style={{ height: "auto"}}>
-                                    <table className="highlight centered">
-                                    <thead>
-                                    <tr>
-                                        <CostTransactionTableHeader />
-                                    </tr>
-                                    </thead>
-                        
-                                    <tbody>
-                                        {this.renderTableBody("Revenue", slicedRevenueFilteredTransaction)}
-                                    </tbody>
-                                    </table>
-                                </div>
-                             )}
-                                
-                            {this.renderPagination(revenueFilteredTransaction, "Revenue")}
-                        </div>
-                        
-                    </div>
-            )}
-            {this.state.isSelectCostRecord === true && this.state.isSelectAllRecord === false && this.state.isLoadingTransaction === false && (
+            {this.state.isSelectCostRecord === true && this.state.isLoadingTransaction === false && (
                 <div className="row">
                         <div className="col x12 l12 m12 s12 center">
                         <MonthPicker 
@@ -554,31 +467,44 @@ renderPagination(filteredTransaction, type){
                             disabled={this.state.isLoadingImportExportCost} 
                         />
                     </div>
-                    <div className="col xl12 l12 m12 s12" style={{right: "5px", position: "relative"}}>
+                    {
+                        this.state.isLoadingTransaction === false && (
+                            <div>
+                                <CostMonthlySummaryPanel color={"red lighten-1"} message={"รายจ่ายจากการนำเข้าสินค้า"} currentMonth={this.state.currentMonth} cost={this.state.currentImportTotal}/>
+                                <CostMonthlySummaryPanel color={"green lighten-1"} message={"รายรับจากการนำออกสินค้า"} currentMonth={this.state.currentMonth} cost={this.state.currentExportTotal}/>
+                            </div>
+                        )
+                    }
+                    <div className="col xl6 l6 m6 s6" style={{right: "5px", top: "10px", position: "relative"}}>
                         <h6>รายจ่าย</h6>
                     </div>
-                        {costTransactions.length === 0 && (
-                            <EmptyTransactionNotice message="ไม่มีค่าใช้จ่ายขณะนี้"/>
-                        )}
-                        {costTransactions.length !== 0 && (
-                            <div className="col card small xl12 l12 m12 s12" style={{ height: "auto"}}>
-                                <table className="highlight centered">
-                                    <thead>
-                                    <tr>
-                                        <CostTransactionTableHeader />
-                                    </tr>
-                                    </thead>
-                                    <tbody>
-                                        {this.renderTableBody("Cost", slicedCostFilteredTransaction)}
-                                    </tbody>
-                                </table>
-                            </div>
-                        )}
+                    <div className="col xl6 l6 m6 s6">
+                        <div className="right">
+                            {this.renderPagination(costFilteredTransaction, "Cost")}
+                        </div>
+                    </div>
+                    {costTransactions.length === 0 && (
+                        <EmptyTransactionNotice message="ไม่มีค่าใช้จ่ายขณะนี้"/>
+                    )}
+                    {costTransactions.length !== 0 && (
+                        <div className="col xl12 l12 m12 s12" style={{ height: "auto"}}>
+                            <table className="highlight import-table">
+                                <thead>
+                                <tr>
+                                    <CostTransactionTableHeader />
+                                </tr>
+                                </thead>
+                                <tbody>
+                                    {this.renderTableBody("Cost", slicedCostFilteredTransaction)}
+                                </tbody>
+                            </table>
+                        </div>
+                    )}
                         
                     {this.renderPagination(costFilteredTransaction, "Cost")}
                 </div>
             )}
-            {this.state.isSelectRevenueRecord === true && this.state.isSelectAllRecord === false && this.state.isLoadingTransaction === false && (
+            {this.state.isSelectRevenueRecord === true && this.state.isLoadingTransaction === false && (
                 <div className="row">
                         <div className="col x12 l12 m12 s12 center">
                         <MonthPicker 
@@ -589,8 +515,21 @@ renderPagination(filteredTransaction, type){
                             disabled={this.state.isLoadingImportExportCost} 
                         />
                     </div>
-                    <div className="col xl12 l12 m12 s12" style={{right: "5px", position: "relative"}}>
+                    {
+                        this.state.isLoadingTransaction === false && (
+                            <div>
+                                <CostMonthlySummaryPanel color={"red lighten-1"} message={"รายจ่ายจากการนำเข้าสินค้า"} currentMonth={this.state.currentMonth} cost={this.state.currentImportTotal}/>
+                                <CostMonthlySummaryPanel color={"green lighten-1"} message={"รายรับจากการนำออกสินค้า"} currentMonth={this.state.currentMonth} cost={this.state.currentExportTotal}/>
+                            </div>
+                        )
+                    }
+                    <div className="col xl6 l6 m6 s6" style={{right: "5px", top: "10px", position: "relative"}}>
                         <h6>รายรับ</h6>
+                    </div>
+                    <div className="col xl6 l6 m6 s6">
+                        <div className="right">
+                            {this.renderPagination(revenueFilteredTransaction, "Revenue")}
+                        </div>
                     </div>
                     {costTransactions.length === 0 && (
                         <EmptyTransactionNotice message="ไม่มีค่าใช้จ่ายขณะนี้"/>
