@@ -12,7 +12,6 @@ import {fetchTransaction, deleteMusicroomTransaction, resetMusicroomTransactionE
 import {getTotalMusicroom} from '../../actions/costTransaction'
 import {LoaderSpinner} from '../commons/LoaderSpinner'
 import './main.css'
-import EmptyTransactionNotice from '../commons/EmptyTransactionNotice';
 import {CostMonthlySummaryPanel} from '../costs/CostMonthlySummaryPanel'
 
 const shiftLeft10 = {
@@ -122,10 +121,10 @@ export class MusicroomTransactionPage extends Component {
 
     componentDidMount(){
         this.props.fetchTransaction()
-        var elems = document.querySelectorAll('#deleteModal');
+        var elems = document.querySelectorAll('#pagingModal');
         M.Modal.init(elems, {
             opacity: 0.6
-        }); 
+        });
         this.setState({isLoadingTotalRevenue: true})
         let promiseMusicroom = this.props.getTotalMusicroom(this.state.currentMonth)
         Promise.all([promiseMusicroom]).then(values => {
@@ -325,6 +324,25 @@ export class MusicroomTransactionPage extends Component {
         })
     }
 
+    renderPaginationBodyModal(arrayOfPage, type){
+        let activePage = 0
+        if(type === "Small"){
+            activePage = this.state.currentSmallRoomPage
+        }
+        else if(type === "Large"){
+            activePage = this.state.currentLargeRoomPage
+        }
+        var returnElement = []
+        _.map(arrayOfPage, (page, index) => {
+            returnElement.push(<li key={index}  onClick={() => this.setCurrentPage(arrayOfPage[index], type, !(activePage === arrayOfPage[index]))} className={activePage === arrayOfPage[index] ? "active" : "waves-effect"} style={{width: "25px"}}>{arrayOfPage[index]}</li>)
+            if(page % 10 === 0){
+                returnElement.push(<br />)
+            }
+        })
+
+        return returnElement
+    }
+
     renderPagination(filteredTransaction, type){
         var numberOfPage = type === "Small" ? this.state.currentSmallRoomPage : this.state.currentLargeRoomPage
         var loop = 0
@@ -367,11 +385,36 @@ export class MusicroomTransactionPage extends Component {
             }
         }
 
+        var arrayOfPageModal = []
+        for(loop = 1; loop <= maximumPage; loop++){
+            arrayOfPageModal.push(loop)
+        }
+
         return(
-            <ul className="col xl12 l12 m12 s12 pagination center">
-                <span style={{fontSize: "17px"}}>หน้า : </span>
-                {this.renderPaginationBody(arrayOfPage, type)}
-            </ul>
+            <div>
+                <div style={{display : 'inline-block'}}>
+                    <ul className="col xl12 l12 m12 s12 pagination center">
+                        <span style={{fontSize: "17px"}}>หน้า : </span>
+                        {this.renderPaginationBody(arrayOfPage, type)}
+                    </ul>
+                </div>
+
+                <div data-target="pagingModal" className="modal-trigger" style={{display : 'inline-block', bottom: "15px", position: "relative", cursor: "pointer"}}>
+                    <i className="material-icons">menu</i>
+                </div>
+
+                <div id="pagingModal" className="modal">
+                    <div className="modal-content">
+                        <h6>เลือกหน้าแสดงผล</h6>
+                        <ul className="col xl12 l12 m12 s12 pagination center">
+                            {this.renderPaginationBodyModal(arrayOfPageModal, type)}
+                        </ul>
+                    </div>
+                    <div className="modal-footer">
+                        <div className="modal-close waves-effect waves-light btn-small red white-text" style={{marginRight: "20px"}}>ปิด</div>
+                    </div>
+                </div>
+            </div>
         )
     }
 

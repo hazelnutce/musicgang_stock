@@ -8,7 +8,6 @@ import {Link} from 'react-router-dom'
 
 import {fetchTransaction} from '../../actions/transaction'
 import {LoaderSpinner} from '../commons/LoaderSpinner'
-import {EmptyTransactionNotice} from '../commons/EmptyTransactionNotice'
 
 const sessionEnums = {
     currentPageTrackerTransaction_1: 'currentPageTrackerTransaction_1',

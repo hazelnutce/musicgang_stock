@@ -29,7 +29,6 @@ import MomentLocaleUtils, {
     parseDate,
   } from 'react-day-picker/moment';
 import CostTransactionTableHeader from './CostTransactionTableHeader';
-import EmptyTransactionNotice from '../commons/EmptyTransactionNotice';
 
 const shiftLeft10 = {
   left: "10px",
@@ -122,6 +121,25 @@ export class CostTransactionDetail extends Component {
     }
 
   }
+
+  renderPaginationBodyModal(arrayOfPage, type){
+        let activePage = 0
+        if(type === "Cost"){
+            activePage = this.state.currentCostPage
+        }
+        else if(type === "Revenue"){
+            activePage = this.state.current
+        }
+        var returnElement = []
+        _.map(arrayOfPage, (page, index) => {
+            returnElement.push(<li key={index}  onClick={() => this.setCurrentPage(arrayOfPage[index], type, !(activePage === arrayOfPage[index]))} className={activePage === arrayOfPage[index] ? "active" : "waves-effect"} style={{width: "25px"}}>{arrayOfPage[index]}</li>)
+            if(page % 10 === 0){
+                returnElement.push(<br />)
+            }
+        })
+
+        return returnElement
+    }
 
   addOneCostTransaction(values, history){
     if(this.state.selectedDay === null || this.state.selectedDay === undefined){
@@ -403,12 +421,37 @@ renderPagination(filteredTransaction, type){
             }
         }
     }
+
+    var arrayOfPageModal = []
+    for(loop = 1; loop <= maximumPage; loop++){
+        arrayOfPageModal.push(loop)
+    }
     
     return(
-        <ul className="col xl12 l12 m12 s12 pagination center">
-            <span style={{fontSize: "17px"}}>หน้า : </span>
-            {this.renderPaginationBody(arrayOfPage, type)}
-        </ul>
+        <div>
+            <div style={{display : 'inline-block'}}>
+                <ul className="col xl12 l12 m12 s12 pagination center">
+                    <span style={{fontSize: "17px"}}>หน้า : </span>
+                    {this.renderPaginationBody(arrayOfPage, type)}
+                </ul>
+            </div>
+
+            <div data-target="pagingModal" className="modal-trigger" style={{display : 'inline-block', bottom: "15px", position: "relative", cursor: "pointer"}}>
+                <i className="material-icons">menu</i>
+            </div>
+
+            <div id="pagingModal" className="modal">
+                <div className="modal-content">
+                    <h6>เลือกหน้าแสดงผล</h6>
+                    <ul className="col xl12 l12 m12 s12 pagination center">
+                        {this.renderPaginationBodyModal(arrayOfPageModal, type)}
+                    </ul>
+                </div>
+                <div className="modal-footer">
+                    <div className="modal-close waves-effect waves-light btn-small red white-text" style={{marginRight: "20px"}}>ปิด</div>
+                </div>
+            </div>
+        </div>
     )
 }
 
@@ -483,24 +526,18 @@ renderPagination(filteredTransaction, type){
                             {this.renderPagination(costFilteredTransaction, "Cost")}
                         </div>
                     </div>
-                    {costTransactions.length === 0 && (
-                        <EmptyTransactionNotice message="ไม่มีค่าใช้จ่ายขณะนี้"/>
-                    )}
-                    {costTransactions.length !== 0 && (
-                        <div className="col xl12 l12 m12 s12" style={{ height: "auto"}}>
-                            <table className="highlight import-table">
-                                <thead>
-                                <tr>
-                                    <CostTransactionTableHeader />
-                                </tr>
-                                </thead>
-                                <tbody>
-                                    {this.renderTableBody("Cost", slicedCostFilteredTransaction)}
-                                </tbody>
-                            </table>
-                        </div>
-                    )}
-                        
+                    <div className="col xl12 l12 m12 s12" style={{ height: "auto"}}>
+                        <table className="highlight import-table">
+                            <thead>
+                            <tr>
+                                <CostTransactionTableHeader />
+                            </tr>
+                            </thead>
+                            <tbody>
+                                {this.renderTableBody("Cost", slicedCostFilteredTransaction)}
+                            </tbody>
+                        </table>
+                    </div>
                     {this.renderPagination(costFilteredTransaction, "Cost")}
                 </div>
             )}
@@ -531,25 +568,19 @@ renderPagination(filteredTransaction, type){
                             {this.renderPagination(revenueFilteredTransaction, "Revenue")}
                         </div>
                     </div>
-                    {costTransactions.length === 0 && (
-                        <EmptyTransactionNotice message="ไม่มีค่าใช้จ่ายขณะนี้"/>
-                    )}
-                    {costTransactions.length !== 0 && (
-                        <div className="col card small xl12 l12 m12 s12" style={{ height: "auto"}}>
-                            <table className="highlight centered">
-                            <thead>
-                            <tr>
-                                <CostTransactionTableHeader />
-                            </tr>
-                            </thead>
-                
-                            <tbody>
-                                {this.renderTableBody("Revenue", slicedRevenueFilteredTransaction)}
-                            </tbody>
-                            </table>
-                        </div>
-                    )}
-                        
+                    <div className="col card small xl12 l12 m12 s12" style={{ height: "auto"}}>
+                        <table className="highlight centered">
+                        <thead>
+                        <tr>
+                            <CostTransactionTableHeader />
+                        </tr>
+                        </thead>
+            
+                        <tbody>
+                            {this.renderTableBody("Revenue", slicedRevenueFilteredTransaction)}
+                        </tbody>
+                        </table>
+                    </div>
                     {this.renderPagination(revenueFilteredTransaction, "Revenue")}
                 </div>
             )}
