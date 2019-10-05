@@ -4,9 +4,9 @@ export class CostTransactionTableHeader extends Component {
     render() {
         return(
             <>
-                <th>วันที่</th>
-                <th>รายละเอียด</th>
-                <th>จำนวนเงิน</th>
+                <th className="smaller_height_header smaller_gap">วันที่</th>
+                <th className="smaller_height_header smaller_gap">รายละเอียด</th>
+                <th className="smaller_height_header smaller_gap">จำนวนเงิน</th>
             </>
         )
     }

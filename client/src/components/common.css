@@ -2,3 +2,22 @@
     position: relative;
     top: 70px;
 }
+
+.smaller_height_header {
+    height: 50px;
+}
+
+.smaller_gap {
+    padding: 5px;
+    text-align: center;
+}
+
+.import-table{
+    border: 1px solid #e8eaed;
+    box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+}
+
+#pagingModal{
+    width: 60% !important; 
+    height: 30% !important;
+  }

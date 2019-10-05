@@ -291,14 +291,14 @@ renderTableBody(costType, transactionList){
         returnTableRow.push(
             <React.Fragment key={_id}>
             <tr>
-                <td>{itemDay !== null ? moment(itemDay).format('ll') : null}</td>
-                <td style={{fontSize}}>
+                <td className="smaller_gap">{itemDay !== null ? moment(itemDay).format('ll') : null}</td>
+                <td className="smaller_gap" style={{fontSize}}>
                     <Link to={{pathname: `/costs/view`,
                             state: {_id, stockId}}}>
                             {preparedDescription}
                     </Link>
                 </td>
-                <td>{formatCost}</td>
+                <td className="smaller_gap">{formatCost}</td>
             </tr>
             </React.Fragment>
         )
@@ -311,9 +311,9 @@ renderTableBody(costType, transactionList){
     for(loop = 0; loop < additionalRow; loop++){
         returnTableRow.push(
             <tr key={loop}>
-                <td style={{lineHeight: "22px"}}>&nbsp;</td>
-                <td style={{lineHeight: "22px"}}>&nbsp;</td>
-                <td style={{lineHeight: "22px"}}>&nbsp;</td>
+                <td className="smaller_gap" style={{lineHeight: "22px"}}>&nbsp;</td>
+                <td className="smaller_gap" style={{lineHeight: "22px"}}>&nbsp;</td>
+                <td className="smaller_gap" style={{lineHeight: "22px"}}>&nbsp;</td>
             </tr>
         )
     }

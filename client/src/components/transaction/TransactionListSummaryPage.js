@@ -10,8 +10,6 @@ import {fetchTransaction} from '../../actions/transaction'
 import {LoaderSpinner} from '../commons/LoaderSpinner'
 import {EmptyTransactionNotice} from '../commons/EmptyTransactionNotice'
 
-import './table.css'
-
 const sessionEnums = {
     currentPageTrackerTransaction_1: 'currentPageTrackerTransaction_1',
     currentPageTrackerTransaction_2: 'currentPageTrackerTransaction_2',
@@ -80,6 +78,9 @@ export class TransactionListSummaryPage extends Component {
                 loadingTransaction: true,
             }, () => {
                 this.initToolTip()
+                setTimeout(() => {
+                    this.initPagingModal()
+                }, 100);
             }) 
         }
     }
@@ -126,12 +127,21 @@ export class TransactionListSummaryPage extends Component {
         return new Date(yearFilter, monthFilter, 1)
     }
 
+
+
     initToolTip = () => {
         var elems = document.querySelectorAll('.tooltipped');
         var options = {
             position: "right"
         }
         M.Tooltip.init(elems, options);
+    }
+
+    initPagingModal = () => {
+        var elems = document.querySelectorAll('#pagingModal');
+        M.Modal.init(elems, {
+            opacity: 0.6
+        });
     }
     
     renderSmallImportTransaction = (filteredTransaction) => {
@@ -151,16 +161,16 @@ export class TransactionListSummaryPage extends Component {
             
             return(
                 <tr key={_id}>
-                    <td>{itemDay !== null ? moment(itemDay).format('ll') : null}</td>
-                    <td>
+                    <td className="smaller_gap">{itemDay !== null ? moment(itemDay).format('ll') : null}</td>
+                    <td className="smaller_gap">
                         <Link to={{pathname: `/transactions/view`,
                                     state: {_id, stockId} }}>
                                 {itemName}
                         </Link>
                     </td>
-                    <td>{itemAmount}</td>
-                    {tooltipMessage !== null && <td className="tooltipped" data-tooltip={tooltipMessage}>{formatTotal}</td>}
-                    {tooltipMessage === null && <td>{formatTotal}</td>}
+                    <td className="smaller_gap">{itemAmount}</td>
+                    {tooltipMessage !== null && <td className="tooltipped smaller_gap" data-tooltip={tooltipMessage}>{formatTotal}</td>}
+                    {tooltipMessage === null && <td className="smaller_gap">{formatTotal}</td>}
                 </tr>
             )
         })
@@ -211,6 +221,25 @@ export class TransactionListSummaryPage extends Component {
             sessionStorage.setItem(sessionEnums.currentPageTrackerTransaction_2, page.toString())
             this.setState({currentExportPage: page})
         }
+    }
+
+    renderPaginationBodyModal(arrayOfPage, type){
+        let activePage = 0
+        if(type === "import"){
+            activePage = this.state.currentImportPage
+        }
+        else if(type === "export"){
+            activePage = this.state.currentExportPage
+        }
+        var returnElement = []
+        _.map(arrayOfPage, (page, index) => {
+            returnElement.push(<li key={index}  onClick={() => this.setCurrentPage(arrayOfPage[index], type, !(activePage === arrayOfPage[index]))} className={activePage === arrayOfPage[index] ? "active" : "waves-effect"} style={{width: "25px"}}>{arrayOfPage[index]}</li>)
+            if(page % 10 === 0){
+                returnElement.push(<br />)
+            }
+        })
+
+        return returnElement
     }
 
     renderPaginationBody(arrayOfPage, type){
@@ -284,12 +313,37 @@ export class TransactionListSummaryPage extends Component {
                 }
             }
         }
+
+        var arrayOfPageModal = []
+        for(loop = 1; loop <= maximumPage; loop++){
+            arrayOfPageModal.push(loop)
+        }
         
         return(
-            <ul className="col xl12 l12 m12 s12 pagination center">
-                <span style={{fontSize: "17px"}}>หน้า : </span>
-                {this.renderPaginationBody(arrayOfPage, type)}
-            </ul>
+            <div>
+                <div style={{display : 'inline-block'}}>
+                    <ul className="col xl12 l12 m12 s12 pagination center">
+                        <span style={{fontSize: "17px"}}>หน้า : </span>
+                        {this.renderPaginationBody(arrayOfPage, type)}
+                    </ul>
+                </div>
+                
+                <div data-target="pagingModal" className="modal-trigger" style={{display : 'inline-block', bottom: "15px", position: "relative", cursor: "pointer"}}>
+                    <i className="material-icons">menu</i>
+                </div>
+
+                <div id="pagingModal" className="modal">
+                    <div className="modal-content">
+                       <h6>เลือกหน้าแสดงผล</h6>
+                       <ul className="col xl12 l12 m12 s12 pagination center">
+                            {this.renderPaginationBodyModal(arrayOfPageModal, type)}
+                       </ul>
+                    </div>
+                    <div className="modal-footer">
+                        <div className="modal-close waves-effect waves-light btn-small red white-text" style={{marginRight: "20px"}}>ปิด</div>
+                    </div>
+                </div>
+            </div>
         )
     }
 
@@ -301,10 +355,10 @@ export class TransactionListSummaryPage extends Component {
         for(loop = 0; loop < additionalRow; loop++){
             returnElement.push(
                 <tr key={loop}>
-                    <td>&nbsp;</td>
-                    <td>&nbsp;</td>
-                    <td>&nbsp;</td>
-                    <td>&nbsp;</td>
+                    <td className="smaller_gap">&nbsp;</td>
+                    <td className="smaller_gap">&nbsp;</td>
+                    <td className="smaller_gap">&nbsp;</td>
+                    <td className="smaller_gap">&nbsp;</td>
                 </tr>
             )
 
@@ -314,91 +368,88 @@ export class TransactionListSummaryPage extends Component {
 
     render() {
       if(this.state.loadingTransaction){
-      const {isSelectAllTransaction, isSelectTransactionIn, isSelectTransactionOut, stockId, transaction: {transactions}} = this.props
+        const {isSelectTransactionIn, isSelectTransactionOut, stockId, transaction: {transactions}} = this.props
 
-      var importFilteredTransaction = transactions.filter(x => x.type === "import" && 
-                                                      x._stock === stockId &&
-                                                      this.isSameMonth(new Date(x.day), this.handleMonthFilter(this.state.currentMonth)))
-      importFilteredTransaction = importFilteredTransaction.sort(this.sortDayForTransaction)
-      var slicedImportFilteredTransaction = importFilteredTransaction.slice((this.state.currentImportPage-1) * 50, this.state.currentImportPage * 50)
-      
+        var importFilteredTransaction = transactions.filter(x => x.type === "import" && 
+                                                        x._stock === stockId &&
+                                                        this.isSameMonth(new Date(x.day), this.handleMonthFilter(this.state.currentMonth)))
+        importFilteredTransaction = importFilteredTransaction.sort(this.sortDayForTransaction)
+        var slicedImportFilteredTransaction = importFilteredTransaction.slice((this.state.currentImportPage-1) * 50, this.state.currentImportPage * 50)
+        
 
-      var exportFilteredTransaction = transactions.filter(x => x.type === "export" &&
-                                                          x._stock === stockId && 
-                                                          this.isSameMonth(new Date(x.day), this.handleMonthFilter(this.state.currentMonth)))
-      exportFilteredTransaction = exportFilteredTransaction.sort(this.sortDayForTransaction)
-      var slicedExportFilteredTransaction = exportFilteredTransaction.slice((this.state.currentExportPage-1) * 50, this.state.currentExportPage * 50)
+        var exportFilteredTransaction = transactions.filter(x => x.type === "export" &&
+                                                            x._stock === stockId && 
+                                                            this.isSameMonth(new Date(x.day), this.handleMonthFilter(this.state.currentMonth)))
+        exportFilteredTransaction = exportFilteredTransaction.sort(this.sortDayForTransaction)
+        var slicedExportFilteredTransaction = exportFilteredTransaction.slice((this.state.currentExportPage-1) * 50, this.state.currentExportPage * 50)
 
-      if(isSelectTransactionIn === true){
-        return (
-            <div className="row">
-                <div className="col x12 l12 m12 s12 center">
-                    <MonthPicker 
-                        handleAddMonth={this.handleAddMonth} 
-                        handleMinusMonth={this.handleMinusMonth} 
-                        handleSetMonth={this.handleSetMonth}
-                        currentMonth={this.state.currentMonth} 
-                    />
-                 </div>
-                 <div className="col xl6 l6 m6 s6" style={{right: "5px", top: "10px", position: "relative"}}>
-                     <h6>สินค้านำเข้า</h6>
-                 </div>
-                 <div className="col xl6 l6 m6 s6">
-                     <div className="right">
-                        {this.renderPagination(importFilteredTransaction, "import")} 
-                     </div>
-                 </div>
-                    <div className="col xl12 l12 m12 s12 import-table">
-                         <table className="table-bordered center">
-                             <thead>
-                                 <tr>
-                                     <th>วันที่</th>
-                                     <th>ชื่อสินค้า</th>
-                                     <th>จำนวน</th>
-                                     <th>ราคา</th>
-                                 </tr>
-                             </thead>
-            
-                             <tbody>
-                                {this.renderSmallImportTransaction(slicedImportFilteredTransaction)}
-                                {this.renderRemainingItem(slicedImportFilteredTransaction)}
-                             </tbody>
-                         </table>
+        if(isSelectTransactionIn === true){
+            return (
+                <div className="row">
+                    <div className="col x12 l12 m12 s12 center">
+                        <MonthPicker 
+                            handleAddMonth={this.handleAddMonth} 
+                            handleMinusMonth={this.handleMinusMonth} 
+                            handleSetMonth={this.handleSetMonth}
+                            currentMonth={this.state.currentMonth} 
+                        />
                     </div>
-                    {this.renderPagination(importFilteredTransaction, "import")}   
-            </div>
-        )
-      }
-      else if(isSelectTransactionOut === true){
-        return (
-            <div className="row">
-                <div className="col x12 l12 m12 s12 center">
-                    <MonthPicker 
-                        handleAddMonth={this.handleAddMonth} 
-                        handleMinusMonth={this.handleMinusMonth} 
-                        handleSetMonth={this.handleSetMonth}
-                        currentMonth={this.state.currentMonth} 
-                    />
-                </div>
-                <div className="col xl6 l6 m6 s6" style={{right: "5px", top: "10px", position: "relative"}}>
-                     <h6>สินค้านำเข้า</h6>
-                 </div>
-                 <div className="col xl6 l6 m6 s6">
-                     <div className="right">
-                        {this.renderPagination(importFilteredTransaction, "import")} 
-                     </div>
-                 </div>
-                {slicedExportFilteredTransaction.length === 0 && 
-                    <EmptyTransactionNotice message="ไม่มีรายการในขณะนี้"/>}
-                {slicedExportFilteredTransaction.length !== 0 && (
+                    <div className="col xl6 l6 m6 s6" style={{right: "5px", top: "10px", position: "relative"}}>
+                        <h6>สินค้านำเข้า</h6>
+                    </div>
+                    <div className="col xl6 l6 m6 s6">
+                        <div className="right">
+                            {this.renderPagination(importFilteredTransaction, "import")} 
+                        </div>
+                    </div>
                     <div className="col xl12 l12 m12 s12 import-table">
                         <table className="table-bordered center">
                             <thead>
                                 <tr>
-                                    <th>วันที่</th>
-                                    <th>ชื่อสินค้า</th>
-                                    <th>จำนวน</th>
-                                    <th>ราคา</th>
+                                    <th className="smaller_height_header smaller_gap">วันที่</th>
+                                    <th className="smaller_height_header smaller_gap">ชื่อสินค้า</th>
+                                    <th className="smaller_height_header smaller_gap">จำนวน</th>
+                                    <th className="smaller_height_header smaller_gap">ราคา</th>
+                                </tr>
+                            </thead>
+            
+                            <tbody>
+                                {this.renderSmallImportTransaction(slicedImportFilteredTransaction)}
+                                {this.renderRemainingItem(slicedImportFilteredTransaction)}
+                            </tbody>
+                        </table>
+                    </div>
+                    {this.renderPagination(importFilteredTransaction, "import")}
+                </div>
+            )
+        }
+        else if(isSelectTransactionOut === true){
+            return (
+                <div className="row">
+                    <div className="col x12 l12 m12 s12 center">
+                        <MonthPicker 
+                            handleAddMonth={this.handleAddMonth} 
+                            handleMinusMonth={this.handleMinusMonth} 
+                            handleSetMonth={this.handleSetMonth}
+                            currentMonth={this.state.currentMonth} 
+                        />
+                    </div>
+                    <div className="col xl6 l6 m6 s6" style={{right: "5px", top: "10px", position: "relative"}}>
+                        <h6>สินค้านำเข้า</h6>
+                    </div>
+                    <div className="col xl6 l6 m6 s6">
+                        <div className="right">
+                            {this.renderPagination(importFilteredTransaction, "import")} 
+                        </div>
+                    </div>
+                    <div className="col xl12 l12 m12 s12 import-table">
+                        <table className="table-bordered center">
+                            <thead>
+                                <tr>
+                                    <th className="smaller_height_header smaller_gap">วันที่</th>
+                                    <th className="smaller_height_header smaller_gap">ชื่อสินค้า</th>
+                                    <th className="smaller_height_header smaller_gap">จำนวน</th>
+                                    <th className="smaller_height_header smaller_gap">ราคา</th>
                                 </tr>
                             </thead>
             
@@ -408,12 +459,10 @@ export class TransactionListSummaryPage extends Component {
                             </tbody>
                         </table>
                     </div>
-                )}    
-                
-                {this.renderPagination(exportFilteredTransaction, "export")}
-            </div>
-        )
-      }
+                    {this.renderPagination(exportFilteredTransaction, "export")}
+                </div>
+            )
+        }
       }
 
       else{

@@ -236,15 +236,15 @@ export class MusicroomTransactionPage extends Component {
 
             return(
                 <tr key={_id}>
-                    <td>{itemDay !== null ? moment(itemDay).format('ll') : null}</td>
-                    <td>
+                    <td className="smaller_gap">{itemDay !== null ? moment(itemDay).format('ll') : null}</td>
+                    <td className="smaller_gap">
                         <Link to={{pathname: `/musicrooms/view`,
                                 state: {_id} }}>
                             {formatStartAndEndTime}
                         </Link>
                     </td>
-                    <td>{formatDiff}</td>
-                    <td>{formatPrice}</td>
+                    <td className="smaller_gap">{formatDiff}</td>
+                    <td className="smaller_gap">{formatPrice}</td>
                 </tr>
             )
         })
@@ -270,15 +270,15 @@ export class MusicroomTransactionPage extends Component {
 
             return(
                 <tr key={_id}>
-                    <td>{itemDay !== null ? moment(itemDay).format('ll') : null}</td>
-                    <td>
+                    <td className="smaller_gap">{itemDay !== null ? moment(itemDay).format('ll') : null}</td>
+                    <td className="smaller_gap">
                         <Link to={{pathname: `/musicrooms/view`,
                                 state: {_id} }}>
                             {formatStartTime + "-" + formatEndTime}
                         </Link>
                     </td>
-                    <td>{formatDiff}</td>
-                    <td>{formatPrice}</td>
+                    <td className="smaller_gap">{formatDiff}</td>
+                    <td className="smaller_gap">{formatPrice}</td>
                 </tr>
             )
         })
@@ -383,10 +383,10 @@ export class MusicroomTransactionPage extends Component {
         for(loop = 0; loop < additionalRow; loop++){
             returnElement.push(
                 <tr key={loop}>
-                    <td>&nbsp;</td>
-                    <td>&nbsp;</td>
-                    <td>&nbsp;</td>
-                    <td>&nbsp;</td>
+                    <td className="smaller_gap">&nbsp;</td>
+                    <td className="smaller_gap">&nbsp;</td>
+                    <td className="smaller_gap">&nbsp;</td>
+                    <td className="smaller_gap">&nbsp;</td>
                 </tr>
             )
             
@@ -473,27 +473,23 @@ export class MusicroomTransactionPage extends Component {
                                 {this.renderPagination(smallRoomFilteredTransaction, "Small")} 
                             </div>
                         </div>
-                        {slicedSmallRoomFilteredTransaction.length === 0 &&
-                            <EmptyTransactionNotice message="ไม่มีรายการในขณะนี้"/>}
-                        {slicedSmallRoomFilteredTransaction.length !== 0 && (
-                            <div className="col xl12 l12 m12 s12" style={{right: "5px", position: "relative", height: "auto"}}>
-                                <table className="highlight import-table">
-                                    <thead>
-                                    <tr>
-                                        <th>วันที่</th>
-                                        <th>เวลา</th>
-                                        <th>จำนวน ชม.</th>
-                                        <th>ราคา</th>
-                                    </tr>
-                                    </thead>
-                    
-                                    <tbody>
-                                        {this.renderSmallroomRecord(slicedSmallRoomFilteredTransaction)}
-                                        {this.renderRemainingItem(slicedSmallRoomFilteredTransaction)}
-                                    </tbody>
-                                </table>
-                            </div>
-                        )}
+                        <div className="col xl12 l12 m12 s12" style={{right: "5px", position: "relative", height: "auto"}}>
+                            <table className="highlight import-table">
+                                <thead>
+                                <tr>
+                                    <th className="smaller_height_header smaller_gap">วันที่</th>
+                                    <th className="smaller_height_header smaller_gap">เวลา</th>
+                                    <th className="smaller_height_header smaller_gap">จำนวน ชม.</th>
+                                    <th className="smaller_height_header smaller_gap">ราคา</th>
+                                </tr>
+                                </thead>
+                
+                                <tbody>
+                                    {this.renderSmallroomRecord(slicedSmallRoomFilteredTransaction)}
+                                    {this.renderRemainingItem(slicedSmallRoomFilteredTransaction)}
+                                </tbody>
+                            </table>
+                        </div>
                         {this.renderPagination(smallRoomFilteredTransaction, "Small")}
                     </div>
                 )}
@@ -519,27 +515,23 @@ export class MusicroomTransactionPage extends Component {
                                 {this.renderPagination(largeRoomFilteredTransaction, "Export")} 
                             </div>
                         </div>
-                        {slicedLargeRoomFilteredTransaction.length === 0 &&
-                                <EmptyTransactionNotice message="ไม่มีรายการในขณะนี้"/>}
-                        {slicedLargeRoomFilteredTransaction.length !== 0 && (
-                            <div className="col card small xl12 l12 m12 s12" style={{right: "5px", position: "relative", height: "auto"}}>
-                                <table className="highlight centered">
-                                <thead>
-                                <tr>
-                                    <th>วันที่</th>
-                                    <th>เวลา</th>
-                                    <th>จำนวน ชม.</th>
-                                    <th>ราคา</th>
-                                </tr>
-                                </thead>
-                    
-                                <tbody>
-                                    {this.renderLargeroomRecord(slicedLargeRoomFilteredTransaction)}
-                                    {this.renderRemainingItem(slicedLargeRoomFilteredTransaction)}
-                                </tbody>
-                                </table>
-                            </div>
-                        )}
+                        <div className="col card small xl12 l12 m12 s12" style={{right: "5px", position: "relative", height: "auto"}}>
+                            <table className="highlight centered">
+                            <thead>
+                            <tr>
+                                <th className="smaller_height_header smaller_gap">วันที่</th>
+                                <th className="smaller_height_header smaller_gap">เวลา</th>
+                                <th className="smaller_height_header smaller_gap">จำนวน ชม.</th>
+                                <th className="smaller_height_header smaller_gap">ราคา</th>
+                            </tr>
+                            </thead>
+                
+                            <tbody>
+                                {this.renderLargeroomRecord(slicedLargeRoomFilteredTransaction)}
+                                {this.renderRemainingItem(slicedLargeRoomFilteredTransaction)}
+                            </tbody>
+                            </table>
+                        </div>
                         {this.renderPagination(largeRoomFilteredTransaction, "Large")}
                     </div>
                 )}
