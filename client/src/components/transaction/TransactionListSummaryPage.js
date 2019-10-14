@@ -35,13 +35,19 @@ export class TransactionListSummaryPage extends Component {
             currentImportPage: parseInt(importPage),
             currentExportPage: parseInt(exportPage),
             currentDaySetting: false,
-            currentDaySettingValue: new Date()
+            currentDaySettingValue: new Date(new Date().setHours(0,0,0,0))
         }
     }
 
     handleDaySetting = () => {
         this.setState({currentDaySetting: !this.state.currentDaySetting})
     }
+
+    handleSettingDayChange = (day) => {
+        if((day instanceof Date)){
+          this.setState({ currentDaySettingValue: day });
+        }
+      }
 
     handleAddMonth = () => {
         let newMonth = this.state.currentMonth + 1
@@ -51,6 +57,7 @@ export class TransactionListSummaryPage extends Component {
         this.setState({currentMonth: newMonth, currentImportPage: 1, currentExportPage: 1}, () => {
             this.initToolTip()
         })
+        this.setState({currentDaySettingValue : new Date(newMonth/12, newMonth%12, 1)})
     }
 
     handleMinusMonth = () => {
@@ -61,6 +68,7 @@ export class TransactionListSummaryPage extends Component {
         this.setState({currentMonth: newMonth, currentImportPage: 1, currentExportPage: 1}, () => {
             this.initToolTip()
         })
+        this.setState({currentDaySettingValue : new Date(newMonth/12, newMonth%12, 1)})
     }
 
     handleSetMonth = (integerMonth) => {
@@ -70,6 +78,7 @@ export class TransactionListSummaryPage extends Component {
         this.setState({currentMonth: integerMonth, currentImportPage: 1, currentExportPage: 1}, () => {
             this.initToolTip()
         })
+        this.setState({currentDaySettingValue : new Date(integerMonth/12, integerMonth%12, 1)})
     }
 
     componentWillReceiveProps = () => {
@@ -94,6 +103,16 @@ export class TransactionListSummaryPage extends Component {
                 }, 100);
             }) 
         }
+    }
+
+    isSameDaySetting = (d1) => {
+        let d2 = this.state.currentDaySettingValue
+        if(this.state.currentDaySetting === true){
+            return d1.getFullYear() === d2.getFullYear() &&
+            d1.getMonth() === d2.getMonth() &&
+            d1.getDate() === d2.getDate();
+        }
+        return true
     }
 
     isSameDay = (d1, d2) => {
@@ -383,14 +402,17 @@ export class TransactionListSummaryPage extends Component {
 
         var importFilteredTransaction = transactions.filter(x => x.type === "import" && 
                                                         x._stock === stockId &&
-                                                        this.isSameMonth(new Date(x.day), this.handleMonthFilter(this.state.currentMonth)))
+                                                        this.isSameMonth(new Date(x.day), this.handleMonthFilter(this.state.currentMonth)) &&
+                                                        this.isSameDaySetting(new Date(x.day)))
         importFilteredTransaction = importFilteredTransaction.sort(this.sortDayForTransaction)
         var slicedImportFilteredTransaction = importFilteredTransaction.slice((this.state.currentImportPage-1) * 50, this.state.currentImportPage * 50)
         
 
         var exportFilteredTransaction = transactions.filter(x => x.type === "export" &&
                                                             x._stock === stockId && 
-                                                            this.isSameMonth(new Date(x.day), this.handleMonthFilter(this.state.currentMonth)))
+                                                            this.isSameMonth(new Date(x.day), this.handleMonthFilter(this.state.currentMonth))&& 
+                                                            this.isSameDaySetting(new Date(x.day)))
+
         exportFilteredTransaction = exportFilteredTransaction.sort(this.sortDayForTransaction)
         var slicedExportFilteredTransaction = exportFilteredTransaction.slice((this.state.currentExportPage-1) * 50, this.state.currentExportPage * 50)
 
@@ -414,11 +436,12 @@ export class TransactionListSummaryPage extends Component {
                             <div className="col xl12 l12 m12 s12">
                                 <DayPickerInput 
                                     classNames={{
-                                    container: "input-field col xl6 l8 m8 s12",
-                                    overlayWrapper: "DayPickerInput-OverlayWrapper",
-                                    overlay: "DayPickerInput-Overlay"
+                                        container: "input-field col xl6 l8 m8 s12",
+                                        overlayWrapper: "DayPickerInput-OverlayWrapper",
+                                        overlay: "DayPickerInput-Overlay"
                                     }}
-                                    onDayChange={this.handleDayChange} 
+                                    value={this.state.currentDaySettingValue}
+                                    onDayChange={this.handleSettingDayChange} 
                                     formatDate={formatDate}
                                     parseDate={parseDate}
                                     format={"LL"}
@@ -485,7 +508,8 @@ export class TransactionListSummaryPage extends Component {
                                     overlayWrapper: "DayPickerInput-OverlayWrapper",
                                     overlay: "DayPickerInput-Overlay"
                                     }}
-                                    onDayChange={this.handleDayChange} 
+                                    value={this.state.currentDaySettingValue}
+                                    onDayChange={this.handleSettingDayChange} 
                                     formatDate={formatDate}
                                     parseDate={parseDate}
                                     format={"LL"}

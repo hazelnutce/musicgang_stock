@@ -65,7 +65,7 @@ export class CostTransactionDetail extends Component {
       currentMusicroomTotal: 0,
       isLoadingImportExportCost: false,
       currentDaySetting: false,
-      currentDaySettingValue: new Date(),
+      currentDaySettingValue: new Date(new Date().setHours(0,0,0,0)),
     }
   }
 
@@ -106,7 +106,13 @@ export class CostTransactionDetail extends Component {
 
   handleDaySetting = () => {
     this.setState({currentDaySetting: !this.state.currentDaySetting})
-  }  
+  }
+
+  handleSettingDayChange = (day) => {
+    if((day instanceof Date)){
+      this.setState({ currentDaySettingValue: day });
+    }
+  }
 
   componentDidUpdate(prevProps){
     if(prevProps.cost.costTransactions !== this.props.cost.costTransactions){
@@ -208,6 +214,7 @@ handleAddMonth = () => {
             currentExportTotal: values[1].data,
             isLoadingImportExportCost: false})
     })
+    this.setState({currentDaySettingValue : new Date(newMonth/12, newMonth%12, 1)})
 }
 
 handleMinusMonth = () => {
@@ -229,6 +236,7 @@ handleMinusMonth = () => {
             currentExportTotal: values[1].data,
             isLoadingImportExportCost: false})
     })
+    this.setState({currentDaySettingValue : new Date(newMonth/12, newMonth%12, 1)})
 }
 
 handleSetMonth = (integerMonth) => {
@@ -250,6 +258,7 @@ handleSetMonth = (integerMonth) => {
             currentExportTotal: values[1].data,
             isLoadingImportExportCost: false})
     })
+    this.setState({currentDaySettingValue : new Date(integerMonth/12, integerMonth%12, 1)})
 }
 
 handleDayChange = (day) => {
@@ -268,6 +277,16 @@ sortDayForTransaction = (a,b) => {
     if(newATime > newBTime)
         return 1
     return 0
+}
+
+isSameDaySetting = (d1) => {
+    let d2 = this.state.currentDaySettingValue
+    if(this.state.currentDaySetting === true){
+        return d1.getFullYear() === d2.getFullYear() &&
+        d1.getMonth() === d2.getMonth() &&
+        d1.getDate() === d2.getDate();
+    }
+    return true
 }
 
 isSameMonth = (d1, d2) => {
@@ -467,11 +486,11 @@ renderPagination(filteredTransaction, type){
     const {stockId} = this.props.location.state
 
     if(costTransactions != null){
-        var costFilteredTransaction = costTransactions.filter(x => x.costType === "Cost" && x._stock === stockId && this.isSameMonth(new Date(x.day), this.handleMonthFilter(this.state.currentMonth)))
+        var costFilteredTransaction = costTransactions.filter(x => x.costType === "Cost" && x._stock === stockId && this.isSameMonth(new Date(x.day), this.handleMonthFilter(this.state.currentMonth)) && this.isSameDaySetting(new Date(x.day)))
         costFilteredTransaction = costFilteredTransaction.sort(this.sortDayForTransaction)
         var slicedCostFilteredTransaction = costFilteredTransaction.slice((this.state.currentCostPage - 1) * 50, this.state.currentCostPage * 50)
 
-        var revenueFilteredTransaction = costTransactions.filter(x => x.costType === "Revenue" && x._stock === stockId && this.isSameMonth(new Date(x.day), this.handleMonthFilter(this.state.currentMonth)))
+        var revenueFilteredTransaction = costTransactions.filter(x => x.costType === "Revenue" && x._stock === stockId && this.isSameMonth(new Date(x.day), this.handleMonthFilter(this.state.currentMonth)) && this.isSameDaySetting(new Date(x.day)))
         revenueFilteredTransaction = revenueFilteredTransaction.sort(this.sortDayForTransaction)
         var slicedRevenueFilteredTransaction = revenueFilteredTransaction.slice((this.state.currentRevenuePage - 1) * 50, this.state.currentRevenuePage * 50)
     }
@@ -530,7 +549,8 @@ renderPagination(filteredTransaction, type){
                                         overlayWrapper: "DayPickerInput-OverlayWrapper",
                                         overlay: "DayPickerInput-Overlay"
                                         }}
-                                        onDayChange={this.handleDayChange} 
+                                        value={this.state.currentDaySettingValue}
+                                        onDayChange={this.handleSettingDayChange} 
                                         formatDate={formatDate}
                                         parseDate={parseDate}
                                         format={"LL"}
@@ -599,7 +619,8 @@ renderPagination(filteredTransaction, type){
                                     overlayWrapper: "DayPickerInput-OverlayWrapper",
                                     overlay: "DayPickerInput-Overlay"
                                     }}
-                                    onDayChange={this.handleDayChange} 
+                                    value={this.state.currentDaySettingValue}
+                                    onDayChange={this.handleSettingDayChange} 
                                     formatDate={formatDate}
                                     parseDate={parseDate}
                                     format={"LL"}

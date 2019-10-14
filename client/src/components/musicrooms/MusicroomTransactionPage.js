@@ -52,7 +52,7 @@ export class MusicroomTransactionPage extends Component {
             currentMusicroomTotal : 0,
             isLoadingTotalRevenue : false,
             currentDaySetting: false,
-            currentDaySettingValue: new Date(),
+            currentDaySettingValue: new Date(new Date().setHours(0,0,0,0)),
         }
     }
 
@@ -72,7 +72,13 @@ export class MusicroomTransactionPage extends Component {
 
     handleDaySetting = () => {
         this.setState({currentDaySetting: !this.state.currentDaySetting})
-    }  
+    }
+
+    handleSettingDayChange = (day) => {
+        if((day instanceof Date)){
+          this.setState({ currentDaySettingValue: day });
+        }
+    }
 
     handleAddMonth = () => {
         let newMonth = this.state.currentMonth + 1
@@ -86,6 +92,7 @@ export class MusicroomTransactionPage extends Component {
                 currentMusicroomTotal: values[0].data,
                 isLoadingTotalRevenue: false})
         })
+        this.setState({currentDaySettingValue : new Date(newMonth/12, newMonth%12, 1)})
     }
 
     handleMinusMonth = () => {
@@ -100,6 +107,7 @@ export class MusicroomTransactionPage extends Component {
                 currentMusicroomTotal: values[0].data,
                 isLoadingTotalRevenue: false})
         })
+        this.setState({currentDaySettingValue : new Date(newMonth/12, newMonth%12, 1)})
     }
 
     handleSetMonth = (integerMonth) => {
@@ -114,6 +122,7 @@ export class MusicroomTransactionPage extends Component {
                 currentMusicroomTotal: values[0].data,
                 isLoadingTotalRevenue: false})
         })
+        this.setState({currentDaySettingValue : new Date(integerMonth/12, integerMonth%12, 1)})
     }
 
     handleCheckboxes = (buttonString) => {
@@ -158,6 +167,16 @@ export class MusicroomTransactionPage extends Component {
             this.addNotification(this.props.musicroom.musicroomTransactionError)
             }
         }
+    }
+
+    isSameDaySetting = (d1) => {
+        let d2 = this.state.currentDaySettingValue
+        if(this.state.currentDaySetting === true){
+            return d1.getFullYear() === d2.getFullYear() &&
+            d1.getMonth() === d2.getMonth() &&
+            d1.getDate() === d2.getDate();
+        }
+        return true
     }
 
     isSameDay = (d1, d2) => {
@@ -466,12 +485,14 @@ export class MusicroomTransactionPage extends Component {
         const {musicroomTransactions} = this.props.musicroom
 
         if(musicroomTransactions != null){
-            var smallRoomFilteredTransaction = musicroomTransactions.filter(x => x.roomSize === "Small" && this.isSameMonth(new Date(x.day), this.handleMonthFilter(this.state.currentMonth)))
+            var smallRoomFilteredTransaction = musicroomTransactions.filter(x => x.roomSize === "Small" && this.isSameMonth(new Date(x.day), this.handleMonthFilter(this.state.currentMonth)) &&
+            this.isSameDaySetting(new Date(x.day)))
             this.prepareOvernightItem(smallRoomFilteredTransaction)
             smallRoomFilteredTransaction = smallRoomFilteredTransaction.sort(this.sortDayForTransaction)
             var slicedSmallRoomFilteredTransaction = smallRoomFilteredTransaction.slice((this.state.currentSmallRoomPage - 1) * 50, this.state.currentSmallRoomPage * 50)
 
-            var largeRoomFilteredTransaction = musicroomTransactions.filter(x => x.roomSize === "Large" && this.isSameMonth(new Date(x.day), this.handleMonthFilter(this.state.currentMonth)))
+            var largeRoomFilteredTransaction = musicroomTransactions.filter(x => x.roomSize === "Large" && this.isSameMonth(new Date(x.day), this.handleMonthFilter(this.state.currentMonth))&&
+            this.isSameDaySetting(new Date(x.day)))
             this.prepareOvernightItem(largeRoomFilteredTransaction)
             largeRoomFilteredTransaction = largeRoomFilteredTransaction.sort(this.sortDayForTransaction)
             var slicedLargeRoomFilteredTransaction = largeRoomFilteredTransaction.slice((this.state.currentLargeRoomPage - 1) * 50, this.state.currentLargeRoomPage * 50)
@@ -531,7 +552,8 @@ export class MusicroomTransactionPage extends Component {
                                         overlayWrapper: "DayPickerInput-OverlayWrapper",
                                         overlay: "DayPickerInput-Overlay"
                                         }}
-                                        onDayChange={this.handleDayChange} 
+                                        value={this.state.currentDaySettingValue}
+                                        onDayChange={this.handleSettingDayChange} 
                                         formatDate={formatDate}
                                         parseDate={parseDate}
                                         format={"LL"}
@@ -599,7 +621,8 @@ export class MusicroomTransactionPage extends Component {
                                             overlayWrapper: "DayPickerInput-OverlayWrapper",
                                             overlay: "DayPickerInput-Overlay"
                                             }}
-                                            onDayChange={this.handleDayChange} 
+                                            value={this.state.currentDaySettingValue}
+                                            onDayChange={this.handleSettingDayChange} 
                                             formatDate={formatDate}
                                             parseDate={parseDate}
                                             format={"LL"}
