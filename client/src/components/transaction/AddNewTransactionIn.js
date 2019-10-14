@@ -342,7 +342,7 @@ export class AddNewTransactionIn extends Component {
                 placeholder={`${formatDate(new Date(), 'LL', 'th')}`}
                 dayPickerProps={{
                   locale: 'th',
-                  localeUtils: MomentLocaleUtils,
+                  localeUtils: MomentLocaleUtils
                 }}
               />
         </div>

@@ -9,6 +9,12 @@ import {Link} from 'react-router-dom'
 import {fetchTransaction} from '../../actions/transaction'
 import {LoaderSpinner} from '../commons/LoaderSpinner'
 
+import DayPickerInput from 'react-day-picker/DayPickerInput'
+import MomentLocaleUtils, {
+    formatDate,
+    parseDate,
+  } from 'react-day-picker/moment';
+
 const sessionEnums = {
     currentPageTrackerTransaction_1: 'currentPageTrackerTransaction_1',
     currentPageTrackerTransaction_2: 'currentPageTrackerTransaction_2',
@@ -27,8 +33,14 @@ export class TransactionListSummaryPage extends Component {
             currentMonth :  parseInt(month),
             loadingTransaction : false,
             currentImportPage: parseInt(importPage),
-            currentExportPage: parseInt(exportPage)
+            currentExportPage: parseInt(exportPage),
+            currentDaySetting: false,
+            currentDaySettingValue: new Date()
         }
+    }
+
+    handleDaySetting = () => {
+        this.setState({currentDaySetting: !this.state.currentDaySetting})
     }
 
     handleAddMonth = () => {
@@ -385,14 +397,41 @@ export class TransactionListSummaryPage extends Component {
         if(isSelectTransactionIn === true){
             return (
                 <div className="row">
-                    <div className="col x12 l12 m12 s12 center">
+                    <div className="col xl12 l12 m12 s12 center">
                         <MonthPicker 
                             handleAddMonth={this.handleAddMonth} 
                             handleMinusMonth={this.handleMinusMonth} 
                             handleSetMonth={this.handleSetMonth}
-                            currentMonth={this.state.currentMonth} 
-                        />
+                            currentMonth={this.state.currentMonth}
+                        >
+                            <span onClick={() => this.handleDaySetting()} style={{top: "10px", left: "10px", position: "relative", cursor: "pointer"}}>
+                                 <i className="material-icons">settings</i>
+                            </span>
+                        </MonthPicker>
                     </div>
+                    {
+                        this.state.currentDaySetting === true && (
+                            <div className="col xl12 l12 m12 s12">
+                                <DayPickerInput 
+                                    classNames={{
+                                    container: "input-field col xl6 l8 m8 s12",
+                                    overlayWrapper: "DayPickerInput-OverlayWrapper",
+                                    overlay: "DayPickerInput-Overlay"
+                                    }}
+                                    onDayChange={this.handleDayChange} 
+                                    formatDate={formatDate}
+                                    parseDate={parseDate}
+                                    format={"LL"}
+                                    placeholder={`${formatDate(new Date(), 'LL', 'th')}`}
+                                    dayPickerProps={{
+                                        locale: 'th',
+                                        localeUtils: MomentLocaleUtils,
+                                        canChangeMonth: false
+                                    }}
+                                />
+                            </div>
+                        )
+                    }
                     <div className="col xl6 l6 m6 s6" style={{right: "5px", top: "10px", position: "relative"}}>
                         <h6>สินค้านำเข้า</h6>
                     </div>
@@ -425,14 +464,41 @@ export class TransactionListSummaryPage extends Component {
         else if(isSelectTransactionOut === true){
             return (
                 <div className="row">
-                    <div className="col x12 l12 m12 s12 center">
-                        <MonthPicker 
+                    <div className="col xl12 l12 m12 s12 center">
+                    <MonthPicker 
                             handleAddMonth={this.handleAddMonth} 
                             handleMinusMonth={this.handleMinusMonth} 
                             handleSetMonth={this.handleSetMonth}
-                            currentMonth={this.state.currentMonth} 
-                        />
+                            currentMonth={this.state.currentMonth}
+                        >
+                            <span onClick={() => this.handleDaySetting()} style={{top: "10px", left: "10px", position: "relative", cursor: "pointer"}}>
+                                 <i className="material-icons">settings</i>
+                            </span>
+                        </MonthPicker>
                     </div>
+                    {
+                        this.state.currentDaySetting === true && (
+                            <div className="col xl12 l12 m12 s12">
+                                <DayPickerInput 
+                                    classNames={{
+                                    container: "input-field col xl6 l8 m8 s12",
+                                    overlayWrapper: "DayPickerInput-OverlayWrapper",
+                                    overlay: "DayPickerInput-Overlay"
+                                    }}
+                                    onDayChange={this.handleDayChange} 
+                                    formatDate={formatDate}
+                                    parseDate={parseDate}
+                                    format={"LL"}
+                                    placeholder={`${formatDate(new Date(), 'LL', 'th')}`}
+                                    dayPickerProps={{
+                                        locale: 'th',
+                                        localeUtils: MomentLocaleUtils,
+                                        canChangeMonth: false
+                                    }}
+                                />
+                            </div>
+                        )
+                    }
                     <div className="col xl6 l6 m6 s6" style={{right: "5px", top: "10px", position: "relative"}}>
                         <h6>สินค้านำเข้า</h6>
                     </div>

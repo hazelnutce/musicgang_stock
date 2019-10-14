@@ -73,6 +73,7 @@ export class MonthPicker extends Component {
                 chevron_right
               </i>
           </div>
+          {this.props.children}
         </h6>
         <div id="modal1" className="modal">
           <div className="modal-content">

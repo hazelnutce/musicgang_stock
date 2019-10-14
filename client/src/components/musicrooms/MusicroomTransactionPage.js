@@ -14,6 +14,12 @@ import {LoaderSpinner} from '../commons/LoaderSpinner'
 import './main.css'
 import {CostMonthlySummaryPanel} from '../costs/CostMonthlySummaryPanel'
 
+import DayPickerInput from 'react-day-picker/DayPickerInput'
+import MomentLocaleUtils, {
+    formatDate,
+    parseDate,
+  } from 'react-day-picker/moment';
+
 const shiftLeft10 = {
     left: "10px",
     position: "relative"
@@ -45,6 +51,8 @@ export class MusicroomTransactionPage extends Component {
             currentLargeRoomPage : parseInt(largePage),
             currentMusicroomTotal : 0,
             isLoadingTotalRevenue : false,
+            currentDaySetting: false,
+            currentDaySettingValue: new Date(),
         }
     }
 
@@ -61,6 +69,10 @@ export class MusicroomTransactionPage extends Component {
           dismissable: { click: true }
         });
       }
+
+    handleDaySetting = () => {
+        this.setState({currentDaySetting: !this.state.currentDaySetting})
+    }  
 
     handleAddMonth = () => {
         let newMonth = this.state.currentMonth + 1
@@ -496,15 +508,43 @@ export class MusicroomTransactionPage extends Component {
                 </div>
                 {this.state.isSelectSmallRoomRecord === true && this.state.loadingMusicroomRecord === true && (
                     <div className="row">
-                            <div className="col x12 l12 m12 s12 center">
-                            <MonthPicker 
-                                handleAddMonth={this.handleAddMonth} 
-                                handleMinusMonth={this.handleMinusMonth} 
-                                handleSetMonth={this.handleSetMonth}
-                                currentMonth={this.state.currentMonth} 
-                                disabled={this.state.isLoadingTotalRevenue} 
-                            />
+                        <div className="col xl12 l12 m12 s12 center">
+                        <MonthPicker 
+                            handleAddMonth={this.handleAddMonth} 
+                            handleMinusMonth={this.handleMinusMonth} 
+                            handleSetMonth={this.handleSetMonth}
+                            currentMonth={this.state.currentMonth}
+                            disabled={this.state.isLoadingTotalRevenue}
+                        >
+                            <span onClick={() => this.handleDaySetting()} style={{top: "10px", left: "10px", position: "relative", cursor: "pointer"}}>
+                                 <i className="material-icons">settings</i>
+                            </span>
+                        </MonthPicker>
                         </div>
+
+                        {
+                            this.state.currentDaySetting === true && (
+                                <div className="col xl12 l12 m12 s12">
+                                    <DayPickerInput 
+                                        classNames={{
+                                        container: "input-field col xl6 l8 m8 s12",
+                                        overlayWrapper: "DayPickerInput-OverlayWrapper",
+                                        overlay: "DayPickerInput-Overlay"
+                                        }}
+                                        onDayChange={this.handleDayChange} 
+                                        formatDate={formatDate}
+                                        parseDate={parseDate}
+                                        format={"LL"}
+                                        placeholder={`${formatDate(new Date(), 'LL', 'th')}`}
+                                        dayPickerProps={{
+                                            locale: 'th',
+                                            localeUtils: MomentLocaleUtils,
+                                            canChangeMonth: false
+                                        }}
+                                    />
+                                </div>
+                            )
+                        }
                         <div className="row">
                             <CostMonthlySummaryPanel color={"green lighten-1"} message={"รายรับจากห้องซ้อมดนตรี"} currentMonth={this.state.currentMonth} cost={this.state.currentMusicroomTotal}/>
                         </div>
@@ -538,14 +578,41 @@ export class MusicroomTransactionPage extends Component {
                 )}
                 {this.state.isSelectLargeRoomRecord === true && this.state.loadingMusicroomRecord === true && (
                     <div className="row">
-                            <div className="col x12 l12 m12 s12 center">
+                            <div className="col xl12 l12 m12 s12 center">
                             <MonthPicker 
                                 handleAddMonth={this.handleAddMonth} 
                                 handleMinusMonth={this.handleMinusMonth} 
                                 handleSetMonth={this.handleSetMonth}
                                 currentMonth={this.state.currentMonth}
-                                disabled={this.state.isLoadingTotalRevenue} 
-                            />
+                                disabled={this.state.isLoadingTotalRevenue}
+                            >
+                                <span onClick={() => this.handleDaySetting()} style={{top: "10px", left: "10px", position: "relative", cursor: "pointer"}}>
+                                    <i className="material-icons">settings</i>
+                                </span>
+                            </MonthPicker>
+                            {
+                                this.state.currentDaySetting === true && (
+                                    <div className="col xl12 l12 m12 s12">
+                                        <DayPickerInput 
+                                            classNames={{
+                                            container: "input-field col xl6 l8 m8 s12",
+                                            overlayWrapper: "DayPickerInput-OverlayWrapper",
+                                            overlay: "DayPickerInput-Overlay"
+                                            }}
+                                            onDayChange={this.handleDayChange} 
+                                            formatDate={formatDate}
+                                            parseDate={parseDate}
+                                            format={"LL"}
+                                            placeholder={`${formatDate(new Date(), 'LL', 'th')}`}
+                                            dayPickerProps={{
+                                                locale: 'th',
+                                                localeUtils: MomentLocaleUtils,
+                                                canChangeMonth: false
+                                            }}
+                                        />
+                                    </div>
+                                )
+                            }
                         </div>
                         <div className="row">
                             <CostMonthlySummaryPanel color={"green lighten-1"} message={"รายรับจากห้องซ้อมดนตรี"} currentMonth={this.state.currentMonth} cost={this.state.currentMusicroomTotal}/>
@@ -555,11 +622,11 @@ export class MusicroomTransactionPage extends Component {
                         </div>
                         <div className="col xl6 l6 m6 s6">
                             <div className="right">
-                                {this.renderPagination(largeRoomFilteredTransaction, "Export")} 
+                                {this.renderPagination(largeRoomFilteredTransaction, "Large")} 
                             </div>
                         </div>
-                        <div className="col card small xl12 l12 m12 s12" style={{right: "5px", position: "relative", height: "auto"}}>
-                            <table className="highlight centered">
+                        <div className="col xl12 l12 m12 s12" style={{right: "5px", position: "relative", height: "auto"}}>
+                            <table className="highlight import-table">
                             <thead>
                             <tr>
                                 <th className="smaller_height_header smaller_gap">วันที่</th>
