@@ -28,7 +28,8 @@ const shiftLeft10 = {
 const sessionEnums = {
     currentPageTrackerMusicroom_1: 'currentPageTrackerMusicroom_1',
     currentPageTrackerMusicroom_2: 'currentPageTrackerMusicroom_2',
-    currentPageTrackerMusicroom_month: 'currentPageTrackerMusicroom_month'
+    currentPageTrackerMusicroom_month: 'currentPageTrackerMusicroom_month',
+    currentModeTrackerMusicroom: 'currentModeTrackerMusicroom'
 }
 
 export class MusicroomTransactionPage extends Component {
@@ -38,12 +39,13 @@ export class MusicroomTransactionPage extends Component {
         var smallPage = sessionStorage.getItem(sessionEnums.currentPageTrackerMusicroom_1)
         var largePage = sessionStorage.getItem(sessionEnums.currentPageTrackerMusicroom_2)
         var month = sessionStorage.getItem(sessionEnums.currentPageTrackerMusicroom_month)
+        var mode = sessionStorage.getItem(sessionEnums.currentModeTrackerMusicroom);
 
         this.notificationDOMRef = React.createRef();
 
         this.state = {
-            isSelectSmallRoomRecord : true,
-            isSelectLargeRoomRecord : false,
+            isSelectSmallRoomRecord : mode === "small",
+            isSelectLargeRoomRecord : mode === "large",
             isLoadingItem: false,
             currentMonth :  parseInt(month),
             loadingMusicroomRecord : false,
@@ -127,12 +129,14 @@ export class MusicroomTransactionPage extends Component {
 
     handleCheckboxes = (buttonString) => {
         if(buttonString === "1"){
+            sessionStorage.setItem(sessionEnums.currentModeTrackerMusicroom, "small")
             this.setState({
                 isSelectSmallRoomRecord : true,
                 isSelectLargeRoomRecord : false,
             })
         }
         else if(buttonString === "2"){
+            sessionStorage.setItem(sessionEnums.currentModeTrackerMusicroom, "large")
             this.setState({
                 isSelectSmallRoomRecord : false,
                 isSelectLargeRoomRecord : true,

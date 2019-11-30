@@ -23,12 +23,15 @@ var sessionStorageObject = {
     currentPageTrackerTransaction_1 : "1",
     currentPageTrackerTransaction_2 : "1",
     currentPageTrackerTransaction_month : monthString,
+    currentModeTrackerTransaction : "import",
     currentPageTrackerMusicroom_1 : "1",
     currentPageTrackerMusicroom_2 : "1",
     currentPageTrackerMusicroom_month : monthString,
+    currentModeTrackerMusicroom : "small",
     currentPageTrackerCost_1 : "1",
     currentPageTrackerCost_2 : "1",
     currentPageTrackerCost_month : monthString,
+    currentModeTrackerCost : "cost"
 }
 
 for(var p in sessionStorageObject){

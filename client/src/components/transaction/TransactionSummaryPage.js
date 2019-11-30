@@ -12,28 +12,35 @@ const shiftLeftMinus45 = {
     position: "relative"
 }
 
+const sessionEnums = {
+    currentModeTrackerTransaction: 'currentModeTrackerTransaction',
+}
+
+
 export class TransactionSummaryPage extends Component {
     constructor(props){
         super(props)
 
+        var mode = sessionStorage.getItem(sessionEnums.currentModeTrackerTransaction)
+
         this.state = {
-            isSelectTransactionIn : true,
-            isSelectTransactionOut : false,
+            isSelectTransactionIn : mode === "import",
+            isSelectTransactionOut : mode === "export",
             isLoadingItem: false
         }
     }
 
     handleCheckboxes = (buttonString) => {
         if(buttonString === "1"){
+            sessionStorage.setItem(sessionEnums.currentModeTrackerTransaction, "import")
             this.setState({
-                isSelectAllTransaction : false,
                 isSelectTransactionIn : true,
                 isSelectTransactionOut : false,
             })
         }
         else if(buttonString === "2"){
+            sessionStorage.setItem(sessionEnums.currentModeTrackerTransaction, "export")
             this.setState({
-                isSelectAllTransaction : false,
                 isSelectTransactionIn : false,
                 isSelectTransactionOut : true,
             })

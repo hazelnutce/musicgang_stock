@@ -30,7 +30,6 @@ import MomentLocaleUtils, {
   } from 'react-day-picker/moment';
 import CostTransactionTableHeader from './CostTransactionTableHeader';
 
-
 const shiftLeft10 = {
   left: "10px",
   position: "relative"
@@ -39,7 +38,8 @@ const shiftLeft10 = {
 const sessionEnums = {
     currentPageTrackerCost_1: 'currentPageTrackerCost_1',
     currentPageTrackerCost_2: 'currentPageTrackerCost_2',
-    currentPageTrackerCost_month: 'currentPageTrackerCost_month'
+    currentPageTrackerCost_month: 'currentPageTrackerCost_month',
+    currentModeTrackerCost: 'currentModeTrackerCost'
 }
 
 export class CostTransactionDetail extends Component {
@@ -49,12 +49,13 @@ export class CostTransactionDetail extends Component {
     var costPage = sessionStorage.getItem(sessionEnums.currentPageTrackerCost_1)
     var revenuePage = sessionStorage.getItem(sessionEnums.currentPageTrackerCost_2)
     var month = sessionStorage.getItem(sessionEnums.currentPageTrackerCost_month)
+    var mode = sessionStorage.getItem(sessionEnums.currentModeTrackerCost)
 
     this.notificationDOMRef = React.createRef();
 
     this.state = {
-      isSelectCostRecord : true,
-      isSelectRevenueRecord : false,
+      isSelectCostRecord : mode === "cost",
+      isSelectRevenueRecord : mode === "revenue",
       selectedDay: new Date(new Date().setHours(0,0,0,0)),
       isLoadingTransaction : true,
       currentMonth :  parseInt(month),
@@ -173,12 +174,14 @@ export class CostTransactionDetail extends Component {
 
   handleCheckboxes = (buttonString) => {
     if(buttonString === "1"){
+        sessionStorage.setItem(sessionEnums.currentModeTrackerCost, "cost")
         this.setState({
             isSelectCostRecord : true,
             isSelectRevenueRecord : false,
         })
     }
     else if(buttonString === "2"){
+        sessionStorage.setItem(sessionEnums.currentModeTrackerCost, "revenue")
         this.setState({
             isSelectCostRecord : false,
             isSelectRevenueRecord : true,
