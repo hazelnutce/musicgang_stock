@@ -29,7 +29,9 @@ const sessionEnums = {
     currentPageTrackerMusicroom_1: 'currentPageTrackerMusicroom_1',
     currentPageTrackerMusicroom_2: 'currentPageTrackerMusicroom_2',
     currentPageTrackerMusicroom_month: 'currentPageTrackerMusicroom_month',
-    currentModeTrackerMusicroom: 'currentModeTrackerMusicroom'
+    currentModeTrackerMusicroom: 'currentModeTrackerMusicroom',
+    currentDayFilterBoolMusicroom: 'currentDayFilterBoolMusicroom',
+    currentDayFilterMusicroom: 'currentDayFilterMusicroom'
 }
 
 export class MusicroomTransactionPage extends Component {
@@ -39,7 +41,10 @@ export class MusicroomTransactionPage extends Component {
         var smallPage = sessionStorage.getItem(sessionEnums.currentPageTrackerMusicroom_1)
         var largePage = sessionStorage.getItem(sessionEnums.currentPageTrackerMusicroom_2)
         var month = sessionStorage.getItem(sessionEnums.currentPageTrackerMusicroom_month)
-        var mode = sessionStorage.getItem(sessionEnums.currentModeTrackerMusicroom);
+        var mode = sessionStorage.getItem(sessionEnums.currentModeTrackerMusicroom)
+        var currentDaySetting = sessionStorage.getItem(sessionEnums.currentDayFilterBoolMusicroom)
+        var currentDaySettingValue = sessionStorage.getItem(sessionEnums.currentDayFilterMusicroom)
+        var splitDay = currentDaySettingValue.split('/', 3)
 
         this.notificationDOMRef = React.createRef();
 
@@ -53,8 +58,8 @@ export class MusicroomTransactionPage extends Component {
             currentLargeRoomPage : parseInt(largePage),
             currentMusicroomTotal : 0,
             isLoadingTotalRevenue : false,
-            currentDaySetting: false,
-            currentDaySettingValue: new Date(new Date().setHours(0,0,0,0)),
+            currentDaySetting: currentDaySetting === "true",
+            currentDaySettingValue: new Date(new Date(splitDay[2],splitDay[1] - 1,splitDay[0]).setHours(0,0,0,0)),
         }
     }
 
@@ -73,11 +78,13 @@ export class MusicroomTransactionPage extends Component {
       }
 
     handleDaySetting = () => {
+        sessionStorage.setItem(sessionEnums.currentDayFilterBoolMusicroom, (!this.state.currentDaySetting).toString())
         this.setState({currentDaySetting: !this.state.currentDaySetting})
     }
 
     handleSettingDayChange = (day) => {
         if((day instanceof Date)){
+            sessionStorage.setItem(sessionEnums.currentDayFilterMusicroom, moment(day).format("D/MM/YYYY"))  
           this.setState({ currentDaySettingValue: day });
         }
     }
@@ -94,7 +101,9 @@ export class MusicroomTransactionPage extends Component {
                 currentMusicroomTotal: values[0].data,
                 isLoadingTotalRevenue: false})
         })
-        this.setState({currentDaySettingValue : new Date(newMonth/12, newMonth%12, 1)})
+        var newDate = new Date(newMonth/12, newMonth%12, 1)
+        sessionStorage.setItem(sessionEnums.currentDayFilterMusicroom, moment(newDate).format("D/MM/YYYY"))
+        this.setState({currentDaySettingValue : newDate})
     }
 
     handleMinusMonth = () => {
@@ -109,7 +118,9 @@ export class MusicroomTransactionPage extends Component {
                 currentMusicroomTotal: values[0].data,
                 isLoadingTotalRevenue: false})
         })
-        this.setState({currentDaySettingValue : new Date(newMonth/12, newMonth%12, 1)})
+        var newDate = new Date(newMonth/12, newMonth%12, 1)
+        sessionStorage.setItem(sessionEnums.currentDayFilterMusicroom, moment(newDate).format("D/MM/YYYY"))
+        this.setState({currentDaySettingValue : newDate})
     }
 
     handleSetMonth = (integerMonth) => {
@@ -124,7 +135,9 @@ export class MusicroomTransactionPage extends Component {
                 currentMusicroomTotal: values[0].data,
                 isLoadingTotalRevenue: false})
         })
-        this.setState({currentDaySettingValue : new Date(integerMonth/12, integerMonth%12, 1)})
+        var newDate = new Date(integerMonth/12, integerMonth%12, 1)
+        sessionStorage.setItem(sessionEnums.currentDayFilterMusicroom, moment(newDate).format("D/MM/YYYY"))
+        this.setState({currentDaySettingValue : newDate})
     }
 
     handleCheckboxes = (buttonString) => {

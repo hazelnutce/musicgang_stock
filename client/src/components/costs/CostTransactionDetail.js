@@ -39,7 +39,9 @@ const sessionEnums = {
     currentPageTrackerCost_1: 'currentPageTrackerCost_1',
     currentPageTrackerCost_2: 'currentPageTrackerCost_2',
     currentPageTrackerCost_month: 'currentPageTrackerCost_month',
-    currentModeTrackerCost: 'currentModeTrackerCost'
+    currentModeTrackerCost: 'currentModeTrackerCost',
+    currentDayFilterBoolCost: 'currentDayFilterBoolCost',
+    currentDayFilterCost: 'currentDayFilterCost'
 }
 
 export class CostTransactionDetail extends Component {
@@ -50,6 +52,9 @@ export class CostTransactionDetail extends Component {
     var revenuePage = sessionStorage.getItem(sessionEnums.currentPageTrackerCost_2)
     var month = sessionStorage.getItem(sessionEnums.currentPageTrackerCost_month)
     var mode = sessionStorage.getItem(sessionEnums.currentModeTrackerCost)
+    var currentDaySetting = sessionStorage.getItem(sessionEnums.currentDayFilterBoolCost)
+    var currentDaySettingValue = sessionStorage.getItem(sessionEnums.currentDayFilterCost)
+    var splitDay = currentDaySettingValue.split('/', 3)
 
     this.notificationDOMRef = React.createRef();
 
@@ -65,8 +70,8 @@ export class CostTransactionDetail extends Component {
       currentExportTotal: 0,
       currentMusicroomTotal: 0,
       isLoadingImportExportCost: false,
-      currentDaySetting: false,
-      currentDaySettingValue: new Date(new Date().setHours(0,0,0,0)),
+      currentDaySetting: currentDaySetting === "true",
+      currentDaySettingValue: new Date(new Date(splitDay[2],splitDay[1] - 1,splitDay[0]).setHours(0,0,0,0))
     }
   }
 
@@ -106,11 +111,13 @@ export class CostTransactionDetail extends Component {
   }
 
   handleDaySetting = () => {
+    sessionStorage.setItem(sessionEnums.currentDayFilterBoolCost, (!this.state.currentDaySetting).toString())
     this.setState({currentDaySetting: !this.state.currentDaySetting})
   }
 
   handleSettingDayChange = (day) => {
     if((day instanceof Date)){
+      sessionStorage.setItem(sessionEnums.currentDayFilterCost, moment(day).format("D/MM/YYYY"))  
       this.setState({ currentDaySettingValue: day });
     }
   }
@@ -217,7 +224,9 @@ handleAddMonth = () => {
             currentExportTotal: values[1].data,
             isLoadingImportExportCost: false})
     })
-    this.setState({currentDaySettingValue : new Date(newMonth/12, newMonth%12, 1)})
+    var newDate = new Date(newMonth/12, newMonth%12, 1)
+    sessionStorage.setItem(sessionEnums.currentDayFilterCost, moment(newDate).format("D/MM/YYYY"))
+    this.setState({currentDaySettingValue : newDate})
 }
 
 handleMinusMonth = () => {
@@ -239,7 +248,9 @@ handleMinusMonth = () => {
             currentExportTotal: values[1].data,
             isLoadingImportExportCost: false})
     })
-    this.setState({currentDaySettingValue : new Date(newMonth/12, newMonth%12, 1)})
+    var newDate = new Date(newMonth/12, newMonth%12, 1)
+    sessionStorage.setItem(sessionEnums.currentDayFilterCost, moment(newDate).format("D/MM/YYYY"))
+    this.setState({currentDaySettingValue : newDate})
 }
 
 handleSetMonth = (integerMonth) => {
@@ -261,7 +272,9 @@ handleSetMonth = (integerMonth) => {
             currentExportTotal: values[1].data,
             isLoadingImportExportCost: false})
     })
-    this.setState({currentDaySettingValue : new Date(integerMonth/12, integerMonth%12, 1)})
+    var newDate = new Date(newMonth/12, newMonth%12, 1)
+    sessionStorage.setItem(sessionEnums.currentDayFilterCost, moment(newDate).format("D/MM/YYYY"))
+    this.setState({currentDaySettingValue : newDate})
 }
 
 handleDayChange = (day) => {

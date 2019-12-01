@@ -18,7 +18,9 @@ import MomentLocaleUtils, {
 const sessionEnums = {
     currentPageTrackerTransaction_1: 'currentPageTrackerTransaction_1',
     currentPageTrackerTransaction_2: 'currentPageTrackerTransaction_2',
-    currentPageTrackerTransaction_month: 'currentPageTrackerTransaction_month'
+    currentPageTrackerTransaction_month: 'currentPageTrackerTransaction_month',
+    currentDayFilterBoolTransaction: 'currentDayFilterBoolTransaction',
+    currentDayFilterTransaction: 'currentDayFilterTransaction'
 }
 
 export class TransactionListSummaryPage extends Component {
@@ -28,23 +30,28 @@ export class TransactionListSummaryPage extends Component {
         var importPage = sessionStorage.getItem(sessionEnums.currentPageTrackerTransaction_1)
         var exportPage = sessionStorage.getItem(sessionEnums.currentPageTrackerTransaction_2)
         var month = sessionStorage.getItem(sessionEnums.currentPageTrackerTransaction_month)
+        var currentDaySetting = sessionStorage.getItem(sessionEnums.currentDayFilterBoolTransaction)
+        var currentDaySettingValue = sessionStorage.getItem(sessionEnums.currentDayFilterTransaction)
+        var splitDay = currentDaySettingValue.split('/', 3)
 
         this.state = {
             currentMonth :  parseInt(month),
             loadingTransaction : false,
             currentImportPage: parseInt(importPage),
             currentExportPage: parseInt(exportPage),
-            currentDaySetting: false,
-            currentDaySettingValue: new Date(new Date().setHours(0,0,0,0))
+            currentDaySetting: currentDaySetting === "true",
+            currentDaySettingValue: new Date(new Date(splitDay[2],splitDay[1] - 1,splitDay[0]).setHours(0,0,0,0))
         }
     }
 
     handleDaySetting = () => {
+        sessionStorage.setItem(sessionEnums.currentDayFilterBoolTransaction, (!this.state.currentDaySetting).toString())
         this.setState({currentDaySetting: !this.state.currentDaySetting})
     }
 
     handleSettingDayChange = (day) => {
         if((day instanceof Date)){
+          sessionStorage.setItem(sessionEnums.currentDayFilterTransaction, moment(day).format("D/MM/YYYY")) 
           this.setState({ currentDaySettingValue: day });
         }
       }
@@ -57,7 +64,9 @@ export class TransactionListSummaryPage extends Component {
         this.setState({currentMonth: newMonth, currentImportPage: 1, currentExportPage: 1}, () => {
             this.initToolTip()
         })
-        this.setState({currentDaySettingValue : new Date(newMonth/12, newMonth%12, 1)})
+        var newDate = new Date(newMonth/12, newMonth%12, 1)
+        sessionStorage.setItem(sessionEnums.currentDayFilterTransaction, moment(newDate).format("D/MM/YYYY"))
+        this.setState({currentDaySettingValue : newDate})
     }
 
     handleMinusMonth = () => {
@@ -68,7 +77,9 @@ export class TransactionListSummaryPage extends Component {
         this.setState({currentMonth: newMonth, currentImportPage: 1, currentExportPage: 1}, () => {
             this.initToolTip()
         })
-        this.setState({currentDaySettingValue : new Date(newMonth/12, newMonth%12, 1)})
+        var newDate = new Date(newMonth/12, newMonth%12, 1)
+        sessionStorage.setItem(sessionEnums.currentDayFilterTransaction, moment(newDate).format("D/MM/YYYY"))
+        this.setState({currentDaySettingValue : newDate})
     }
 
     handleSetMonth = (integerMonth) => {
@@ -78,7 +89,9 @@ export class TransactionListSummaryPage extends Component {
         this.setState({currentMonth: integerMonth, currentImportPage: 1, currentExportPage: 1}, () => {
             this.initToolTip()
         })
-        this.setState({currentDaySettingValue : new Date(integerMonth/12, integerMonth%12, 1)})
+        var newDate = new Date(integerMonth/12, integerMonth%12, 1)
+        sessionStorage.setItem(sessionEnums.currentDayFilterTransaction, moment(newDate).format("D/MM/YYYY"))
+        this.setState({currentDaySettingValue : newDate})
     }
 
     componentWillReceiveProps = () => {
@@ -156,8 +169,6 @@ export class TransactionListSummaryPage extends Component {
         var yearFilter = monthConst / 12
         return new Date(yearFilter, monthFilter, 1)
     }
-
-
 
     initToolTip = () => {
         var elems = document.querySelectorAll('.tooltipped');
