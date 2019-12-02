@@ -36,6 +36,7 @@ import TransactionImport from './transaction/AddNewTransactionIn'
 import TransactionExport from './transaction/AddNewTransactionOut'
 import EditTransaction from './transaction/EditTransaction'
 import ViewTransaction from './transaction/ViewTransaction'
+import TotalTransactionPerDay from './transaction/TotalTransactionPerDay'
 import MusicroomTransactionPage from './musicrooms/MusicroomTransactionPage'
 import AddMusicroomTransaction from './musicrooms/AddMusicroomTransaction'
 import EditMusicroomTransaction from "./musicrooms/EditMusicroomTransaction";
@@ -76,6 +77,7 @@ class App extends Component {
                 <Route exact path="/transactions/new/export" component={TransactionExport}></Route>
                 <Route exact path="/transactions/detail" component={TransactionSummaryPage}></Route>
                 <Route exact path="/transactions/edit" component={EditTransaction}></Route>
+                <Route exact path="/transaction/total" component={TotalTransactionPerDay}></Route>
                 <Route exact path="/musicrooms" component={MusicroomTransactionPage}></Route>
                 <Route exact path="/musicrooms/new" component={AddMusicroomTransaction}></Route>
                 <Route exact path="/musicrooms/view" component={ViewMusicroomTransaction}></Route>

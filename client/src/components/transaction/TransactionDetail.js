@@ -52,8 +52,15 @@ export class TransactionDetail extends Component {
                     <i className="material-icons">
                       <FontAwesomeIcon className="fas fa-sm" icon="boxes"/>
                     </i>
-                    <Link to={{ state: {stockName : stock.stockName, stockId: stock._id}, pathname: `/transactions/detail`}}>
+                    <div style={{width: "150px"}}>
                       {stock.stockName}
+                    </div>
+                    <Link style={{marginLeft: "20px"}} to={{ state: {stockName : stock.stockName, stockId: stock._id}, pathname: `/transactions/detail`}}>
+                      แสดงรายการประจำวัน
+                    </Link>
+                    <span style={{marginLeft: "20px"}}>|</span>
+                    <Link style={{marginLeft: "20px"}} to={{ state: {stockName : stock.stockName, stockId: stock._id}, pathname: `/transactions/detail`}}>
+                      แสดงยอดรายประจำวัน
                     </Link>
                   </div>
                   <div className="collapsible-body">
