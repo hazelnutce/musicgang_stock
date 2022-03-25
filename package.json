@@ -47,7 +47,7 @@
     },
     "devDependencies": {
         "asar": "^0.14.3",
-        "electron": "^2.0.8",
+        "electron": "^13.6.6",
         "foreman": "^3.0.1"
     }
 }
