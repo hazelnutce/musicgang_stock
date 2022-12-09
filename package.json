@@ -34,7 +34,7 @@
         "crypto": "^1.0.1",
         "crypto-password-helper": "0.0.3",
         "electron-packager": "^12.1.1",
-        "express": "^4.16.3",
+        "express": "^4.17.3",
         "jquery": "^3.4.1",
         "keymaster": "^1.6.2",
         "lokijs": "^1.5.5",
